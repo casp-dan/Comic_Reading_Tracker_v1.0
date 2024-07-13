@@ -21,9 +21,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 /**
- * Controller for making a new entry in the database
- *
+ * Controller for the make entry tab
  * @author Daniel Casper
+ * @version 7/13/24
  */
 public class MakeEntryDialogController {
     
@@ -164,7 +164,7 @@ public class MakeEntryDialogController {
         xmenAdj.setVisible(false);
         xmenAdj.setSelected(false);
         if (month.getText().equals("") || month.getText().equals("Overview")){
-            setStatValues(DBConnection.getTotal(), DBConnection.getNumXMen(), DBConnection.getNumPublisher("DC"), DBConnection.getNumPublisher("Marvel"), DBConnection.getNumSeries(), DBConnection.getNumPublisher("Image"));
+            setStatValues(DBConnection.getTotal(), DBConnection.getNumXMen(), DBConnection.getNumPublisher("DC"), DBConnection.getNumPublisher("Marvel"), DBConnection.getNumPublisher("Image"), DBConnection.getNumSeries());
             year.setVisible(false);
             year.setText("");
         }
@@ -196,7 +196,7 @@ public class MakeEntryDialogController {
         imageTotalValue.setText(Integer.toString(image)); 
         xmenTotalValue.setText(Integer.toString(xmen));
         marvelTotalValue.setText(Integer.toString(marvel));
-        seriesTotalValue.setText(Integer.toString(series));
+        seriesTotalValue.setText(Integer.toString(series));bbb
     }
 
     /**
@@ -336,7 +336,7 @@ public class MakeEntryDialogController {
         int seriesSum=0;
         String yearStr=year.getText().split("0")[1];
         TotalValue.setText(Integer.toString(DBConnection.getTotalYear(Integer.parseInt(yearStr))));
-        int idMax=DBConnection.getNumSeries()+1;
+        int idMax=DBConnection.getFinalSeriesID();
         for (int i=1;i<=idMax;i++){
             String publisher=DBConnection.getPublisherByID(i);
             int addTo=DBConnection.getNumByYear(i,Integer.parseInt(yearStr));

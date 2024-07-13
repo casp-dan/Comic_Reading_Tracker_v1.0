@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import app.DBConnection;
-import app.Entry;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -23,10 +22,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 /**
- * Controller for the backlog tab
+ * Controller for the series tree view tab page
  *
- * @author Thomas Breimer
- * @version 5/22/23
+ * @author Daniel Casper
+ * @version 7/13/24
  */
 
 public class seriesViewController{
@@ -41,10 +40,8 @@ public class seriesViewController{
 
 
     /**
-     * Assigns shared objects between mainScenesController
-     * @param newBacklog backlog object
-     * @param mainScenesController reference back to mainScenesController
-     */
+     * Sets variables and creates any unmade javaFX features 
+     */    
     public void setObjects() {
         issueTree=new TreeView<String>();
         issueTree.setLayoutX(33);
@@ -63,17 +60,12 @@ public class seriesViewController{
         totalIssues.setVisible(false);        
     }
 
+    /**
+     * Creates a dropdown menu button to select the title of a series that already exists.
+     */
     public void makeTitlesButton(){
         ObservableList<MenuItem> bookNames=seriesTitles.getItems();
         bookNames.clear();
-        MenuItem item1=new MenuItem("");
-        item1.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                seriesField.setText("");
-                seriesTitles.setText("");
-            }
-        });
-        bookNames.add(item1);
         ArrayList<String> titles=DBConnection.getSeries();
         for (int i=0;i<titles.size();i++){
             if (titles.get(i).contains(seriesField.getText())){
@@ -89,6 +81,12 @@ public class seriesViewController{
         }
     }
 
+    /**
+     * Searches the database for all issues of the designated series 
+     * and displays them in a table view
+     * @param mouseEvent
+     * @throws IOException
+     */
     public void searchIssues(@SuppressWarnings("exports") MouseEvent mouseEvent) throws IOException {
         if (!DBConnection.getSeries().contains(seriesField.getText())){
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -98,13 +96,17 @@ public class seriesViewController{
             alert.showAndWait();
         }
         else{
-            createSprintArchiveTreeView();
+            createIssueView();
             totalIssues.setText("Issues Read: " +DBConnection.getNumIssues(seriesField.getText()));
             totalIssues.setVisible(true);
         }
     }
 
-    public void createSprintArchiveTreeView(){
+    /**
+     * Creates a table view that displays each issue of a series 
+     * in the database along with the date it was read
+     */
+    public void createIssueView(){
         pane.getChildren().remove(issueTree);
         TreeItem<String> rootItem = new CheckBoxTreeItem<>("Issues");
         ArrayList<String> issues=DBConnection.getIssuesBySeriesID(seriesField.getText());

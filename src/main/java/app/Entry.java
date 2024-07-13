@@ -3,7 +3,11 @@ package app;
 import java.io.IOException;
 import javafx.scene.control.Alert;
 
-
+/**
+ * Creates entries in the database.
+ * @author Daniel Casper
+ * @version 7/9/24
+ */
 public class Entry {
 
     private String name;
@@ -50,7 +54,7 @@ public class Entry {
             return true;
         }
         else{
-            bookID=DBConnection.createSeries(name, 0, publisher, xmen); 
+            bookID=DBConnection.createSeries(name, publisher, xmen); 
             if (publisher.equals("")){
                 errorMessage("No Publisher Selected", "Please Select a Publisher");
                 return false;

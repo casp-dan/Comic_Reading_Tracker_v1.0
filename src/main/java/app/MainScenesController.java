@@ -1,20 +1,17 @@
 package app;
 
-import java.net.URL;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import java.io.IOException;
-import java.util.ResourceBundle;
 import app.controllers.MakeEntryDialogController;
 import app.controllers.seriesViewController;
-import javafx.fxml.Initializable;
 
 /**
  * Main controller
  * @author Daniel CAsper
  */
 
-public class MainScenesController implements Initializable {
+public class MainScenesController {
 
     @FXML private Parent makeEntryPage;
     @FXML private MakeEntryDialogController makeEntryPageController;
@@ -31,6 +28,4 @@ public class MainScenesController implements Initializable {
         seriesViewPageController.setObjects();
     }
 
-    public void initialize(URL location, ResourceBundle resources) {
-    }
 }

@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 /**
- * Main Class
+ * Main App Class
  * @author Daniel Casper
  */
 
@@ -23,54 +23,26 @@ public class App extends Application {
     @SuppressWarnings("exports")
     public void start(Stage stage) throws IOException {
         try {
-
-
-            /** 
-            // Login Window
-            /** 
-            // Login Window
-            FXMLLoader loginLoader = new FXMLLoader(getClass().getResource("/app/makeEntryDialog.fxml"));
-            Parent loginRoot = (Parent) loginLoader.load();
-            MakeEntryDialogController loginController = (MakeEntryDialogController) loginLoader.getController();
-            loginController.setMain(list);
-
-            Scene loginScene = new Scene(loginRoot);
-            mainStage = new Stage();
-
-            mainStage.getIcons().add(new Image(getClass().getResourceAsStream("icon.png")));
-            mainStage.initModality(Modality.APPLICATION_MODAL);
-            mainStage.setScene(loginScene);
-            mainStage.setTitle("Comic Log");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("mainScenes.fxml"));
+            Parent root = loader.load();
+            controller = (MainScenesController) loader.getController();
             
-            
-            mainStage.show();
-            
-            */
-            // Main Window
-             //this.sprint = new Sprint("Unnamed Sprint", 0);
-             //this.archive = new SprintArchive(0);
-             //this.classroom = new Classroom();
-             
-             FXMLLoader loader = new FXMLLoader(getClass().getResource("mainScenes.fxml"));
-             Parent root = loader.load();
-             controller = (MainScenesController) loader.getController();
-             
-             
-             controller.setObjects();
-             
-             Scene scene = new Scene(root);
-             stage.setScene(scene);
-             stage.setResizable(true);
-             stage.setTitle("Comic Log™");
-             DBConnection.connectDB();
-             stage.getIcons().add(new Image(getClass().getResourceAsStream("icon.png")));
-             
-             stage.show();
-             
-            } 
-            catch(Exception e){
-                e.printStackTrace();
-            }
+
+            controller.setObjects();
+
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setResizable(true);
+            stage.setTitle("Comic Log™");
+            DBConnection.connectDB();
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("icon.png")));
+
+            stage.show();
+
+        } 
+        catch(Exception e){
+            e.printStackTrace();
+        }
 
     }
 
