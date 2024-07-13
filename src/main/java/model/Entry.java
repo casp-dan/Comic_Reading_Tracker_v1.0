@@ -13,9 +13,10 @@ public class Entry {
     private String date;
     private String publisher;
     private boolean xmen;
+    private boolean xmenAdj;
     private String[] comps;
 
-    public Entry(String name, String num, String date, String publisher, boolean xmen) throws IOException{
+    public Entry(String name, String num, String date, String publisher, boolean xmen, boolean xmenAdj) throws IOException{
         this.comps=date.split("/");
         if (comps[2].length()>2){
             comps[2]=comps[2].split("0")[1];
@@ -25,6 +26,7 @@ public class Entry {
         this.date=date;
         this.publisher=publisher;
         this.xmen=xmen;
+        this.xmenAdj=xmenAdj;
         
     }
 
@@ -34,7 +36,7 @@ public class Entry {
             int issue=Integer.parseInt(issues[0]);
             while (issue<=Integer.parseInt(issues[1])){
                 if (!DBConnection.entryExists(run,Integer.toString(issue),date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]))){
-                    DBConnection.addIssue(run,Integer.toString(issue),date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]));
+                    DBConnection.addIssue(run,Integer.toString(issue),date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]), xmenAdj);
                     issue++;
                 }
                 else{
@@ -45,7 +47,7 @@ public class Entry {
         }
         else{
             if (!DBConnection.entryExists(run,num,date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]))){
-                DBConnection.addIssue(run,num,date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]));
+                DBConnection.addIssue(run,num,date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]),xmenAdj);
             }
             else{
                 comicExistsError();
@@ -81,7 +83,7 @@ public class Entry {
                         int issue=Integer.parseInt(issues[0]);
                         while (issue<=Integer.parseInt(issues[1])){
                             if (!DBConnection.entryExists(bookID,Integer.toString(issue),date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]))){
-                                DBConnection.addIssue(bookID,Integer.toString(issue),date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]));
+                                DBConnection.addIssue(bookID,Integer.toString(issue),date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]),xmenAdj);
                                 issue++;
                             }
                             else{
@@ -92,7 +94,7 @@ public class Entry {
                     }
                     else{
                         if (!DBConnection.entryExists(bookID,num,date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]))){
-                            DBConnection.addIssue(bookID,num,date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]));
+                            DBConnection.addIssue(bookID,num,date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]),xmenAdj);
                         }
                         else{
                             comicExistsError();
@@ -106,7 +108,7 @@ public class Entry {
                         int issue=Integer.parseInt(issues[0]);
                         while (issue<=Integer.parseInt(issues[1])){
                             if (!DBConnection.entryExists(bookID,Integer.toString(issue),date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]))){
-                                DBConnection.addIssue(bookID,Integer.toString(issue),date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]));
+                                DBConnection.addIssue(bookID,Integer.toString(issue),date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]),xmenAdj);
                                 issue++;
                             }
                             else{
@@ -117,7 +119,7 @@ public class Entry {
                     }
                     else{
                         if (!DBConnection.entryExists(bookID,num,date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]))){
-                            DBConnection.addIssue(bookID,num,date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]));
+                            DBConnection.addIssue(bookID,num,date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]),xmenAdj);
                         }
                         else{
                             comicExistsError();
@@ -131,7 +133,7 @@ public class Entry {
                         int issue=Integer.parseInt(issues[0]);
                         while (issue<=Integer.parseInt(issues[1])){
                             if (!DBConnection.entryExists(bookID,Integer.toString(issue),date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]))){
-                                DBConnection.addIssue(bookID,Integer.toString(issue),date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]));
+                                DBConnection.addIssue(bookID,Integer.toString(issue),date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]),xmenAdj);
                                 issue++;
                             }
                             else{
@@ -142,7 +144,7 @@ public class Entry {
                     }
                     else{
                         if (!DBConnection.entryExists(bookID,num,date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]))){
-                            DBConnection.addIssue(bookID,num,date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]));
+                            DBConnection.addIssue(bookID,num,date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]),xmenAdj);
                         }
                         else{
                             comicExistsError();

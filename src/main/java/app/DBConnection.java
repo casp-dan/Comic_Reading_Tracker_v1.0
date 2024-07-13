@@ -1,13 +1,10 @@
 package app;
-import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.List;
 
 
 
@@ -68,6 +65,53 @@ public class DBConnection {
         }
         closeDB(connection);
         return SeriesID;
+    }
+    
+    public static String getSeriesTitleByID(int SeriesID){
+        String SeriesTitle;
+        Connection connection = connectDB();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT SeriesTitle FROM Series WHERE SeriesID="+SeriesID+";");
+
+            //rs.next() must be performed here because otherwise you get an SQLException Error. This still returns the first instance of "name"
+
+            rs.next();
+            
+            if (rs.getRow()==0){
+                return "";
+            } 
+            SeriesTitle= rs.getString("SeriesTitle");
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return SeriesTitle;
+    }
+    
+    public static boolean getXSeriesByID(int SeriesID){
+        Connection connection = connectDB();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT SeriesID FROM XmenAdjSeries WHERE SeriesID="+SeriesID+";");
+
+            //rs.next() must be performed here because otherwise you get an SQLException Error. This still returns the first instance of "name"
+
+            rs.next();
+            
+            if (rs.getRow()==0){
+                return false;
+            } 
+            SeriesID=rs.getInt("SeriesID");
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return true;
     }
     
     public static String getPublisherByID(int seriesID){
@@ -163,7 +207,6 @@ public class DBConnection {
         return dateID;
     }
     
-    
     public static ArrayList<String> getSeries(){
         ArrayList<String> titles=new ArrayList<String>();
         Connection connection = connectDB();
@@ -191,14 +234,89 @@ public class DBConnection {
         closeDB(connection);
         return titles;
     }
-
-
     
+    public static ArrayList<Integer> getXmen(){
+        ArrayList<Integer> titles=new ArrayList<Integer>();
+        Connection connection = connectDB();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("Select SeriesID from Series where xmen=1;");
+
+            //rs.next() must be performed here because otherwise you get an SQLException Error. This still returns the first instance of "name"
+            rs.next();
+            titles.add(rs.getInt("SeriesID"));
+            if (rs.getRow()==0){
+                return null;
+            } 
+
+            while(rs.next()){
+                titles.add(rs.getInt("SeriesID"));
+            }
+
+            
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return titles;
+    }
+    
+    public static ArrayList<Integer> getXmenAdj(){
+        ArrayList<Integer> titles=new ArrayList<Integer>();
+        Connection connection = connectDB();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("Select SeriesID from XmenAdjSeries;");
+
+            //rs.next() must be performed here because otherwise you get an SQLException Error. This still returns the first instance of "name"
+            rs.next();
+            titles.add(rs.getInt("SeriesID"));
+            if (rs.getRow()==0){
+                return null;
+            } 
+
+            while(rs.next()){
+                titles.add(rs.getInt("SeriesID"));
+            }
+
+            
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return titles;
+    }
+
     public static int updateIssueCount(int SeriesID){
         Connection connection = connectDB();
         try {
             Statement statement = connection.createStatement();
             String sql = "UPDATE Series SET issueID=issueID+1 WHERE SeriesID="+SeriesID+";";
+            statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+            ResultSet rs = statement.getGeneratedKeys();
+            
+
+            //rs.next() must be performed here because otherwise you get an SQLException Error. This still returns the first instance of "name"
+
+            rs.next();
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return SeriesID;
+    }
+    
+    public static int updateXIssueCount(int SeriesID){
+        Connection connection = connectDB();
+        try {
+            Statement statement = connection.createStatement();
+            String sql = "UPDATE XmenAdjSeries SET issueID=issueID+1 WHERE SeriesID="+SeriesID+";";
             statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
             ResultSet rs = statement.getGeneratedKeys();
             
@@ -221,6 +339,26 @@ public class DBConnection {
         try{
             Statement statement = connection.createStatement();
             String sql = "INSERT INTO Series(SeriesTitle, issueID, Publisher, xmen) VALUES('"+SeriesTitle+"', "+issueID+", '"+Publisher+"', "+xmen+" );";
+            statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+            ResultSet resultSet = statement.getGeneratedKeys();
+            if (resultSet.next()) {
+                SeriesID = resultSet.getInt(1);
+                System.out.println("Generated primary key: " + SeriesID);
+            }
+            
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem with database", e);
+        }
+        closeDB(connection);
+        return SeriesID;
+    }
+    
+    public static int createXmenAdjSeries(int SeriesID, String SeriesTitle, int issueID, String Publisher, boolean xmen){
+        Connection connection = connectDB();
+        try{
+            Statement statement = connection.createStatement();
+            String sql = "INSERT INTO XmenAdjSeries(SeriesID, SeriesTitle, issueID) VALUES("+SeriesID+", '"+SeriesTitle+"', "+issueID+");";
             statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
             ResultSet resultSet = statement.getGeneratedKeys();
             if (resultSet.next()) {
@@ -295,6 +433,25 @@ public class DBConnection {
         closeDB(connection);
         return sum;
     }
+    
+    public static int getTotalYear(int year){
+        Connection connection = connectDB();
+        int sum = 0;
+        try{
+            Statement st = connection.createStatement();
+            ResultSet res = st.executeQuery("SELECT COUNT(issueID) FROM COMIC WHERE year="+year+";");
+            while (res.next()) {
+                int c = res.getInt(1);
+                sum = sum + c;
+            } 
+            res.close();
+            st.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return sum;
+    }
 
     public static int getNumPublisher(String Publisher){
         Connection connection = connectDB();
@@ -315,7 +472,7 @@ public class DBConnection {
         return sum;
     }
     
-    public static int getNumByID(int seriesID, int month, int year){
+    public static int getNumByMonth(int seriesID, int month, int year){
         Connection connection = connectDB();
         int sum = 0;
         try{
@@ -334,12 +491,50 @@ public class DBConnection {
         return sum;
     }
     
-    public static int getNumXmenByID(int seriesID, int month, int year){
+    public static int getNumByYear(int seriesID, int year){
         Connection connection = connectDB();
         int sum = 0;
         try{
             Statement st = connection.createStatement();
-            ResultSet res = st.executeQuery("SELECT COUNT(issueID) FROM COMIC WHERE month="+month+" AND year="+year+" and seriesID="+seriesID+";");
+            ResultSet res = st.executeQuery("SELECT COUNT(issueID) FROM COMIC WHERE year="+year+" and seriesID="+seriesID+";");
+            while (res.next()) {
+                int c = res.getInt(1);
+                sum = sum + c;
+            } 
+            res.close();
+            st.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return sum;
+    }
+    
+    public static int getNumXmenByMonth(int seriesID, int month, int year){
+        Connection connection = connectDB();
+        int sum = 0;
+        try{
+            Statement st = connection.createStatement();
+            ResultSet res = st.executeQuery("SELECT COUNT(issueID) FROM XmenAdjComic WHERE month="+month+" AND year="+year+" and seriesID="+seriesID+";");
+            while (res.next()) {
+                int c = res.getInt(1);
+                sum = sum + c;
+            } 
+            res.close();
+            st.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return sum;
+    }
+    
+    public static int getNumXmenByYear(int seriesID, int year){
+        Connection connection = connectDB();
+        int sum = 0;
+        try{
+            Statement st = connection.createStatement();
+            ResultSet res = st.executeQuery("SELECT COUNT(issueID) FROM XmenAdjComic WHERE year="+year+" and seriesID="+seriesID+";");
             while (res.next()) {
                 int c = res.getInt(1);
                 sum = sum + c;
@@ -368,11 +563,31 @@ public class DBConnection {
         }catch(SQLException e){
             throw new RuntimeException("Problem querying database", e);
         }
+        sum+=getNumXMenAdj();
+        closeDB(connection);
+        return sum;
+    }
+    
+    public static int getNumXMenAdj(){
+        Connection connection = connectDB();
+        int sum = 0;
+        try{
+            Statement st = connection.createStatement();
+            ResultSet res = st.executeQuery("SELECT SUM(issueID) FROM XmenAdjSeries;");
+            while (res.next()) {
+                int c = res.getInt(1);
+                sum = sum + c;
+            } 
+            res.close();
+            st.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
         closeDB(connection);
         return sum;
     }
 
-    public static int addIssue(int SeriesID, String issueName, String dateString, int month, int day, int year){
+    public static int addIssue(int SeriesID, String issueName, String dateString, int month, int day, int year, boolean xmenAdj){
         int issueID = -1;
         Connection connection = connectDB();
         try{
@@ -385,6 +600,33 @@ public class DBConnection {
                 System.out.println("Generated primary key: " + issueID);
             }
             updateIssueCount(SeriesID);
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem with database", e);
+        }
+        if (xmenAdj){
+            if (!getXSeriesByID(SeriesID)){
+                createXmenAdjSeries(SeriesID, getSeriesTitleByID(SeriesID), 0, dateString, xmenAdj);
+            }
+            addXAdjIssue(SeriesID,issueName,dateString,month,day,year);
+        }
+        closeDB(connection);
+        return issueID;
+    }
+    
+    public static int addXAdjIssue(int SeriesID, String issueName, String dateString, int month, int day, int year){
+        int issueID = -1;
+        Connection connection = connectDB();
+        try{
+            Statement statement = connection.createStatement();
+            String sql = "insert into XmenAdjComic(SeriesID, issueName, dateString, month, day, year) values("+SeriesID+", '"+issueName+"','"+dateString+"', "+month+", "+day+", "+year+");";
+            statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+            ResultSet resultSet = statement.getGeneratedKeys();
+            if (resultSet.next()) {
+                issueID = resultSet.getInt(1);
+                System.out.println("Generated primary key: " + issueID);
+            }
+            updateXIssueCount(SeriesID);
             statement.close();
         }catch(SQLException e){
             throw new RuntimeException("Problem with database", e);
@@ -415,4 +657,3 @@ public class DBConnection {
     }
 
 }
-

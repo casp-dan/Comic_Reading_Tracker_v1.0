@@ -9,7 +9,7 @@
       </MenuButton>
       <MenuButton fx:id="month" layoutX="180.0" xmlns:fx="http://javafx.com/fxml">
       </MenuButton>
-      <VBox layoutX="26.0" layoutY="42.0" prefHeight="133.0" prefWidth="150.0">
+      <VBox layoutX="26.0" layoutY="50.0" prefHeight="133.0" prefWidth="150.0">
          <children>
             <Label alignment="CENTER" prefHeight="16.0" prefWidth="200.0" text="Series Name" textAlignment="CENTER" textFill="WHITE" />
             <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />

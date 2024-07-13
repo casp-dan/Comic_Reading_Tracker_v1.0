@@ -1,22 +1,24 @@
 package app.controllers;
 
-import model.*;
-import javafx.fxml.FXML;
-import app.DBConnection;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import app.DBConnection;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
+import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
-import javafx.collections.ObservableList;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import model.Entry;
 
 /**
  * Controller for making a new entry
@@ -26,6 +28,7 @@ import javafx.collections.ObservableList;
 public class MakeEntryDialogController {
     private ArrayList<String> months;
     private CheckBox xmen;
+    private CheckBox xmenAdj;
     private MenuButton year;
     @FXML private AnchorPane pane;
     @FXML private MenuButton month;
@@ -50,15 +53,25 @@ public class MakeEntryDialogController {
     //private Authenticator authenticator;
 
     public void setObjects() {
-        months=new ArrayList<String>(Arrays.asList("Overview","January","February","March","April","May","June","July","August","September","October","November","December"));
+        months=new ArrayList<String>(Arrays.asList("Overview","Yearly","January","February","March","April","May","June","July","August","September","October","November","December"));
         xmen=new CheckBox("X-Men?");
+        xmenAdj=new CheckBox("X-Men Adjacent?");
+        seriesField.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent t) {
+                makeTitlesButton();
+            }
+        }); 
         xmen.setLayoutX(100);
         xmen.setVisible(false);
+        xmenAdj.setLayoutX(100);
+        xmenAdj.setLayoutY(30);
+        xmenAdj.setVisible(false);
         year=new MenuButton("");
         year.setLayoutX(350);
         year.setVisible(false);
         updateView();
         pane.getChildren().add(1, xmen);
+        pane.getChildren().add(1, xmenAdj);
         pane.getChildren().add(1, year);
         makeYearButton();
         makeMonthsButton();
@@ -93,9 +106,10 @@ public class MakeEntryDialogController {
                 String publisherStr=publisher.getText();
                 String seriesName=seriesField.getText();
                 boolean isXmen=xmen.isSelected();
+                boolean isXmenAdj=xmenAdj.isSelected();
                 for (int i=0;i<issues.length;i++){
                     if (properDate(dates[i])){
-                        Entry entry=new Entry(seriesName, issues[i], dates[i], publisherStr, isXmen);
+                        Entry entry=new Entry(seriesName, issues[i], dates[i], publisherStr, isXmen,isXmenAdj);
                         if (!entry.makeEntry()){
                             i=issues.length;
                         }
@@ -105,7 +119,7 @@ public class MakeEntryDialogController {
             }
         }
         else{
-            Entry entry=new Entry(seriesField.getText(), issuesField.getText(), dateField.getText(), publisher.getText(), xmen.isSelected());
+            Entry entry=new Entry(seriesField.getText(), issuesField.getText(), dateField.getText(), publisher.getText(), xmen.isSelected(),xmenAdj.isSelected());
             entry.makeEntry();
             updateView();
         }
@@ -121,12 +135,15 @@ public class MakeEntryDialogController {
                 publisher.setText(item1.getText());
                 xmen.setVisible(false);
                 xmen.setSelected(false);
+                xmenAdj.setVisible(false);
+                xmenAdj.setSelected(false);
             }
         });
         item2.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
                 publisher.setText(item2.getText());
                 xmen.setVisible(true);
+                xmenAdj.setVisible(true);
             }
         });
         item3.setOnAction(new EventHandler<ActionEvent>() {
@@ -134,6 +151,8 @@ public class MakeEntryDialogController {
                 publisher.setText(item3.getText());
                 xmen.setVisible(false);
                 xmen.setSelected(false);
+                xmenAdj.setVisible(false);
+                xmenAdj.setSelected(false);
             }
         });
         publishers.add(item1);
@@ -142,66 +161,101 @@ public class MakeEntryDialogController {
     }
 
     public void updateView(){
-        int monthInt=months.indexOf(month.getText());
+        int monthInt=months.indexOf(month.getText())-1;
         publisher.setText("");
         xmen.setVisible(false);
         xmen.setSelected(false);
+        xmenAdj.setVisible(false);
+        xmenAdj.setSelected(false);
         if (month.getText().equals("") || month.getText().equals("Overview")){
-            TotalValue.setText(Integer.toString(DBConnection.getTotal()));
-            xmenTotalValue.setText(Integer.toString(DBConnection.getNumXMen()));
-            seriesTotalValue.setText(Integer.toString(DBConnection.getNumSeries()));
-            dcTotalValue.setText(Integer.toString(DBConnection.getNumPublisher("DC")));
-            imageTotalValue.setText(Integer.toString(DBConnection.getNumPublisher("Image")));
-            marvelTotalValue.setText(Integer.toString(DBConnection.getNumPublisher("Marvel")));
+            setStatValues(DBConnection.getTotal(), DBConnection.getNumXMen(), DBConnection.getNumPublisher("DC"), DBConnection.getNumPublisher("Marvel"), DBConnection.getNumSeries(), DBConnection.getNumPublisher("Image"));
+            year.setVisible(false);
+            year.setText("");
+        }
+        else if (month.getText().equals("Yearly")){
+            int dcSum=0;
+            int xmenSum=0;
+            int marvelSum=0;
+            int imageSum=0;
+            int seriesSum=0;
+            String yearStr=year.getText().split("0")[1];
+            TotalValue.setText(Integer.toString(DBConnection.getTotalYear(Integer.parseInt(yearStr))));
+            int idMax=DBConnection.getNumSeries()+1;
+            for (int i=1;i<=idMax;i++){
+                String publisher=DBConnection.getPublisherByID(i);
+                int addTo=DBConnection.getNumByYear(i,Integer.parseInt(yearStr));
+                switch(publisher){
+                    case "Marvel": marvelSum+=addTo; break; 
+                    case "Image": imageSum+=addTo; break;
+                    case "DC": dcSum+=addTo; break;
+                }
+                if (addTo>0){
+                    seriesSum++;
+                }  
+            }
+            ArrayList<Integer> list=DBConnection.getXmen();
+            int x=0;
+            while (x<list.size()){
+                xmenSum+=DBConnection.getNumByYear(list.get(x),Integer.parseInt(yearStr));
+                x++;
+            }
+            list=DBConnection.getXmenAdj();
+            x=0;
+            while (x<list.size()){
+                xmenSum+=DBConnection.getNumXmenByYear(list.get(x),Integer.parseInt(yearStr));
+                x++;
+            }
+            setStatValues((marvelSum+dcSum+imageSum), xmenSum, dcSum, marvelSum, seriesSum, imageSum);
         }
         else{
             int dcSum=0;
+            int xmenSum=0;
             int marvelSum=0;
             int imageSum=0;
-            int xmenSum=0;
             int seriesSum=0;
-            TotalValue.setText(Integer.toString(DBConnection.getTotalMonth(monthInt,Integer.parseInt(year.getText()))));
-            int idMax=DBConnection.getNumSeries();
             String yearStr=year.getText().split("0")[1];
+            TotalValue.setText(Integer.toString(DBConnection.getTotalMonth(monthInt,Integer.parseInt(yearStr))));
+            int idMax=DBConnection.getNumSeries()+1;
             for (int i=1;i<=idMax;i++){
                 String publisher=DBConnection.getPublisherByID(i);
-                if (publisher.equals("DC")){
-                    int addTo=DBConnection.getNumByID(i,monthInt,Integer.parseInt(yearStr));
-                    dcSum+=addTo;
-                    if (addTo>0){
-                        seriesSum++;
-                    }
+                int addTo=DBConnection.getNumByMonth(i,monthInt,Integer.parseInt(yearStr));
+                switch(publisher){
+                    case "Marvel": marvelSum+=addTo; break; 
+                    case "Image": imageSum+=addTo; break;
+                    case "DC": dcSum+=addTo; break;
                 }
-                else if (publisher.equals("Image")){
-                    int addTo=DBConnection.getNumByID(i,monthInt,Integer.parseInt(yearStr));
-                    imageSum+=addTo;
-                    if (addTo>0){
-                        seriesSum++;
-                    }                }
-                else if (publisher.equals("Marvel")){
-                    int addTo=DBConnection.getNumByID(i,monthInt,Integer.parseInt(yearStr));
-                    marvelSum+=addTo;
-                    if (DBConnection.isXmenByID(i)){
-                        xmenSum+=DBConnection.getNumXmenByID(i,monthInt,Integer.parseInt(yearStr));
-                    }
-                    if (addTo>0){
-                        seriesSum++;
-                    }                
-                }
+                if (addTo>0){
+                    seriesSum++;
+                }  
             }
-            dcTotalValue.setText(Integer.toString(dcSum));                   
-            imageTotalValue.setText(Integer.toString(imageSum)); 
-            xmenTotalValue.setText(Integer.toString(xmenSum));
-            marvelTotalValue.setText(Integer.toString(marvelSum));
-            marvelTotalValue.setText(Integer.toString(marvelSum));
-            seriesTotalValue.setText(Integer.toString(seriesSum));
-            TotalValue.setText(Integer.toString((marvelSum+dcSum+imageSum)));
+            ArrayList<Integer> list=DBConnection.getXmen();
+            int x=0;
+            while (x<list.size()){
+                xmenSum+=DBConnection.getNumByMonth(list.get(x),monthInt,Integer.parseInt(yearStr));
+                x++;
+            }
+            list=DBConnection.getXmenAdj();
+            x=0;
+            while (x<list.size()){
+                xmenSum+=DBConnection.getNumXmenByMonth(list.get(x),monthInt,Integer.parseInt(yearStr));
+                x++;
+            }
+            setStatValues((marvelSum+dcSum+imageSum), xmenSum, dcSum, marvelSum, seriesSum, imageSum);
         }
         seriesField.setText("");
         issuesField.setText("");
         dateField.setText("");
         seriesTitles.setText("");
         makeTitlesButton();
+    }
+
+    private void setStatValues(int total, int xmen, int dc, int marvel, int series, int image){
+        TotalValue.setText(Integer.toString(total));
+        dcTotalValue.setText(Integer.toString(dc));                   
+        imageTotalValue.setText(Integer.toString(image)); 
+        xmenTotalValue.setText(Integer.toString(xmen));
+        marvelTotalValue.setText(Integer.toString(marvel));
+        seriesTotalValue.setText(Integer.toString(series));
     }
 
     public void makeTitlesButton(){
@@ -217,161 +271,34 @@ public class MakeEntryDialogController {
         bookNames.add(item1);
         ArrayList<String> titles=DBConnection.getSeries();
         for (int i=0;i<titles.size();i++){
-            MenuItem item=new MenuItem(titles.get(i));
-            item.setOnAction(new EventHandler<ActionEvent>() {
-                public void handle(ActionEvent t) {
-                    seriesField.setText(item.getText());
-                    seriesTitles.setText(item.getText());
-                }
-            });
-            bookNames.add(item);
+            if (titles.get(i).contains(seriesField.getText())){
+                MenuItem item=new MenuItem(titles.get(i));
+                item.setOnAction(new EventHandler<ActionEvent>() {
+                    public void handle(ActionEvent t) {
+                        seriesField.setText(item.getText());
+                        seriesTitles.setText(item.getText());
+                    }
+                });
+                bookNames.add(item);
+            }
         }
     }
 
     public void makeMonthsButton(){
-        ObservableList<MenuItem> months=month.getItems();
-        MenuItem item1=new MenuItem("Overview");
-        MenuItem item2=new MenuItem("January");
-        MenuItem item3=new MenuItem("February");
-        MenuItem item4=new MenuItem("March");
-        MenuItem item5=new MenuItem("April");
-        MenuItem item6=new MenuItem("May");
-        MenuItem item7=new MenuItem("June");
-        MenuItem item8=new MenuItem("July");
-        MenuItem item9=new MenuItem("August");
-        MenuItem item10=new MenuItem("September");
-        MenuItem item11=new MenuItem("October");
-        MenuItem item12=new MenuItem("November");
-        MenuItem item13=new MenuItem("December");
-        item1.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                month.setText(item1.getText());
-                year.setVisible(false);
-                year.setText("");
-                updateView();
-            }
-        });
-        item2.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                month.setText(item2.getText());
-                year.setVisible(true);
-                if (!year.getText().equals("")){
-                    updateView();
+        ObservableList<MenuItem> monthsItems=month.getItems();
+        for (int i=0;i<months.size();i++){
+            MenuItem item=new MenuItem(months.get(i));
+            item.setOnAction(new EventHandler<ActionEvent>() {
+                public void handle(ActionEvent t) {
+                    month.setText(item.getText());
+                    year.setVisible(true);
+                    if (!year.getText().equals("")){
+                        updateView();
+                    }
                 }
-            }
-        });
-        item3.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                month.setText(item3.getText());
-                year.setVisible(true);
-                if (!year.getText().equals("")){
-                    updateView();
-                }
-            }
-        });
-        item4.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                month.setText(item4.getText());
-                year.setVisible(true);
-                if (!year.getText().equals("")){
-                    updateView();
-                }
-            }
-        });
-        item5.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                month.setText(item5.getText());
-                year.setVisible(true);
-                if (!year.getText().equals("")){
-                    updateView();
-                }
-            }
-        });
-        item6.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                month.setText(item6.getText());
-                year.setVisible(true);
-                if (!year.getText().equals("")){
-                    updateView();
-                }
-            }
-        });
-        item7.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                month.setText(item7.getText());
-                year.setVisible(true);
-                if (!year.getText().equals("")){
-                    updateView();
-                }
-            }
-        });
-        item8.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                month.setText(item8.getText());
-                year.setVisible(true);
-                if (!year.getText().equals("")){
-                    updateView();
-                }
-            }
-        });
-        item9.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                month.setText(item9.getText());
-                year.setVisible(true);
-                if (!year.getText().equals("")){
-                    updateView();
-                }
-            }
-        });
-        item10.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                month.setText(item10.getText());
-                year.setVisible(true);
-                if (!year.getText().equals("")){
-                    updateView();
-                }
-            }
-        });
-        item11.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                month.setText(item11.getText());
-                year.setVisible(true);
-                if (!year.getText().equals("")){
-                    updateView();
-                }
-            }
-        });
-        item12.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                month.setText(item12.getText());
-                year.setVisible(true);
-                if (!year.getText().equals("")){
-                    updateView();
-                }
-            }
-        });
-        item13.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                month.setText(item13.getText());
-                year.setVisible(true);
-                if (!year.getText().equals("")){
-                    updateView();
-                }
-            }
-        });
-        months.add(item1);
-        months.add(item2);
-        months.add(item3);
-        months.add(item4);
-        months.add(item5);
-        months.add(item6);
-        months.add(item7);
-        months.add(item8);
-        months.add(item9);
-        months.add(item10);
-        months.add(item11);
-        months.add(item12);
-        months.add(item13);
+            });
+            monthsItems.add(item);
+        }
     }
 
     public void makeYearButton(){
