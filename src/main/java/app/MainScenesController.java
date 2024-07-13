@@ -46,7 +46,7 @@ public class MainScenesController implements Initializable {
         list = new ArrayList<Book>();
         statsList = new ArrayList<Integer>();
         makeEntryPageController.setObjects(list);
-        //statsPageController.setObjects(statsList);
+        statsPageController.setObjects(statsList);
     }
 
     

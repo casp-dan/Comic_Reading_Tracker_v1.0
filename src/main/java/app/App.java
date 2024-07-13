@@ -64,7 +64,7 @@ public class App extends Application {
              stage.setScene(scene);
              stage.setResizable(true);
              stage.setTitle("Comic Log™");
-             DBConnection.connectDB();
+             //DBConnection.connectDB();
              stage.getIcons().add(new Image(getClass().getResourceAsStream("icon.png")));
              
              stage.show();

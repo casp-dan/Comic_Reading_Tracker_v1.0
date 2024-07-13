@@ -1,10 +1,7 @@
 package app;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 
 /**
  * SQL Connection
@@ -17,6 +14,7 @@ public class DBConnection {
      * This opens the connection to the database
      * @return connection
      */
+    @SuppressWarnings("exports")
     public static Connection connectDB(){
         String url = "urlGoesHere"; 
         String username = "username";
@@ -36,7 +34,7 @@ public class DBConnection {
      * Closes the connection to the database
      * @param connection
      */
-    public static void closeDB(Connection connection){
+    public static void closeDB(@SuppressWarnings("exports") Connection connection){
         try{
             connection.close();
         }catch(SQLException e){
