@@ -88,11 +88,11 @@ public class DBConnection {
         return Publisher;
     }
 
-    public static boolean entryExists(int SeriesID, String issueName, String dateString, int day, int month, int year){
+    public static boolean entryExists(int SeriesID, String issueName, String dateString, int month, int day, int year){
         Connection connection = connectDB();
         try {
             Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT issueID FROM Comic WHERE SeriesID="+SeriesID+" AND issueName='"+issueName+"' AND dateString='"+dateString+"' AND day="+day+" AND month="+month+" AND year="+year+";");
+            ResultSet rs = statement.executeQuery("SELECT issueID FROM Comic WHERE SeriesID="+SeriesID+" AND issueName='"+issueName+"' AND dateString='"+dateString+"' AND month="+month+" AND day="+day+" AND year="+year+";");
 
             //rs.next() must be performed here because otherwise you get an SQLException Error. This still returns the first instance of "name"
 
@@ -337,12 +337,12 @@ public class DBConnection {
         return sum;
     }
 
-    public static int addIssue(int SeriesID, String issueName, String dateString, int day, int month, int year){
+    public static int addIssue(int SeriesID, String issueName, String dateString, int month, int day, int year){
         int issueID = -1;
         Connection connection = connectDB();
         try{
             Statement statement = connection.createStatement();
-            String sql = "insert into Comic(SeriesID, issueName, dateString, day, month, year) values("+SeriesID+", '"+issueName+"','"+dateString+"', "+day+", "+month+", "+year+");";
+            String sql = "insert into Comic(SeriesID, issueName, dateString, month, day, year) values("+SeriesID+", '"+issueName+"','"+dateString+"', "+month+", "+day+", "+year+");";
             statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
             ResultSet resultSet = statement.getGeneratedKeys();
             if (resultSet.next()) {
@@ -363,7 +363,7 @@ public class DBConnection {
         int dateID = 0;
         try{
             Statement statement = connection.createStatement();
-            String sql = "INSERT INTO Date(dateString,day,month, year) VALUES('"+dateString+"', "+day+", "+month+", "+year+");";
+            String sql = "INSERT INTO Date(dateString,month,day, year) VALUES('"+dateString+"', "+month+", "+day+", "+year+");";
             statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
             ResultSet resultSet = statement.getGeneratedKeys();
             if (resultSet.next()) {

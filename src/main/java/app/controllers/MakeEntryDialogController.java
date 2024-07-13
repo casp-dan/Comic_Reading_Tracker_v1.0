@@ -80,15 +80,34 @@ public class MakeEntryDialogController {
             alert.setContentText("Please Fill Out All Fields!");
             alert.showAndWait();
         }
-        else if (dateField.getText().split("/").length!=3){
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Fields Empty");
-            alert.setHeaderText(null);
-            alert.setContentText("Please Properly Enter Date!");
-            alert.showAndWait();
+        else if (issuesField.getText().contains(",")){
+            String[] issues=issuesField.getText().split(",");
+            String[] dates=dateField.getText().split(",");
+            if (issues.length!=dates.length){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Improper Entry");
+                alert.setHeaderText(null);
+                alert.setContentText("Please ensure each set of issues has a correspondig date!");
+                alert.showAndWait();
+            }
+            else{
+                String publisherStr=publisher.getText();
+                String seriesName=seriesField.getText();
+                boolean isXmen=xmen.isSelected();
+                for (int i=0;i<issues.length;i++){
+                    if (properDate(dates[i])){
+                        Entry entry=new Entry(seriesName, issues[i], dates[i], publisherStr, isXmen);
+                        if (!entry.makeEntry()){
+                            i=issues.length;
+                        }
+                        updateView();           
+                    }     
+                }
+            }
         }
         else{
-            new Entry(seriesField.getText(), issuesField.getText(), dateField.getText(), publisher.getText(), xmen.isSelected());
+            Entry entry=new Entry(seriesField.getText(), issuesField.getText(), dateField.getText(), publisher.getText(), xmen.isSelected());
+            entry.makeEntry();
             updateView();
         }
     }
@@ -128,7 +147,7 @@ public class MakeEntryDialogController {
         publisher.setText("");
         xmen.setVisible(false);
         xmen.setSelected(false);
-        if (month.getText().equals("")){
+        if (month.getText().equals("") || month.getText().equals("Overview")){
             TotalValue.setText(Integer.toString(DBConnection.getTotal()));
             xmenTotalValue.setText(Integer.toString(DBConnection.getNumXMen()));
             seriesTotalValue.setText(Integer.toString(DBConnection.getNumSeries()));
@@ -177,6 +196,9 @@ public class MakeEntryDialogController {
             marvelTotalValue.setText(Integer.toString(marvelSum));
             seriesTotalValue.setText(Integer.toString(seriesSum));
         }
+        seriesField.setText("");
+        issuesField.setText("");
+        dateField.setText("");
     }
 
     public void makeMonthsButton(){
@@ -199,6 +221,7 @@ public class MakeEntryDialogController {
                 month.setText(item1.getText());
                 year.setVisible(false);
                 year.setText("");
+                updateView();
             }
         });
         item2.setOnAction(new EventHandler<ActionEvent>() {
@@ -350,5 +373,17 @@ public class MakeEntryDialogController {
         years.add(item1);
         years.add(item2);
         years.add(item3);
+    }
+
+    public boolean properDate(String dateString){
+        if (dateString.split("/").length!=3){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Fields Empty");
+            alert.setHeaderText(null);
+            alert.setContentText("Please Properly Enter Date!");
+            alert.showAndWait();
+            return false;
+        }
+        return true;
     }
 }

@@ -11,7 +11,7 @@ CREATE TABLE Comic (
     SeriesID INTEGER,
     issueName VARCHAR(45),
     dateString VARCHAR(45),
-    day INTEGER,
     month INTEGER,
+    day INTEGER,
     year INTEGER
 );
