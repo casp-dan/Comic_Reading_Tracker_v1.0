@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="pane" prefHeight="216.0" prefWidth="202.0" style="-fx-background-color: B04759;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.controllers.MakeEntryDialogController">
+   <children>
+      <MenuButton fx:id="publisher" xmlns:fx="http://javafx.com/fxml">
+       </MenuButton>
+      <VBox layoutX="26.0" layoutY="42.0" prefHeight="133.0" prefWidth="150.0">
+         <children>
+            <Label alignment="CENTER" prefHeight="16.0" prefWidth="200.0" text="Series Name" textAlignment="CENTER" textFill="WHITE" />
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
+            <TextField fx:id="seriesField" prefHeight="25.0" prefWidth="135.0" promptText="Series Name"/>
+            <Separator orientation="VERTICAL" prefWidth="200.0" visible="false" />
+            <Label alignment="CENTER" prefHeight="16.0" prefWidth="200.0" text="Issues Read" textAlignment="CENTER" textFill="WHITE"/>
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
+            <TextField fx:id="issuesField" prefHeight="25.0" prefWidth="135.0" promptText="Issue Number"/>
+            <Separator orientation="VERTICAL" prefWidth="200.0" visible="false" />
+            <Button mnemonicParsing="false" prefHeight="25.0" onMouseClicked="#loginAsStudent" prefWidth="168.0" text="Make Entry" />
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
