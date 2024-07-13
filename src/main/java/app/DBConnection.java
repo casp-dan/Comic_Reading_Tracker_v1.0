@@ -67,6 +67,31 @@ public class DBConnection {
         return SeriesID;
     }
     
+    
+    public static int getFinalSeriesID(){
+        int SeriesID;
+        Connection connection = connectDB();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT SeriesID FROM Series ORDER BY SeriesID DESC LIMIT 1;");
+
+            //rs.next() must be performed here because otherwise you get an SQLException Error. This still returns the first instance of "name"
+
+            rs.next();
+            
+            if (rs.getRow()==0){
+                return 0;
+            } 
+            SeriesID= rs.getInt("SeriesID");
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return SeriesID;
+    }
+    
     public static String getSeriesTitleByID(int SeriesID){
         String SeriesTitle;
         Connection connection = connectDB();

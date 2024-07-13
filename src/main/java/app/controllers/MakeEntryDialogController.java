@@ -26,7 +26,7 @@ import model.Entry;
  * @author Daniel Casper
  */
 public class MakeEntryDialogController {
-    private ArrayList<String> months;
+    
     private CheckBox xmen;
     private CheckBox xmenAdj;
     private MenuButton year;
@@ -34,8 +34,6 @@ public class MakeEntryDialogController {
     @FXML private MenuButton month;
     @FXML private MenuButton publisher;
     @FXML private MenuButton seriesTitles;
-
-
     @SuppressWarnings("exports")
     @FXML public TextField seriesField;
     @SuppressWarnings("exports")
@@ -49,11 +47,17 @@ public class MakeEntryDialogController {
     @FXML private Label xmenTotalValue;
     @FXML private Label seriesTotal;
     @FXML private Label seriesTotalValue;
+    
+    
+    private ArrayList<String> MONTHS=new ArrayList<String>(Arrays.asList("Overview","Yearly","January","February","March","April","May","June","July","August","September","October","November","December"));
+    private ArrayList<String> YEARS=new ArrayList<String>(Arrays.asList("2022","2023","2024"));
+    private ArrayList<String> PUBLISHERS=new ArrayList<String>(Arrays.asList("DC","Marvel","Image"));
 
-    //private Authenticator authenticator;
 
+    /**
+     * Sets objects and creates Menu Buttons for the publisher, series title, month and year.
+     */
     public void setObjects() {
-        months=new ArrayList<String>(Arrays.asList("Overview","Yearly","January","February","March","April","May","June","July","August","September","October","November","December"));
         xmen=new CheckBox("X-Men?");
         xmenAdj=new CheckBox("X-Men Adjacent?");
         seriesField.setOnKeyReleased(new EventHandler<KeyEvent>() {
@@ -80,27 +84,19 @@ public class MakeEntryDialogController {
     }
 
     /**
-     * Called when login as student is clicked
+     * Makes a new entry based on the filled out text fields, or creates an error message if needed
      * @param mouseEvent
      * @throws IOException 
      */
     public void makeEntry(@SuppressWarnings("exports") MouseEvent mouseEvent) throws IOException {
         if (seriesField.getText().equals("") || issuesField.getText().equals("") || dateField.getText().equals("")){
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Fields Empty");
-            alert.setHeaderText(null);
-            alert.setContentText("Please Fill Out All Fields!");
-            alert.showAndWait();
+            errorMessage("Fields Empty", "Please Fill Out All Fields!");
         }
         else if (issuesField.getText().contains(",")){
             String[] issues=issuesField.getText().split(",");
             String[] dates=dateField.getText().split(",");
             if (issues.length!=dates.length){
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Improper Entry");
-                alert.setHeaderText(null);
-                alert.setContentText("Please ensure each set of issues has a correspondig date!");
-                alert.showAndWait();
+                errorMessage("Improper Entry", "Please ensure each set of issues has a correspondig date!");
             }
             else{
                 String publisherStr=publisher.getText();
@@ -125,43 +121,43 @@ public class MakeEntryDialogController {
         }
     }
 
+    /**
+     * Creates a dropdown menu button to select the publisher of a new comic series.
+     */
     public void makePublisherButton(){
         ObservableList<MenuItem> publishers=publisher.getItems();
-        MenuItem item1=new MenuItem("DC");
-        MenuItem item2=new MenuItem("Marvel");
-        MenuItem item3=new MenuItem("Image");
-        item1.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                publisher.setText(item1.getText());
-                xmen.setVisible(false);
-                xmen.setSelected(false);
-                xmenAdj.setVisible(false);
-                xmenAdj.setSelected(false);
+        for (int i=0;i<PUBLISHERS.size();i++){
+            MenuItem item=new MenuItem(PUBLISHERS.get(i));
+            if (PUBLISHERS.get(i).equals("Marvel")){
+                item.setOnAction(new EventHandler<ActionEvent>() {
+                    public void handle(ActionEvent t) {
+                        publisher.setText(item.getText());
+                        xmen.setVisible(true);
+                        xmenAdj.setVisible(true);
+                    }
+                });
+                publishers.add(item);
             }
-        });
-        item2.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                publisher.setText(item2.getText());
-                xmen.setVisible(true);
-                xmenAdj.setVisible(true);
+            else{
+                item.setOnAction(new EventHandler<ActionEvent>() {
+                    public void handle(ActionEvent t) {
+                        publisher.setText(item.getText());
+                        xmen.setVisible(false);
+                        xmen.setSelected(false);
+                        xmenAdj.setVisible(false);
+                        xmenAdj.setSelected(false);
+                    }
+                });
+                publishers.add(item);
             }
-        });
-        item3.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                publisher.setText(item3.getText());
-                xmen.setVisible(false);
-                xmen.setSelected(false);
-                xmenAdj.setVisible(false);
-                xmenAdj.setSelected(false);
-            }
-        });
-        publishers.add(item1);
-        publishers.add(item2);
-        publishers.add(item3);
+        }
     }
-
+        
+    /**
+     * Updates stat values based on month and year button values.
+     */
     public void updateView(){
-        int monthInt=months.indexOf(month.getText())-1;
+        int monthInt=MONTHS.indexOf(month.getText())-1;
         publisher.setText("");
         xmen.setVisible(false);
         xmen.setSelected(false);
@@ -173,74 +169,10 @@ public class MakeEntryDialogController {
             year.setText("");
         }
         else if (month.getText().equals("Yearly")){
-            int dcSum=0;
-            int xmenSum=0;
-            int marvelSum=0;
-            int imageSum=0;
-            int seriesSum=0;
-            String yearStr=year.getText().split("0")[1];
-            TotalValue.setText(Integer.toString(DBConnection.getTotalYear(Integer.parseInt(yearStr))));
-            int idMax=DBConnection.getNumSeries()+1;
-            for (int i=1;i<=idMax;i++){
-                String publisher=DBConnection.getPublisherByID(i);
-                int addTo=DBConnection.getNumByYear(i,Integer.parseInt(yearStr));
-                switch(publisher){
-                    case "Marvel": marvelSum+=addTo; break; 
-                    case "Image": imageSum+=addTo; break;
-                    case "DC": dcSum+=addTo; break;
-                }
-                if (addTo>0){
-                    seriesSum++;
-                }  
-            }
-            ArrayList<Integer> list=DBConnection.getXmen();
-            int x=0;
-            while (x<list.size()){
-                xmenSum+=DBConnection.getNumByYear(list.get(x),Integer.parseInt(yearStr));
-                x++;
-            }
-            list=DBConnection.getXmenAdj();
-            x=0;
-            while (x<list.size()){
-                xmenSum+=DBConnection.getNumXmenByYear(list.get(x),Integer.parseInt(yearStr));
-                x++;
-            }
-            setStatValues((marvelSum+dcSum+imageSum), xmenSum, dcSum, marvelSum, seriesSum, imageSum);
+            createYearlyView();
         }
         else{
-            int dcSum=0;
-            int xmenSum=0;
-            int marvelSum=0;
-            int imageSum=0;
-            int seriesSum=0;
-            String yearStr=year.getText().split("0")[1];
-            TotalValue.setText(Integer.toString(DBConnection.getTotalMonth(monthInt,Integer.parseInt(yearStr))));
-            int idMax=DBConnection.getNumSeries()+10;
-            for (int i=1;i<=idMax;i++){
-                String publisher=DBConnection.getPublisherByID(i);
-                int addTo=DBConnection.getNumByMonth(i,monthInt,Integer.parseInt(yearStr));
-                switch(publisher){
-                    case "Marvel": marvelSum+=addTo; break; 
-                    case "Image": imageSum+=addTo; break;
-                    case "DC": dcSum+=addTo; break;
-                }
-                if (addTo>0){
-                    seriesSum++;
-                }  
-            }
-            ArrayList<Integer> list=DBConnection.getXmen();
-            int x=0;
-            while (x<list.size()){
-                xmenSum+=DBConnection.getNumByMonth(list.get(x),monthInt,Integer.parseInt(yearStr));
-                x++;
-            }
-            list=DBConnection.getXmenAdj();
-            x=0;
-            while (x<list.size()){
-                xmenSum+=DBConnection.getNumXmenByMonth(list.get(x),monthInt,Integer.parseInt(yearStr));
-                x++;
-            }
-            setStatValues((marvelSum+dcSum+imageSum), xmenSum, dcSum, marvelSum, seriesSum, imageSum);
+            createMonthlyView(monthInt);
         }
         seriesField.setText("");
         issuesField.setText("");
@@ -249,7 +181,16 @@ public class MakeEntryDialogController {
         makeTitlesButton();
     }
 
-    private void setStatValues(int total, int xmen, int dc, int marvel, int series, int image){
+    /**
+     * Sets the text for each label in the stats section of the tab.
+     * @param total Total number of individual rows in Comic table
+     * @param xmen Total number of individual rows in comic table that is part of an X-Men or X-Men Adjacent Series
+     * @param dc Total number of individual rows in comic table that is part of a DC Series
+     * @param marvel Total number of individual rows in comic table that is part of a Marvel Series
+     * @param image Total number of individual rows in comic table that is part of an Image Series
+     * @param series Total number of individual rows in Series table
+     */
+    private void setStatValues(int total, int xmen, int dc, int marvel, int image, int series){
         TotalValue.setText(Integer.toString(total));
         dcTotalValue.setText(Integer.toString(dc));                   
         imageTotalValue.setText(Integer.toString(image)); 
@@ -258,17 +199,12 @@ public class MakeEntryDialogController {
         seriesTotalValue.setText(Integer.toString(series));
     }
 
+    /**
+     * Creates a dropdown menu button to select the title of a series that already exists.
+     */
     public void makeTitlesButton(){
         ObservableList<MenuItem> bookNames=seriesTitles.getItems();
         bookNames.clear();
-        MenuItem item1=new MenuItem("");
-        item1.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                seriesField.setText("");
-                seriesTitles.setText("");
-            }
-        });
-        bookNames.add(item1);
         ArrayList<String> titles=DBConnection.getSeries();
         for (int i=0;i<titles.size();i++){
             if (titles.get(i).contains(seriesField.getText())){
@@ -284,10 +220,13 @@ public class MakeEntryDialogController {
         }
     }
 
+    /**
+     * Creates a dropdown menu button to select the month for the stats view. Includes total overview and yearly view options.
+     */
     public void makeMonthsButton(){
         ObservableList<MenuItem> monthsItems=month.getItems();
-        for (int i=0;i<months.size();i++){
-            MenuItem item=new MenuItem(months.get(i));
+        for (int i=0;i<MONTHS.size();i++){
+            MenuItem item=new MenuItem(MONTHS.get(i));
             item.setOnAction(new EventHandler<ActionEvent>() {
                 public void handle(ActionEvent t) {
                     month.setText(item.getText());
@@ -301,43 +240,128 @@ public class MakeEntryDialogController {
         }
     }
 
+    /**
+     * Creates a dropdown menu button to select the year for the stats view.
+     */
     public void makeYearButton(){
         ObservableList<MenuItem> years=year.getItems();
-        MenuItem item1=new MenuItem("2022");
-        MenuItem item2=new MenuItem("2023");
-        MenuItem item3=new MenuItem("2024");
-        item1.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                year.setText(item1.getText());
-                updateView();
-            }
-        });
-        item2.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                year.setText(item2.getText());
-                updateView();
-            }
-        });
-        item3.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                year.setText(item3.getText());
-                updateView();
-            }
-        });
-        years.add(item1);
-        years.add(item2);
-        years.add(item3);
+        for (int i=0;i<YEARS.size();i++){
+            MenuItem item=new MenuItem(YEARS.get(i));
+            item.setOnAction(new EventHandler<ActionEvent>() {
+                public void handle(ActionEvent t) {
+                    year.setText(item.getText());
+                    updateView();
+                }
+            });
+            years.add(item);
+        }
     }
 
-    public boolean properDate(String dateString){
+    /**
+     * Verifies that the contents of the date Text Field contains a valid date in the proper form of mm/dd/yyyy.
+     * Years are stored only by the last 2 digits (ie: 2024-->24) and years entered as 2 digits will be accepted as well. 
+     * @param dateString Text string retrieved from the date text field
+     * @return true if date is properly formatted, false if not 
+     */
+    private boolean properDate(String dateString){
         if (dateString.split("/").length!=3){
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Fields Empty");
-            alert.setHeaderText(null);
-            alert.setContentText("Please Properly Enter Date!");
-            alert.showAndWait();
-            return false;
+            errorMessage("Fields Empty", "Please Properly Enter Date!");
         }
         return true;
     }
+
+    /**
+     * Creates and error message JavaFX alert with the given message.
+     * @param title Title for the alert window
+     * @param message Error message for the alert window
+     */
+    private void errorMessage(String title, String message){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle(title);
+                alert.setHeaderText(null);
+                alert.setContentText(message);
+                alert.showAndWait();
+    }
+
+    /**
+     * Retrieves integer values for stats based on the month and year 
+     * button selections if a calendar month is selected
+     * @param monthInt integer value for the month field (1-12)
+     */
+    private void createMonthlyView(int monthInt){
+        int dcSum=0;
+        int xmenSum=0;
+        int marvelSum=0;
+        int imageSum=0;
+        int seriesSum=0;
+        String yearStr=year.getText().split("0")[1];
+        TotalValue.setText(Integer.toString(DBConnection.getTotalMonth(monthInt,Integer.parseInt(yearStr))));
+        int idMax=DBConnection.getFinalSeriesID();
+        for (int i=1;i<=idMax;i++){
+            String publisher=DBConnection.getPublisherByID(i);
+            int addTo=DBConnection.getNumByMonth(i,monthInt,Integer.parseInt(yearStr));
+            switch(publisher){
+                case "Marvel": marvelSum+=addTo; break; 
+                case "Image": imageSum+=addTo; break;
+                case "DC": dcSum+=addTo; break;
+            }
+            if (addTo>0){
+                seriesSum++;
+            }  
+        }
+        ArrayList<Integer> list=DBConnection.getXmen();
+        int x=0;
+        while (x<list.size()){
+            xmenSum+=DBConnection.getNumByMonth(list.get(x),monthInt,Integer.parseInt(yearStr));
+            x++;
+        }
+        list=DBConnection.getXmenAdj();
+        x=0;
+        while (x<list.size()){
+            xmenSum+=DBConnection.getNumXmenByMonth(list.get(x),monthInt,Integer.parseInt(yearStr));
+            x++;
+        }
+        setStatValues((marvelSum+dcSum+imageSum), xmenSum, dcSum, marvelSum, seriesSum, imageSum);
+    }
+
+    /**
+     * Retrieves integer values for stats based on the year 
+     * button selection if "yearly" is selected on the month button
+     */
+    private void createYearlyView(){
+        int dcSum=0;
+        int xmenSum=0;
+        int marvelSum=0;
+        int imageSum=0;
+        int seriesSum=0;
+        String yearStr=year.getText().split("0")[1];
+        TotalValue.setText(Integer.toString(DBConnection.getTotalYear(Integer.parseInt(yearStr))));
+        int idMax=DBConnection.getNumSeries()+1;
+        for (int i=1;i<=idMax;i++){
+            String publisher=DBConnection.getPublisherByID(i);
+            int addTo=DBConnection.getNumByYear(i,Integer.parseInt(yearStr));
+            switch(publisher){
+                case "Marvel": marvelSum+=addTo; break; 
+                case "Image": imageSum+=addTo; break;
+                case "DC": dcSum+=addTo; break;
+            }
+            if (addTo>0){
+                seriesSum++;
+            }  
+        }
+        ArrayList<Integer> list=DBConnection.getXmen();
+        int x=0;
+        while (x<list.size()){
+            xmenSum+=DBConnection.getNumByYear(list.get(x),Integer.parseInt(yearStr));
+            x++;
+        }
+        list=DBConnection.getXmenAdj();
+        x=0;
+        while (x<list.size()){
+            xmenSum+=DBConnection.getNumXmenByYear(list.get(x),Integer.parseInt(yearStr));
+            x++;
+        }
+        setStatValues((marvelSum+dcSum+imageSum), xmenSum, dcSum, marvelSum, seriesSum, imageSum);
+    }
+
 }
