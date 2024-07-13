@@ -2,6 +2,10 @@ package app;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+
 
 /**
  * SQL Connection
@@ -18,7 +22,7 @@ public class DBConnection {
     public static Connection connectDB(){
         String url = "urlGoesHere"; 
         String username = "username";
-        String password = "password";
+        String password = "paassword";
         //ArrayList<String> tasks = new ArrayList<String>();
         Connection connection;
         try{
@@ -28,7 +32,6 @@ public class DBConnection {
         }
         return connection;
     }
-
 
     /***
      * Closes the connection to the database
@@ -42,4 +45,138 @@ public class DBConnection {
         }
 
     }
+
+    public static int getSeriesIDByTitle(String SeriesTitle){
+        int SeriesID;
+        Connection connection = connectDB();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT SeriesID FROM Series WHERE SeriesTitle=\""+SeriesTitle+"\";");
+
+            //rs.next() must be performed here because otherwise you get an SQLException Error. This still returns the first instance of "name"
+
+            rs.next();
+            
+            if (rs.getRow()==0){
+                return 0;
+            } 
+            SeriesID= rs.getInt("SeriesID");
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return SeriesID;
+    }
+    
+    public static int updateIssueCount(int SeriesID){
+        Connection connection = connectDB();
+        try {
+            Statement statement = connection.createStatement();
+            String sql = "UPDATE Series SET issueID=issueID+1 WHERE SeriesID="+SeriesID+";";
+            statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+            ResultSet rs = statement.getGeneratedKeys();
+            
+
+            //rs.next() must be performed here because otherwise you get an SQLException Error. This still returns the first instance of "name"
+
+            rs.next();
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return SeriesID;
+    }
+    
+    //String sql = "UPDATE Series SET issueID=issueID+1 WHERE SeriesID="+SeriesID+";";
+
+
+
+    /***
+     * Makes a new task and adds to database with given parameters
+     * @param SeriesID
+     * @param SeriesTitle
+     * @param issueID
+     * @param Publisher
+     * @param xmen
+     */
+    public static int createSeries(String SeriesTitle, int issueID, String Publisher, boolean xmen){
+        Connection connection = connectDB();
+        int SeriesID = 0;
+        try{
+            Statement statement = connection.createStatement();
+            String sql = "INSERT INTO Series(SeriesTitle, issueID, Publisher, xmen), VALUES("+SeriesTitle+", '"+issueID+"', "+Publisher+", "+xmen+" );";
+            statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+            ResultSet resultSet = statement.getGeneratedKeys();
+            if (resultSet.next()) {
+                SeriesID = resultSet.getInt(1);
+                System.out.println("Generated primary key: " + SeriesID);
+            }
+            
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem with database", e);
+        }
+        closeDB(connection);
+        return SeriesID;
+    }
+
+    public static int addIssue(int SeriesID, String issueName, int date){
+        int issueID = -1;
+        Connection connection = connectDB();
+        try{
+            Statement statement = connection.createStatement();
+            String sql = "insert into Comic(SeriesID, issueName, date) values("+SeriesID+", '"+issueName+"',"+date+");";
+            statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+            ResultSet resultSet = statement.getGeneratedKeys();
+            if (resultSet.next()) {
+                issueID = resultSet.getInt(1);
+                System.out.println("Generated primary key: " + issueID);
+            }
+            updateIssueCount(SeriesID);
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem with database", e);
+        }
+        closeDB(connection);
+        return issueID;
+    }
+
+    
+    
+    
+    /***
+     * Makes a new task and adds to database with given parameters
+     * @param month
+     * @param day
+     * @param year
+     */
+    public static int addDate(int month, int day, int year){
+        Connection connection = connectDB();
+        int dateID = 0;
+        try{
+            Statement statement = connection.createStatement();
+            String sql = "insert into Date(month,day, year) values("+month+", "+day+", "+year+");";
+            statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+            ResultSet resultSet = statement.getGeneratedKeys();
+            if (resultSet.next()) {
+                dateID = resultSet.getInt(1);
+                System.out.println("Generated primary key: " + dateID);
+            }
+            
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem with database", e);
+        }
+        closeDB(connection);
+        return dateID;
+    }
+
+
+
+
 }
+

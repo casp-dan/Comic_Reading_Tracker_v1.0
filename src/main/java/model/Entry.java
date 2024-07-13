@@ -1,6 +1,9 @@
 package model;
 
 import java.util.ArrayList;
+
+import app.DBConnection;
+
 import java.io.IOException;
 import javafx.scene.control.Alert;
 
@@ -8,23 +11,53 @@ import javafx.scene.control.Alert;
 public class Entry {
 
     public Entry(String name, String num, String publisher, ArrayList<Book> list, boolean xmen) throws IOException{
-        Book run=getBook(list,name);
-        if (run!=null){
-            addBook(run, list, num);
+        int bookID=isBook(name);
+        if (bookID!=0){
+            addBook(bookID, list, num);
         }
         else{
             switch(publisher){
-                case "Marvel": 
-                    run=new MarvelBook(name, xmen);
-                    addBook(run,list,num);
+                case "Marvel":
+                    bookID=DBConnection.createSeries(name, 0, "Marvel", xmen); 
+                    if (num.contains("-")){
+                        String[] issues=num.split("-");
+                        int issue=Integer.parseInt(issues[0]);
+                        while (issue<=Integer.parseInt(issues[1])){
+                            DBConnection.addIssue(bookID,num,6);
+                            issue++;
+                        }
+                    }
+                    else{
+                        DBConnection.addIssue(bookID,num,6);
+                    }
                     break;
                 case "DC": 
-                    run=new DCBook(name);
-                    addBook(run,list,num);
+                    bookID=DBConnection.createSeries(name, 0, "DC", xmen); 
+                    if (num.contains("-")){
+                        String[] issues=num.split("-");
+                        int issue=Integer.parseInt(issues[0]);
+                        while (issue<=Integer.parseInt(issues[1])){
+                            DBConnection.addIssue(bookID,num,6);
+                            issue++;
+                        }
+                    }
+                    else{
+                        DBConnection.addIssue(bookID,num,6);
+                    }
                     break;
                 case "Image": 
-                    run=new ImageBook(name);
-                    addBook(run,list,num);
+                    bookID=DBConnection.createSeries(name, 0, "Image", xmen); 
+                    if (num.contains("-")){
+                        String[] issues=num.split("-");
+                        int issue=Integer.parseInt(issues[0]);
+                        while (issue<=Integer.parseInt(issues[1])){
+                            DBConnection.addIssue(bookID,num,6);
+                            issue++;
+                        }
+                    }
+                    else{
+                        DBConnection.addIssue(bookID,num,6);
+                    }
                     break;
                 default:
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -36,23 +69,21 @@ public class Entry {
         }
     }
 
-    public void addBook(Book run, ArrayList<Book> list, String num){
-        list.add(run);
+    public void addBook(int run, ArrayList<Book> list, String num){
         if (num.contains("-")){
             String[] issues=num.split("-");
-            run.addIssue(Integer.parseInt(issues[0]),Integer.parseInt(issues[1]));
+            int issue=Integer.parseInt(issues[0]);
+            while (issue<=Integer.parseInt(issues[1])){
+                DBConnection.addIssue(run,num,6);
+                issue++;
+            }
         }
         else{
-            run.addIssue(Integer.valueOf(num));
+            DBConnection.addIssue(run,num,6);
         }
     }
 
-    public Book getBook(ArrayList<Book> list, String name){
-        for (Book series: list){
-            if (series.getTitle().equals(name)){
-                return series;
-            }
-        }
-        return null;
+    public int isBook(String name){
+        return DBConnection.getSeriesIDByTitle(name);
     }
 }
