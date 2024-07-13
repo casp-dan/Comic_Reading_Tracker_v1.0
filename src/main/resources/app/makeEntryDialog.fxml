@@ -7,6 +7,8 @@
    <children>
       <MenuButton fx:id="publisher" xmlns:fx="http://javafx.com/fxml">
       </MenuButton>
+      <MenuButton fx:id="month" layoutX="180.0" xmlns:fx="http://javafx.com/fxml">
+      </MenuButton>
       <VBox layoutX="26.0" layoutY="42.0" prefHeight="133.0" prefWidth="150.0">
          <children>
             <Label alignment="CENTER" prefHeight="16.0" prefWidth="200.0" text="Series Name" textAlignment="CENTER" textFill="WHITE" />
@@ -39,6 +41,9 @@
          <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
          <Label fx:id="xmenTotal" text="Total X-Men: " prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
          <Label fx:id="xmenTotalValue" prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+         <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
+         <Label fx:id="seriesTotal" text="Total Series: " prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+         <Label fx:id="seriesTotalValue" prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
          <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
       </VBox>
    </children>

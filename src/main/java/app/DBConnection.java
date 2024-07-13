@@ -33,10 +33,6 @@ public class DBConnection {
         return connection;
     }
 
-    /***
-     * Closes the connection to the database
-     * @param connection
-     */
     public static void closeDB(@SuppressWarnings("exports") Connection connection){
         try{
             connection.close();
@@ -69,12 +65,34 @@ public class DBConnection {
         closeDB(connection);
         return SeriesID;
     }
-
-    public static boolean entryExists(int SeriesID, String issueName, int date){
+    
+    public static String getPublisherByID(int seriesID){
+        String Publisher;
         Connection connection = connectDB();
         try {
             Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT issueID FROM Comic WHERE SeriesID="+SeriesID+" AND issueName='"+issueName+"' AND date="+date+";");
+            ResultSet rs = statement.executeQuery("SELECT Publisher FROM Series WHERE seriesID="+seriesID+";");
+            //rs.next() must be performed here because otherwise you get an SQLException Error. This still returns the first instance of "name"
+
+            rs.next();
+            if (rs.getRow()==0){
+                return "";
+            } 
+            Publisher= rs.getString("Publisher");
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return Publisher;
+    }
+
+    public static boolean entryExists(int SeriesID, String issueName, String dateString, int day, int month, int year){
+        Connection connection = connectDB();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT issueID FROM Comic WHERE SeriesID="+SeriesID+" AND issueName='"+issueName+"' AND dateString='"+dateString+"' AND day="+day+" AND month="+month+" AND year="+year+";");
 
             //rs.next() must be performed here because otherwise you get an SQLException Error. This still returns the first instance of "name"
 
@@ -91,16 +109,38 @@ public class DBConnection {
         closeDB(connection);
         return true;
     }
-
-
     
+    public static int getNumSeries(){
+        int count;
+        Connection connection = connectDB();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT COUNT(*) AS count FROM SERIES;");
+
+            //rs.next() must be performed here because otherwise you get an SQLException Error. This still returns the first instance of "name"
+
+            rs.next();
+            
+            if (rs.getRow()==0){
+                return 0;
+            }
+            
+            count= rs.getInt("count");
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return count;
+    }
     
     public static int getDateByString(String dateString){
         int dateID;
         Connection connection = connectDB();
         try {
             Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT dateID FROM Date WHERE dateString=\""+dateString+"\";");
+            ResultSet rs = statement.executeQuery("SELECT dateID FROM COMIC WHERE dateString=\""+dateString+"\";");
 
             //rs.next() must be performed here because otherwise you get an SQLException Error. This still returns the first instance of "name"
 
@@ -140,14 +180,6 @@ public class DBConnection {
         return SeriesID;
     }
     
-    /***
-     * Makes a new task and adds to database with given parameters
-     * @param SeriesID
-     * @param SeriesTitle
-     * @param issueID
-     * @param Publisher
-     * @param xmen
-     */
     public static int createSeries(String SeriesTitle, int issueID, String Publisher, boolean xmen){
         Connection connection = connectDB();
         int SeriesID = 0;
@@ -169,14 +201,53 @@ public class DBConnection {
         return SeriesID;
     }
 
-    
-    
+    public static boolean isXmenByID(int SeriesID){
+        Connection connection = connectDB();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT xmen FROM Series WHERE SeriesID="+SeriesID+";");
+
+            //rs.next() must be performed here because otherwise you get an SQLException Error. This still returns the first instance of "name"
+
+            rs.next();
+            
+            if (rs.getRow()==0){
+                return false;
+            } 
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return true;
+    }
+
     public static int getTotal(){
         Connection connection = connectDB();
         int sum = 0;
         try{
             Statement st = connection.createStatement();
             ResultSet res = st.executeQuery("SELECT SUM(issueID) FROM Series;");
+            while (res.next()) {
+                int c = res.getInt(1);
+                sum = sum + c;
+            } 
+            res.close();
+            st.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return sum;
+    }
+    
+    public static int getTotalMonth(int month, int year){
+        Connection connection = connectDB();
+        int sum = 0;
+        try{
+            Statement st = connection.createStatement();
+            ResultSet res = st.executeQuery("SELECT COUNT(issueID) FROM COMIC WHERE month="+month+" AND year="+year+";");
             while (res.next()) {
                 int c = res.getInt(1);
                 sum = sum + c;
@@ -209,6 +280,44 @@ public class DBConnection {
         return sum;
     }
     
+    public static int getNumByID(int seriesID, int month, int year){
+        Connection connection = connectDB();
+        int sum = 0;
+        try{
+            Statement st = connection.createStatement();
+            ResultSet res = st.executeQuery("SELECT COUNT(issueID) FROM COMIC WHERE month="+month+" AND year="+year+" and seriesID="+seriesID+";");
+            while (res.next()) {
+                int c = res.getInt(1);
+                sum = sum + c;
+            } 
+            res.close();
+            st.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return sum;
+    }
+    
+    public static int getNumXmenByID(int seriesID, int month, int year){
+        Connection connection = connectDB();
+        int sum = 0;
+        try{
+            Statement st = connection.createStatement();
+            ResultSet res = st.executeQuery("SELECT COUNT(issueID) FROM COMIC WHERE month="+month+" AND year="+year+" and seriesID="+seriesID+";");
+            while (res.next()) {
+                int c = res.getInt(1);
+                sum = sum + c;
+            } 
+            res.close();
+            st.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return sum;
+    }
+    
     public static int getNumXMen(){
         Connection connection = connectDB();
         int sum = 0;
@@ -228,13 +337,12 @@ public class DBConnection {
         return sum;
     }
 
-
-    public static int addIssue(int SeriesID, String issueName, int date){
+    public static int addIssue(int SeriesID, String issueName, String dateString, int day, int month, int year){
         int issueID = -1;
         Connection connection = connectDB();
         try{
             Statement statement = connection.createStatement();
-            String sql = "insert into Comic(SeriesID, issueName, date) values("+SeriesID+", '"+issueName+"',"+date+");";
+            String sql = "insert into Comic(SeriesID, issueName, dateString, day, month, year) values("+SeriesID+", '"+issueName+"','"+dateString+"', "+day+", "+month+", "+year+");";
             statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
             ResultSet resultSet = statement.getGeneratedKeys();
             if (resultSet.next()) {
@@ -249,7 +357,6 @@ public class DBConnection {
         closeDB(connection);
         return issueID;
     }
-    
     
     public static int newDate(String dateString, int day, int month, int year){
         Connection connection = connectDB();

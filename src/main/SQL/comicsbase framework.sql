@@ -10,12 +10,6 @@ CREATE TABLE Comic (
     issueID INTEGER not null auto_increment primary key,
     SeriesID INTEGER,
     issueName VARCHAR(45),
-    date INTEGER
-);
-
-
-CREATE TABLE Date (
-    dateID INTEGER not null auto_increment primary key,
     dateString VARCHAR(45),
     day INTEGER,
     month INTEGER,
