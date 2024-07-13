@@ -108,7 +108,7 @@ public class DBConnection {
         int SeriesID = 0;
         try{
             Statement statement = connection.createStatement();
-            String sql = "INSERT INTO Series(SeriesTitle, issueID, Publisher, xmen), VALUES("+SeriesTitle+", '"+issueID+"', "+Publisher+", "+xmen+" );";
+            String sql = "INSERT INTO Series(SeriesTitle, issueID, Publisher, xmen) VALUES('"+SeriesTitle+"', "+issueID+", '"+Publisher+"', "+xmen+" );";
             statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
             ResultSet resultSet = statement.getGeneratedKeys();
             if (resultSet.next()) {
