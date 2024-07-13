@@ -36,6 +36,7 @@ public class MakeEntryDialogController {
     private CheckBox xmen;
 
     public TextField seriesField;
+    public TextField dateField;
     public TextField issuesField; 
     private ArrayList<Book> list;
 
@@ -57,7 +58,7 @@ public class MakeEntryDialogController {
      * @throws IOException 
      */
     public void makeEntry(MouseEvent mouseEvent) throws IOException {
-        Entry entry=new Entry(seriesField.getText(), issuesField.getText(), publisher.getText(), list, xmen.isSelected());
+        Entry entry=new Entry(seriesField.getText(), issuesField.getText(), dateField.getText(), publisher.getText(), list, xmen.isSelected());
         for (Book run: list){
             System.out.println(run);
             System.out.println(run.getPublisher());

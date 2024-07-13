@@ -16,27 +16,24 @@ CREATE TABLE Comic (
 
 CREATE TABLE Date (
     dateID INTEGER not null auto_increment primary key,
-    month INTEGER,
+    dateString VARCHAR(45),
     day INTEGER,
+    month INTEGER,
     year INTEGER
-
 );
 
-ALTER TABLE Series
-ADD FOREIGN KEY (issueID) REFERENCES Comic(issueID);
+SELECT SUM(issueID) FROM Series WHERE Publisher="Marvel" 
+
+
+
+
+
+
+
+
+
 
 ALTER TABLE Comic
 ADD FOREIGN KEY (date) REFERENCES Date(dateID);
 
 
-INSERT INTO Series (SeriesTitle, issueID, Publisher, xmen)
-VALUES ('Uncanny X-Men', 0, 'Marvel', 1);
-
-SELECT SeriesID FROM Series
-WHERE SeriesTitle='Uncanny X-Men';
-
-INSERT INTO Comic(SeriesID, issueName, date)
-VALUES (1, "345", 1);
-
-
-UPDATE Series SET issueID=issueID+1 WHERE SeriesID=1;

@@ -70,6 +70,31 @@ public class DBConnection {
         return SeriesID;
     }
     
+    
+    public static int getDateByString(String dateString){
+        int dateID;
+        Connection connection = connectDB();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT dateID FROM Date WHERE dateString=\""+dateString+"\";");
+
+            //rs.next() must be performed here because otherwise you get an SQLException Error. This still returns the first instance of "name"
+
+            rs.next();
+            
+            if (rs.getRow()==0){
+                return 0;
+            } 
+            dateID= rs.getInt("dateID");
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return dateID;
+    }
+    
     public static int updateIssueCount(int SeriesID){
         Connection connection = connectDB();
         try {
@@ -91,10 +116,6 @@ public class DBConnection {
         return SeriesID;
     }
     
-    //String sql = "UPDATE Series SET issueID=issueID+1 WHERE SeriesID="+SeriesID+";";
-
-
-
     /***
      * Makes a new task and adds to database with given parameters
      * @param SeriesID
@@ -124,6 +145,37 @@ public class DBConnection {
         return SeriesID;
     }
 
+    
+    
+    public static int getNumPublisher(String Publisher){
+        Connection connection = connectDB();
+        int sum = 0;
+        try{
+            Statement st = connection.createStatement();
+            ResultSet res = st.executeQuery("SELECT SUM(issueID) FROM Series WHERE Publisher='"+Publisher+"';");
+            while (res.next()) {
+            int c = res.getInt(1);
+            sum = sum + c;
+            //    Statement statement = connection.createStatement();
+        //    ResultSet rs = statement.executeQuery("SELECT SUM(issueID) FROM Series WHERE Publisher='"+Publisher+"';");
+        //    //rs.next() must be performed here because otherwise you get an SQLException Error. This still returns the first instance of "name"
+        //
+        //    rs.next();
+        //    
+        //    if (rs.getRow()==0){
+        //        return 0;
+            } 
+        //    
+            res.close();
+            st.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return sum;
+    }
+
+
     public static int addIssue(int SeriesID, String issueName, int date){
         int issueID = -1;
         Connection connection = connectDB();
@@ -144,22 +196,14 @@ public class DBConnection {
         closeDB(connection);
         return issueID;
     }
-
     
     
-    
-    /***
-     * Makes a new task and adds to database with given parameters
-     * @param month
-     * @param day
-     * @param year
-     */
-    public static int addDate(int month, int day, int year){
+    public static int newDate(String dateString, int day, int month, int year){
         Connection connection = connectDB();
         int dateID = 0;
         try{
             Statement statement = connection.createStatement();
-            String sql = "insert into Date(month,day, year) values("+month+", "+day+", "+year+");";
+            String sql = "INSERT INTO Date(dateString,day,month, year) VALUES('"+dateString+"', "+day+", "+month+", "+year+");";
             statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
             ResultSet resultSet = statement.getGeneratedKeys();
             if (resultSet.next()) {
