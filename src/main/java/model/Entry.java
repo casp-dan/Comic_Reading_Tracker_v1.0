@@ -7,7 +7,7 @@ import javafx.scene.control.Alert;
 
 public class Entry {
 
-    public Entry(String name, String num, String publisher, ArrayList<Book> list) throws IOException{
+    public Entry(String name, String num, String publisher, ArrayList<Book> list, boolean xmen) throws IOException{
         Book run=getBook(list,name);
         if (run!=null){
             addBook(run, list, num);
@@ -15,7 +15,7 @@ public class Entry {
         else{
             switch(publisher){
                 case "Marvel": 
-                    run=new MarvelBook(name, false);
+                    run=new MarvelBook(name, xmen);
                     addBook(run,list,num);
                     break;
                 case "DC": 

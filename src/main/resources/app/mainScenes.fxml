@@ -12,7 +12,7 @@
         </Tab>
         <Tab text="Stats">
             <content>
-                
+                <fx:include fx:id="statsPage" source="statsPage.fxml" />
             </content>
         </Tab>
     </tabs>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: B04759;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+      <VBox>   
+         <Label fx:id="marvelTotal" text="Total Marvel: " prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+         <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
+         <Label fx:id="dcTotal" text="Total DC: " prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+         <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
+         <Label fx:id="imageTotal" text="Total Image: " prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+         <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
+      </VBox>
+    </children>
+</AnchorPane>

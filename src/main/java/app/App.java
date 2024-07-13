@@ -18,9 +18,6 @@ import java.util.ArrayList;
 
 public class App extends Application {
 
-    private ArrayList<Book> list;
-    private String userRole;
-    private String username;
     public Stage mainStage;
     private MainScenesController controller;
 
@@ -30,7 +27,6 @@ public class App extends Application {
         try {
 
 
-            this.list = new ArrayList<Book>();
             /** 
             // Login Window
             /** 
@@ -47,13 +43,12 @@ public class App extends Application {
             mainStage.initModality(Modality.APPLICATION_MODAL);
             mainStage.setScene(loginScene);
             mainStage.setTitle("Comic Log");
-            DBConnection.connectDB();
-
+            
             
             mainStage.show();
-
+            
             */
-             // Main Window
+            // Main Window
              //this.sprint = new Sprint("Unnamed Sprint", 0);
              //this.archive = new SprintArchive(0);
              //this.classroom = new Classroom();
@@ -63,12 +58,13 @@ public class App extends Application {
              controller = (MainScenesController) loader.getController();
              
              
-             controller.setObjects(list, this);
+             controller.setObjects();
              
              Scene scene = new Scene(root);
              stage.setScene(scene);
              stage.setResizable(true);
              stage.setTitle("Comic Log™");
+             DBConnection.connectDB();
              stage.getIcons().add(new Image(getClass().getResourceAsStream("icon.png")));
              
              stage.show();

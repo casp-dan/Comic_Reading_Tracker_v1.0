@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+
 /**
  * SQL Connection
  * @author: Daniel Casper
@@ -20,7 +21,7 @@ public class DBConnection {
         String url = "urlGoesHere"; 
         String username = "username";
         String password = "password";
-        ArrayList<String> tasks = new ArrayList<String>();
+        //ArrayList<String> tasks = new ArrayList<String>();
         Connection connection;
         try{
             connection = DriverManager.getConnection(url, username, password);
@@ -29,6 +30,8 @@ public class DBConnection {
         }
         return connection;
     }
+
+
     /***
      * Closes the connection to the database
      * @param connection

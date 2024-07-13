@@ -6,8 +6,7 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import app.controllers.MakeEntryDialogController;
-
-
+import app.controllers.StatsPageController;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -23,8 +22,12 @@ public class MainScenesController implements Initializable {
 
     @FXML private Parent makeEntryPage;
     @FXML private MakeEntryDialogController makeEntryPageController;
+    
+    @FXML private Parent statsPage;
+    @FXML private StatsPageController statsPageController;
 
     private ArrayList<Book> list;
+    private ArrayList<Integer> statsList;
     
     private App mainApp;
 
@@ -39,9 +42,11 @@ public class MainScenesController implements Initializable {
      * @param username name of student is userRole is "student"
      * @throws IOException 
      */
-    public void setObjects(ArrayList<Book> list, App mainApp) throws IOException {
-        this.list=list;
-        makeEntryPageController.setMain(list);
+    public void setObjects() throws IOException {
+        list = new ArrayList<Book>();
+        statsList = new ArrayList<Integer>();
+        makeEntryPageController.setObjects(list);
+        //statsPageController.setObjects(statsList);
     }
 
     
