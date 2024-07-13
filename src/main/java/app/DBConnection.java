@@ -208,6 +208,31 @@ public class DBConnection {
         return count;
     }
     
+    public static int getNumIssues(String SeriesTitle){
+        int count;
+        Connection connection = connectDB();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT issueID FROM SERIES WHERE SeriesTitle='"+SeriesTitle+"';");
+
+            //rs.next() must be performed here because otherwise you get an SQLException Error. This still returns the first instance of "name"
+
+            rs.next();
+            
+            if (rs.getRow()==0){
+                return 0;
+            }
+            
+            count= rs.getInt("issueID");
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return count;
+    }
+    
     public static int getDateByString(String dateString){
         int dateID;
         Connection connection = connectDB();

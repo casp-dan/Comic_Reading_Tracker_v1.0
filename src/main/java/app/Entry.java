@@ -1,6 +1,4 @@
-package model;
-
-import app.DBConnection;
+package app;
 
 import java.io.IOException;
 import javafx.scene.control.Alert;

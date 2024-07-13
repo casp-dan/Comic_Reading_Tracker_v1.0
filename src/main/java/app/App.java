@@ -6,10 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import model.*;
-
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * Main Class
@@ -18,11 +15,12 @@ import java.util.ArrayList;
 
 public class App extends Application {
 
+    @SuppressWarnings("exports")
     public Stage mainStage;
     private MainScenesController controller;
 
     
-    @Override
+    @SuppressWarnings("exports")
     public void start(Stage stage) throws IOException {
         try {
 

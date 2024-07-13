@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import app.DBConnection;
+import app.Entry;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBoxTreeItem;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
@@ -19,7 +21,6 @@ import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import model.Entry;
 
 /**
  * Controller for the backlog tab
@@ -34,6 +35,7 @@ public class seriesViewController{
     @FXML private MenuButton seriesTitles;
     @FXML private TreeView<String> issueTree;
     @FXML private AnchorPane pane;
+    @FXML private Label totalIssues;
 
 
 
@@ -47,7 +49,7 @@ public class seriesViewController{
         issueTree=new TreeView<String>();
         issueTree.setLayoutX(33);
         issueTree.setLayoutY(30.0);
-        issueTree.setPrefHeight(284.0);
+        issueTree.setPrefHeight(268.0);
         issueTree.setPrefWidth(355.0);
         pane.getChildren().add(1, issueTree);
         seriesField.setOnKeyReleased(new EventHandler<KeyEvent>() {
@@ -56,6 +58,9 @@ public class seriesViewController{
             }
         });
         makeTitlesButton();
+        totalIssues.setLayoutX(150);
+        totalIssues.setLayoutY(303);
+        totalIssues.setVisible(false);        
     }
 
     public void makeTitlesButton(){
@@ -94,6 +99,8 @@ public class seriesViewController{
         }
         else{
             createSprintArchiveTreeView();
+            totalIssues.setText("Issues Read: " +DBConnection.getNumIssues(seriesField.getText()));
+            totalIssues.setVisible(true);
         }
     }
 

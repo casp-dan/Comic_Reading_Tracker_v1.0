@@ -8,5 +8,6 @@
       <TextField fx:id="seriesField" prefHeight="25.0" prefWidth="135.0" promptText="Series Name"/>
       <MenuButton fx:id="seriesTitles" layoutX="150.0" xmlns:fx="http://javafx.com/fxml"/>
       <Button mnemonicParsing="false" prefHeight="25.0" onMouseClicked="#searchIssues" text="Search" layoutX="368.0" />
-  </children>
+      <Label fx:id="totalIssues" textAlignment="CENTER" textFill="BLACK" />
+   </children>
 </AnchorPane>
