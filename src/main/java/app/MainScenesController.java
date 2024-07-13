@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import java.io.IOException;
 import java.util.ResourceBundle;
 import app.controllers.MakeEntryDialogController;
+import app.controllers.seriesViewController;
 import javafx.fxml.Initializable;
 
 /**
@@ -17,6 +18,9 @@ public class MainScenesController implements Initializable {
 
     @FXML private Parent makeEntryPage;
     @FXML private MakeEntryDialogController makeEntryPageController;
+    
+    @FXML private Parent seriesViewPage;
+    @FXML private seriesViewController seriesViewPageController;
 
     
     /**
@@ -24,6 +28,7 @@ public class MainScenesController implements Initializable {
      */
     public void setObjects() throws IOException {
         makeEntryPageController.setObjects();
+        seriesViewPageController.setObjects();
     }
 
     public void initialize(URL location, ResourceBundle resources) {

@@ -215,7 +215,7 @@ public class MakeEntryDialogController {
             int seriesSum=0;
             String yearStr=year.getText().split("0")[1];
             TotalValue.setText(Integer.toString(DBConnection.getTotalMonth(monthInt,Integer.parseInt(yearStr))));
-            int idMax=DBConnection.getNumSeries()+1;
+            int idMax=DBConnection.getNumSeries()+10;
             for (int i=1;i<=idMax;i++){
                 String publisher=DBConnection.getPublisherByID(i);
                 int addTo=DBConnection.getNumByMonth(i,monthInt,Integer.parseInt(yearStr));

@@ -235,6 +235,64 @@ public class DBConnection {
         return titles;
     }
     
+    public static ArrayList<String> getIssuesBySeriesID(String SeriesTitle){
+        int seriesID=getSeriesIDByTitle(SeriesTitle);
+        ArrayList<String> issues=new ArrayList<String>();
+        Connection connection = connectDB();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT issueName FROM COMIC WHERE seriesID="+seriesID+";");
+
+            //rs.next() must be performed here because otherwise you get an SQLException Error. This still returns the first instance of "name"
+            rs.next();
+            issues.add(rs.getString("issueName"));
+            if (rs.getRow()==0){
+                return null;
+            } 
+
+            while(rs.next()){
+                issues.add(rs.getString("issueName"));
+            }
+
+            
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return issues;
+    }
+    
+    public static ArrayList<String> getDatesBySeriesID(String SeriesTitle){
+        int seriesID=getSeriesIDByTitle(SeriesTitle);
+        ArrayList<String> issues=new ArrayList<String>();
+        Connection connection = connectDB();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT dateString FROM COMIC WHERE seriesID="+seriesID+";");
+
+            //rs.next() must be performed here because otherwise you get an SQLException Error. This still returns the first instance of "name"
+            rs.next();
+            issues.add(rs.getString("dateString"));
+            if (rs.getRow()==0){
+                return null;
+            } 
+
+            while(rs.next()){
+                issues.add(rs.getString("dateString"));
+            }
+
+            
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return issues;
+    }
+    
     public static ArrayList<Integer> getXmen(){
         ArrayList<Integer> titles=new ArrayList<Integer>();
         Connection connection = connectDB();
