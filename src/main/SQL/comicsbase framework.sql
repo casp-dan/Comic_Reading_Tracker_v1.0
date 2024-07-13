@@ -21,19 +21,3 @@ CREATE TABLE Date (
     month INTEGER,
     year INTEGER
 );
-
-SELECT SUM(issueID) FROM Series WHERE Publisher="Marvel" 
-
-
-
-
-
-
-
-
-
-
-ALTER TABLE Comic
-ADD FOREIGN KEY (date) REFERENCES Date(dateID);
-
-

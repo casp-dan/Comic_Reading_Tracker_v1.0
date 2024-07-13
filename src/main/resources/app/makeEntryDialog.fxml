@@ -24,5 +24,22 @@
             <Button mnemonicParsing="false" prefHeight="25.0" onMouseClicked="#makeEntry" prefWidth="168.0" text="Make Entry" />
          </children>
       </VBox>
+      <VBox layoutX="260.0" layoutY="42.0" prefHeight="133.0" prefWidth="150.0">
+         <Label fx:id="Total" text="Total: " prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+         <Label fx:id="TotalValue" prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+         <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
+         <Label fx:id="marvelTotal" text="Total Marvel: " prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+         <Label fx:id="marvelTotalValue" prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+         <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
+         <Label fx:id="dcTotal" text="Total DC: " prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+         <Label fx:id="dcTotalValue" prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+         <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
+         <Label fx:id="imageTotal" text="Total Image: " prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+         <Label fx:id="imageTotalValue" prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+         <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
+         <Label fx:id="xmenTotal" text="Total X-Men: " prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+         <Label fx:id="xmenTotalValue" prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+         <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
+      </VBox>
    </children>
 </AnchorPane>

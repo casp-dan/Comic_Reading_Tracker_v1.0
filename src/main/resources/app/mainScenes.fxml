@@ -10,10 +10,6 @@
                 <fx:include fx:id="makeEntryPage" source="makeEntryDialog.fxml" />
             </content>
         </Tab>
-        <Tab text="Stats">
-            <content>
-                <fx:include fx:id="statsPage" source="statsPage.fxml" />
-            </content>
-        </Tab>
+        
     </tabs>
 </TabPane>

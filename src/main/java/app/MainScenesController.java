@@ -45,8 +45,7 @@ public class MainScenesController implements Initializable {
     public void setObjects() throws IOException {
         list = new ArrayList<Book>();
         statsList = new ArrayList<Integer>();
-        makeEntryPageController.setObjects(list);
-        statsPageController.setObjects(statsList);
+        makeEntryPageController.setObjects(statsPageController);
     }
 
     

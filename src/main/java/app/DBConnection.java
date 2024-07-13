@@ -69,6 +69,30 @@ public class DBConnection {
         closeDB(connection);
         return SeriesID;
     }
+
+    public static boolean entryExists(int SeriesID, String issueName, int date){
+        Connection connection = connectDB();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT issueID FROM Comic WHERE SeriesID="+SeriesID+" AND issueName='"+issueName+"' AND date="+date+";");
+
+            //rs.next() must be performed here because otherwise you get an SQLException Error. This still returns the first instance of "name"
+
+            rs.next();
+            
+            if (rs.getRow()==0){
+                return false;
+            } 
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return true;
+    }
+
+
     
     
     public static int getDateByString(String dateString){
@@ -147,6 +171,25 @@ public class DBConnection {
 
     
     
+    public static int getTotal(){
+        Connection connection = connectDB();
+        int sum = 0;
+        try{
+            Statement st = connection.createStatement();
+            ResultSet res = st.executeQuery("SELECT SUM(issueID) FROM Series;");
+            while (res.next()) {
+                int c = res.getInt(1);
+                sum = sum + c;
+            } 
+            res.close();
+            st.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return sum;
+    }
+
     public static int getNumPublisher(String Publisher){
         Connection connection = connectDB();
         int sum = 0;
@@ -154,18 +197,28 @@ public class DBConnection {
             Statement st = connection.createStatement();
             ResultSet res = st.executeQuery("SELECT SUM(issueID) FROM Series WHERE Publisher='"+Publisher+"';");
             while (res.next()) {
-            int c = res.getInt(1);
-            sum = sum + c;
-            //    Statement statement = connection.createStatement();
-        //    ResultSet rs = statement.executeQuery("SELECT SUM(issueID) FROM Series WHERE Publisher='"+Publisher+"';");
-        //    //rs.next() must be performed here because otherwise you get an SQLException Error. This still returns the first instance of "name"
-        //
-        //    rs.next();
-        //    
-        //    if (rs.getRow()==0){
-        //        return 0;
+                int c = res.getInt(1);
+                sum = sum + c;
             } 
-        //    
+            res.close();
+            st.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return sum;
+    }
+    
+    public static int getNumXMen(){
+        Connection connection = connectDB();
+        int sum = 0;
+        try{
+            Statement st = connection.createStatement();
+            ResultSet res = st.executeQuery("SELECT SUM(issueID) FROM Series WHERE xmen=1;");
+            while (res.next()) {
+                int c = res.getInt(1);
+                sum = sum + c;
+            } 
             res.close();
             st.close();
         }catch(SQLException e){
