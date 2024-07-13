@@ -6,8 +6,6 @@ import app.DBConnection;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.stream.IntStream;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
@@ -27,12 +25,12 @@ import javafx.collections.ObservableList;
  */
 public class MakeEntryDialogController {
     private ArrayList<String> months;
-    private ArrayList<String> years;
     private CheckBox xmen;
     private MenuButton year;
     @FXML private AnchorPane pane;
     @FXML private MenuButton month;
     @FXML private MenuButton publisher;
+    @FXML private MenuButton seriesTitles;
 
 
     @SuppressWarnings("exports")
@@ -65,6 +63,7 @@ public class MakeEntryDialogController {
         makeYearButton();
         makeMonthsButton();
         makePublisherButton();
+        makeTitlesButton();
     }
 
     /**
@@ -163,26 +162,27 @@ public class MakeEntryDialogController {
             int seriesSum=0;
             TotalValue.setText(Integer.toString(DBConnection.getTotalMonth(monthInt,Integer.parseInt(year.getText()))));
             int idMax=DBConnection.getNumSeries();
+            String yearStr=year.getText().split("0")[1];
             for (int i=1;i<=idMax;i++){
                 String publisher=DBConnection.getPublisherByID(i);
                 if (publisher.equals("DC")){
-                    int addTo=DBConnection.getNumByID(i,monthInt,Integer.parseInt(year.getText()));
+                    int addTo=DBConnection.getNumByID(i,monthInt,Integer.parseInt(yearStr));
                     dcSum+=addTo;
                     if (addTo>0){
                         seriesSum++;
                     }
                 }
                 else if (publisher.equals("Image")){
-                    int addTo=DBConnection.getNumByID(i,monthInt,Integer.parseInt(year.getText()));
+                    int addTo=DBConnection.getNumByID(i,monthInt,Integer.parseInt(yearStr));
                     imageSum+=addTo;
                     if (addTo>0){
                         seriesSum++;
                     }                }
                 else if (publisher.equals("Marvel")){
-                    int addTo=DBConnection.getNumByID(i,monthInt,Integer.parseInt(year.getText()));
+                    int addTo=DBConnection.getNumByID(i,monthInt,Integer.parseInt(yearStr));
                     marvelSum+=addTo;
                     if (DBConnection.isXmenByID(i)){
-                        xmenSum+=DBConnection.getNumXmenByID(i,monthInt,Integer.parseInt(year.getText()));
+                        xmenSum+=DBConnection.getNumXmenByID(i,monthInt,Integer.parseInt(yearStr));
                     }
                     if (addTo>0){
                         seriesSum++;
@@ -195,10 +195,37 @@ public class MakeEntryDialogController {
             marvelTotalValue.setText(Integer.toString(marvelSum));
             marvelTotalValue.setText(Integer.toString(marvelSum));
             seriesTotalValue.setText(Integer.toString(seriesSum));
+            TotalValue.setText(Integer.toString((marvelSum+dcSum+imageSum)));
         }
         seriesField.setText("");
         issuesField.setText("");
         dateField.setText("");
+        seriesTitles.setText("");
+        makeTitlesButton();
+    }
+
+    public void makeTitlesButton(){
+        ObservableList<MenuItem> bookNames=seriesTitles.getItems();
+        bookNames.clear();
+        MenuItem item1=new MenuItem("");
+        item1.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) {
+                seriesField.setText("");
+                seriesTitles.setText("");
+            }
+        });
+        bookNames.add(item1);
+        ArrayList<String> titles=DBConnection.getSeries();
+        for (int i=0;i<titles.size();i++){
+            MenuItem item=new MenuItem(titles.get(i));
+            item.setOnAction(new EventHandler<ActionEvent>() {
+                public void handle(ActionEvent t) {
+                    seriesField.setText(item.getText());
+                    seriesTitles.setText(item.getText());
+                }
+            });
+            bookNames.add(item);
+        }
     }
 
     public void makeMonthsButton(){

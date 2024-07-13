@@ -15,3 +15,9 @@ CREATE TABLE Comic (
     day INTEGER,
     year INTEGER
 );
+
+
+
+getting xmen query:
+    Select SeriesID from Series where xmen=1;
+    SELECT COUNT(*) FROM Comic WHERE month=2 and year=22 AND SeriesID=SeriesID;

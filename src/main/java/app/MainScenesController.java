@@ -5,7 +5,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import java.io.IOException;
 import java.util.ResourceBundle;
-import app.controllers.StatsPageController;
 import app.controllers.MakeEntryDialogController;
 import javafx.fxml.Initializable;
 

@@ -1,9 +1,13 @@
 package app;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 
 
@@ -158,6 +162,37 @@ public class DBConnection {
         closeDB(connection);
         return dateID;
     }
+    
+    
+    public static ArrayList<String> getSeries(){
+        ArrayList<String> titles=new ArrayList<String>();
+        Connection connection = connectDB();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT SeriesTitle FROM Series;");
+
+            //rs.next() must be performed here because otherwise you get an SQLException Error. This still returns the first instance of "name"
+            rs.next();
+            titles.add(rs.getString("SeriesTitle"));
+            if (rs.getRow()==0){
+                return null;
+            } 
+
+            while(rs.next()){
+                titles.add(rs.getString("SeriesTitle"));
+            }
+
+            
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return titles;
+    }
+
+
     
     public static int updateIssueCount(int SeriesID){
         Connection connection = connectDB();
@@ -378,9 +413,6 @@ public class DBConnection {
         closeDB(connection);
         return dateID;
     }
-
-
-
 
 }
 
