@@ -21,11 +21,17 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-//sourceSets.main.java.srcDirs += ['comics2.src.main']
+//sourceSets.main.java.srcDirs += ['comics.src.main']
 
 application {
     mainModule = 'app'
     mainClass = 'app.App'
+}
+
+jar {
+  manifest {
+    attributes 'Main-Class': application.mainClass
+  }
 }
 
 javafx {
