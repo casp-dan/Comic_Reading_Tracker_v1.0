@@ -114,7 +114,7 @@ public class seriesViewController{
         for (int i = 0; i < issues.size(); i++) {
             String thisIssue = issues.get(i);
             String thisDate = dates.get(i);
-            TreeItem<String> treeIssue = new TreeItem<>(thisIssue+":     "+thisDate);
+            TreeItem<String> treeIssue = new TreeItem<>(thisIssue+"    "+thisDate);
             rootItem.getChildren().add(treeIssue);
         }
         issueTree.setRoot(rootItem);

@@ -196,7 +196,7 @@ public class MakeEntryDialogController {
         imageTotalValue.setText(Integer.toString(image)); 
         xmenTotalValue.setText(Integer.toString(xmen));
         marvelTotalValue.setText(Integer.toString(marvel));
-        seriesTotalValue.setText(Integer.toString(series));bbb
+        seriesTotalValue.setText(Integer.toString(series));
     }
 
     /**

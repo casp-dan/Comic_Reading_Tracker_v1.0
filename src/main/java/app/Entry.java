@@ -76,12 +76,12 @@ public class Entry {
             String[] issues=num.split("-");
             int issue=Integer.parseInt(issues[0]);
             while (issue<=Integer.parseInt(issues[1])){
-                addIssue(run);
+                addIssue(run,Integer.toString(issue));
                 issue++;
             }
         }
         else{
-            addIssue(run);
+            addIssue(run,num);
         }
     }
 
@@ -89,9 +89,9 @@ public class Entry {
      * Adds an individual issue of a comic to the database as a new row in the Comic table
      * @param run integer ID for a series (correlates to SeriesID in all tables in database)
      */
-    private void addIssue(int run){
-        if (!DBConnection.entryExists(run,num,date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]))){
-            DBConnection.addIssue(run,num,date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]),xmenAdj);
+    private void addIssue(int run, String issue){
+        if (!DBConnection.entryExists(run,issue,date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]))){
+            DBConnection.addIssue(run,issue,date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]),xmenAdj);
         }
         else{
             errorMessage("Entry Exists", "This Entry Exists");
