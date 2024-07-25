@@ -10,9 +10,14 @@
                 <fx:include fx:id="makeEntryPage" source="makeEntryDialog.fxml" />
             </content>
         </Tab>
-        <Tab text="View Issues">
+        <Tab text="View Series">
             <content>
                 <fx:include fx:id="seriesViewPage" source="seriesView.fxml" />
+            </content>
+        </Tab>
+        <Tab text="View Date">
+            <content>
+                <fx:include fx:id="dateViewPage" source="dateView.fxml" />
             </content>
         </Tab>
     </tabs>

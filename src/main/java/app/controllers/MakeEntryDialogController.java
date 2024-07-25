@@ -115,9 +115,11 @@ public class MakeEntryDialogController {
             }
         }
         else{
-            Entry entry=new Entry(seriesField.getText(), issuesField.getText(), dateField.getText(), publisher.getText(), xmen.isSelected(),xmenAdj.isSelected());
-            entry.makeEntry();
-            updateView();
+            if (properDate(dateField.getText())){
+                Entry entry=new Entry(seriesField.getText(), issuesField.getText(), dateField.getText(), publisher.getText(), xmen.isSelected(),xmenAdj.isSelected());
+                entry.makeEntry();
+                updateView();
+            }
         }
     }
 
@@ -266,6 +268,7 @@ public class MakeEntryDialogController {
     private boolean properDate(String dateString){
         if (dateString.split("/").length!=3){
             errorMessage("Fields Empty", "Please Properly Enter Date!");
+            return false;
         }
         return true;
     }

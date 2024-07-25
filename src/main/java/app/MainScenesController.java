@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import java.io.IOException;
 import app.controllers.MakeEntryDialogController;
+import app.controllers.dateViewController;
 import app.controllers.seriesViewController;
 
 /**
@@ -18,6 +19,9 @@ public class MainScenesController {
     
     @FXML private Parent seriesViewPage;
     @FXML private seriesViewController seriesViewPageController;
+    
+    @FXML private Parent dateViewPage;
+    @FXML private dateViewController dateViewPageController;
 
     
     /**
@@ -26,6 +30,7 @@ public class MainScenesController {
     public void setObjects() throws IOException {
         makeEntryPageController.setObjects();
         seriesViewPageController.setObjects();
+        dateViewPageController.setObjects();
     }
 
 }

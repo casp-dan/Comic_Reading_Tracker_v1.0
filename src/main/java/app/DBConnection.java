@@ -247,7 +247,7 @@ public class DBConnection {
      * @param SeriesTitle string in the SeriesTitle column of a given row of the Series table
      * @return integer in the issueID column of a given row of the Series table
      */
-    public static int getNumIssues(String SeriesTitle){
+    public static int getNumIssuesSeries(String SeriesTitle){
         int count;
         Connection connection = connectDB();
         try {
@@ -334,6 +334,72 @@ public class DBConnection {
         }
         closeDB(connection);
         return issues;
+    }
+    
+    /**
+     * Get a list of all the issues in a series from the Comic table
+     * @param SeriesTitle string in the SeriesTitle column of a given row of the Series table
+     * @return an ArrayList containing strings of all the issueNames with 
+     * the given SeriesID in the Comic table
+     */
+    public static ArrayList<String> getIssuesByDate(String dateString){
+        ArrayList<String> issues=new ArrayList<String>();
+        Connection connection = connectDB();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT issueName FROM COMIC WHERE dateString='"+dateString+"';");
+
+            rs.next();
+            if (rs.getRow()==0){
+                return null;
+            } 
+            issues.add(rs.getString("issueName"));
+
+            while(rs.next()){
+                issues.add(rs.getString("issueName"));
+            }
+
+            
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return issues;
+    }
+    
+    /**
+     * Get a list of all the issues in a series from the Comic table
+     * @param SeriesTitle string in the SeriesTitle column of a given row of the Series table
+     * @return an ArrayList containing strings of all the issueNames with 
+     * the given SeriesID in the Comic table
+     */
+    public static ArrayList<Integer> getSeriesByDate(String dateString){
+        ArrayList<Integer> series=new ArrayList<Integer>();
+        Connection connection = connectDB();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT seriesID FROM COMIC WHERE dateString='"+dateString+"';");
+
+            rs.next();
+            if (rs.getRow()==0){
+                return null;
+            } 
+            series.add(rs.getInt("seriesID"));
+
+            while(rs.next()){
+                series.add(rs.getInt("seriesID"));
+            }
+
+            
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return series;
     }
     
     /**

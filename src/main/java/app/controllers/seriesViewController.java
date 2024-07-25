@@ -97,7 +97,7 @@ public class seriesViewController{
         }
         else{
             createIssueView();
-            totalIssues.setText("Issues Read: " +DBConnection.getNumIssues(seriesField.getText()));
+            totalIssues.setText("Issues Read: " +DBConnection.getNumIssuesSeries(seriesField.getText()));
             totalIssues.setVisible(true);
         }
     }
