@@ -1,9 +1,13 @@
 package app.controllers;
 
+import java.sql.Connection;
+
 import app.*;
 import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.scene.control.Alert;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
 /**
@@ -15,20 +19,29 @@ import javafx.scene.control.TextField;
 public class LoginDialogController {
 
     @FXML private TextField urlField;
-    @FXML private TextField usernameField;
-    @FXML private TextField passwordField;
+    @FXML private PasswordField passwordField;
     
     public void setMain() {
         
     }
 
     public void login(MouseEvent mouseEvent) {
-        String url=urlField.getText();
-        String user=usernameField.getText();
         String password=passwordField.getText();
-        DBConnection.setLogin(url,user,password);
-        Stage stage = (Stage) usernameField.getScene().getWindow();
-        stage.close();
+        String url=urlField.getText();
+        DBConnection.setLogin(url,password);
+        Connection connect=DBConnection.connectDB();
+        if (connect!=null){
+            Stage stage = (Stage) urlField.getScene().getWindow();
+            stage.close();
+        }
+        else{
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Invalid Credentials");
+            alert.setHeaderText(null);
+            alert.setContentText("Invalid credentials. Please enter a valid url and password.");
+            alert.showAndWait();
+            urlField.setText("");
+            passwordField.setText("");
+        }
     }
-
 }

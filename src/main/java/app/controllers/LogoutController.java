@@ -37,7 +37,7 @@ public class LogoutController{
     public void logout(MouseEvent mouseEvent) throws java.io.IOException{
         Stage stage = (Stage) logoutButton.getScene().getWindow();
         stage.close();
-        DBConnection.setLogin(null, null, null);
+        DBConnection.setLogin(null, null);
         app.start(stage);
     }
 }

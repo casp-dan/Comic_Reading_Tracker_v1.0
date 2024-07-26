@@ -10,10 +10,8 @@
             <Label alignment="CENTER" prefHeight="16.0" prefWidth="200.0" text="Connect to Database" textAlignment="CENTER" textFill="WHITE" />
             <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
             <TextField fx:id="urlField" prefHeight="25.0" prefWidth="135.0" promptText="URL" />
-            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
-            <TextField fx:id="usernameField" prefHeight="25.0" prefWidth="135.0" promptText="Username"/>
             <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />  
-            <TextField fx:id="passwordField" prefHeight="25.0" prefWidth="135.0" promptText="Password"/>
+            <PasswordField fx:id="passwordField" prefHeight="25.0" prefWidth="135.0" promptText="Password"/>
             <Separator orientation="VERTICAL" prefWidth="200.0" visible="false" />
             <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="168.0" text="Login" onMouseClicked="#login" />
          </children>

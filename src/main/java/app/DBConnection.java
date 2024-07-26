@@ -16,12 +16,10 @@ import java.util.ArrayList;
 public class DBConnection {
 
     private static String urlString;
-    private static String userString;
     private static String passwordString;
 
-    public static void setLogin(String url, String user, String password){
+    public static void setLogin(String url, String password){
         urlString=url;
-        userString=user;
         passwordString=password;
     }
 
@@ -32,14 +30,13 @@ public class DBConnection {
     @SuppressWarnings("exports")
     public static Connection connectDB(){
         String url=urlString;
-        String username=userString;
         String password=passwordString;
         //ArrayList<String> tasks = new ArrayList<String>();
         Connection connection;
         try{
-            connection = DriverManager.getConnection(url, username, password);
+            connection = DriverManager.getConnection(url, null, password);
         }catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect!", e);
+            return null;
         }
         return connection;
     }
