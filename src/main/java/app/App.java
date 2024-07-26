@@ -49,7 +49,7 @@ public class App extends Application {
             controller = (MainScenesController) loader.getController();
             
 
-            controller.setObjects();
+            controller.setObjects(this);
 
             Scene scene = new Scene(root);
             stage.setScene(scene);

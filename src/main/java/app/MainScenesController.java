@@ -5,6 +5,7 @@ import javafx.scene.Parent;
 import java.io.IOException;
 import app.controllers.MakeEntryDialogController;
 import app.controllers.dateViewController;
+import app.controllers.LogoutController;
 import app.controllers.seriesViewController;
 
 /**
@@ -22,15 +23,19 @@ public class MainScenesController {
     
     @FXML private Parent dateViewPage;
     @FXML private dateViewController dateViewPageController;
+    
+    @FXML private Parent logoutPage;
+    @FXML private LogoutController logoutPageController;
 
     
     /**
      * Called by App. Passes in object refs so they can be shared.
      */
-    public void setObjects() throws IOException {
+    public void setObjects(App app) throws IOException {
         makeEntryPageController.setObjects();
         seriesViewPageController.setObjects();
         dateViewPageController.setObjects();
+        logoutPageController.assignObjects(app);
     }
 
 }
