@@ -123,6 +123,9 @@ public class dateViewController{
                     errorMessage(title, message);
                     return false;
                 }
+                else{
+                    return true;
+                }
             }
             else if (Integer.parseInt(date[2])>Integer.parseInt(today[0])){
                 errorMessage(title, message);
@@ -134,7 +137,6 @@ public class dateViewController{
         }
         errorMessage(title, message);
         return false;
-
     }
     
     /**
