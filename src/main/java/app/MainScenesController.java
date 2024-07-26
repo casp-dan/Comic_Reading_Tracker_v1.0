@@ -38,9 +38,9 @@ public class MainScenesController {
     public void setObjects(App app) throws IOException {
         statsPageController.setObjects();
         dateViewPageController.setObjects();
-        makeEntryPageController.setObjects(statsPageController);
         seriesViewPageController.setObjects();
         logoutPageController.assignObjects(app);
+        makeEntryPageController.setObjects(statsPageController);
     }
 
 }

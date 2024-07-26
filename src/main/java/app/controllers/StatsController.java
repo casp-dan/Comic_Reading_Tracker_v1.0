@@ -38,17 +38,17 @@ public class StatsController {
         year=new MenuButton("");
         year.setLayoutX(150);
         year.setVisible(false);
-        updateView();
+        updateStats();
         pane.getChildren().add(1, year);
         makeYearButton();
         makeMonthsButton();
-        updateView();
+        updateStats();
     }
 
     /**
      * Updates stat values based on month and year button values.
      */
-    public void updateView(){
+    public void updateStats(){
         int monthInt=MONTHS.indexOf(month.getText())-1;
         if (month.getText().equals("") || month.getText().equals("Overview")){
             setStatValues(DBConnection.getTotal(), DBConnection.getNumXMen(), DBConnection.getNumPublisher("DC"), DBConnection.getNumPublisher("Marvel"), DBConnection.getNumPublisher("Image"), DBConnection.getNumPublisher("Dark Horse"), DBConnection.getNumPublisher("Boom"), DBConnection.getNumSeries());
@@ -56,10 +56,10 @@ public class StatsController {
             year.setText("");
         }
         else if (month.getText().equals("Yearly")){
-            createYearlyView();
+            createView(0);
         }
         else{
-            createMonthlyView(monthInt);
+            createView(monthInt);
         }
     }
 
@@ -97,7 +97,7 @@ public class StatsController {
                     month.setText(item.getText());
                     year.setVisible(true);
                     if (!year.getText().equals("")){
-                        updateView();
+                        updateStats();
                     }
                 }
             });
@@ -115,20 +115,19 @@ public class StatsController {
             item.setOnAction(new EventHandler<ActionEvent>() {
                 public void handle(ActionEvent t) {
                     year.setText(item.getText());
-                    updateView();
+                    updateStats();
                 }
             });
             years.add(item);
         }
     }
 
-
     /**
      * Retrieves integer values for stats based on the month and year 
      * button selections if a calendar month is selected
      * @param monthInt integer value for the month field (1-12)
      */
-    private void createMonthlyView(int monthInt){
+    private void createView(int monthInt){
         int dcSum=0;
         int xmenSum=0;
         int marvelSum=0;
@@ -137,11 +136,22 @@ public class StatsController {
         int boomSum=0;
         int seriesSum=0;
         String yearStr=year.getText().split("0")[1];
-        TotalValue.setText(Integer.toString(DBConnection.getTotalMonth(monthInt,Integer.parseInt(yearStr))));
+        if (monthInt==0){
+            TotalValue.setText(Integer.toString(DBConnection.getTotalYear(Integer.parseInt(yearStr))));
+        }
+        else{
+            TotalValue.setText(Integer.toString(DBConnection.getTotalMonth(monthInt,Integer.parseInt(yearStr))));
+        }
         int idMax=DBConnection.getFinalSeriesID();
         for (int i=1;i<=idMax;i++){
             String publisher=DBConnection.getPublisherByID(i);
-            int addTo=DBConnection.getNumByMonth(i,monthInt,Integer.parseInt(yearStr));
+            int addTo;
+            if (monthInt==0){
+                addTo=DBConnection.getNumByYear(i,Integer.parseInt(yearStr));
+            }
+            else{
+                addTo=DBConnection.getNumByMonth(i,monthInt,Integer.parseInt(yearStr));
+            }
             switch(publisher){
                 case "Marvel": marvelSum+=addTo; break; 
                 case "Image": imageSum+=addTo; break;
@@ -156,60 +166,25 @@ public class StatsController {
         ArrayList<Integer> list=DBConnection.getXmen();
         int x=0;
         while (x<list.size()){
-            xmenSum+=DBConnection.getNumByMonth(list.get(x),monthInt,Integer.parseInt(yearStr));
-            x++;
-        }
-        list=DBConnection.getXmenAdj();
-        x=0;
-        while (x<list.size()){
-            xmenSum+=DBConnection.getNumXmenByMonth(list.get(x),monthInt,Integer.parseInt(yearStr));
-            x++;
-        }
-        setStatValues((marvelSum+dcSum+imageSum+darkHorseSum+boomSum), xmenSum, dcSum, marvelSum, imageSum, darkHorseSum, boomSum, seriesSum);
-    }
-
-    /**
-     * Retrieves integer values for stats based on the year 
-     * button selection if "yearly" is selected on the month button
-     */
-    private void createYearlyView(){
-        int dcSum=0;
-        int xmenSum=0;
-        int marvelSum=0;
-        int imageSum=0;
-        int darkHorseSum=0;
-        int boomSum=0;
-        int seriesSum=0;
-        String yearStr=year.getText().split("0")[1];
-        TotalValue.setText(Integer.toString(DBConnection.getTotalYear(Integer.parseInt(yearStr))));
-        int idMax=DBConnection.getFinalSeriesID();
-        for (int i=1;i<=idMax;i++){
-            String publisher=DBConnection.getPublisherByID(i);
-            int addTo=DBConnection.getNumByYear(i,Integer.parseInt(yearStr));
-            switch(publisher){
-                case "Marvel": marvelSum+=addTo; break; 
-                case "Image": imageSum+=addTo; break;
-                case "Dark Horse": darkHorseSum+=addTo; break;
-                case "Boom": boomSum+=addTo; break;
-                case "DC": dcSum+=addTo; break;
+            if (monthInt==0){
+                xmenSum+=DBConnection.getNumByYear(list.get(x),Integer.parseInt(yearStr));
             }
-            if (addTo>0){
-                seriesSum++;
-            }  
-        }
-        ArrayList<Integer> list=DBConnection.getXmen();
-        int x=0;
-        while (x<list.size()){
-            xmenSum+=DBConnection.getNumByYear(list.get(x),Integer.parseInt(yearStr));
+            else{
+                xmenSum+=DBConnection.getNumByMonth(list.get(x),monthInt,Integer.parseInt(yearStr));
+            }
             x++;
         }
         list=DBConnection.getXmenAdj();
         x=0;
         while (x<list.size()){
-            xmenSum+=DBConnection.getNumXmenByYear(list.get(x),Integer.parseInt(yearStr));
+            if (monthInt==0){
+                xmenSum+=DBConnection.getNumXmenByYear(list.get(x),Integer.parseInt(yearStr));
+            }
+            else{
+                xmenSum+=DBConnection.getNumXmenByMonth(list.get(x),monthInt,Integer.parseInt(yearStr));
+            }
             x++;
         }
         setStatValues((marvelSum+dcSum+imageSum+darkHorseSum+boomSum), xmenSum, dcSum, marvelSum, imageSum, darkHorseSum, boomSum, seriesSum);
     }
-
 }

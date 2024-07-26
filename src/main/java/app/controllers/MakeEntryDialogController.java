@@ -48,37 +48,12 @@ public class MakeEntryDialogController {
      */
     public void setObjects(StatsController stats) {
         statsController=stats;
-        xmen=new CheckBox("X-Men?");
-        xmenAdj=new CheckBox("X-Men Adjacent?");
-        today=new CheckBox("Today?");
-        seriesField.setOnKeyReleased(new EventHandler<KeyEvent>() {
-            public void handle(KeyEvent t) {
-                makeTitlesButton();
-            }
-        });
-        today.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            public void handle(MouseEvent t) {
-                if (today.isSelected()){
-                    setDate();
-                }
-                else{
-                    dateField.clear();
-                }
-            }
-        });
-        xmen.setLayoutX(100);
-        xmen.setVisible(false);
-        xmenAdj.setLayoutX(100);
-        xmenAdj.setLayoutY(30);
-        xmenAdj.setVisible(false);
-        today.setLayoutY(245);
-        today.setLayoutX(185);
-        updateView();
-        pane.getChildren().add(1, xmen);
-        pane.getChildren().add(1, xmenAdj);
-        pane.getChildren().add(1, today);
-        makePublisherButton();
+        makeXmenButton();
         makeTitlesButton();
+        makeSeriesSearch();
+        makeXmenAdjButton();
+        makeTodayCheckbox();
+        makePublisherButton();
     }
 
     /**
@@ -107,7 +82,7 @@ public class MakeEntryDialogController {
                         if (!entry.makeEntry()){
                             i=issues.length;
                         }
-                        updateView();           
+                        clearFields();           
                     }     
                 }
             }
@@ -116,11 +91,51 @@ public class MakeEntryDialogController {
             if (properDate(dateField.getText())){
                 Entry entry=new Entry(seriesField.getText(), issuesField.getText(), dateField.getText(), publisher.getText(), xmen.isSelected(),xmenAdj.isSelected());
                 entry.makeEntry();
-                updateView();
+                clearFields();
             }
         }
     }
-
+    
+    /**
+     * Clear all text fields and buttons and update 
+     * the series button's contents
+     */
+    public void clearFields(){
+        dateField.clear();
+        makeTitlesButton();
+        seriesField.clear();
+        issuesField.clear();
+        publisher.setText("");
+        statsController.updateStats();
+        xmen.setVisible(false);
+        xmen.setSelected(false);
+        seriesTitles.setText("");
+        today.setSelected(false);
+        xmenAdj.setVisible(false);
+        xmenAdj.setSelected(false);
+    }
+    
+    /**
+     * Creates a dropdown menu button to select the title of a series that already exists.
+     */
+    public void makeTitlesButton(){
+        ObservableList<MenuItem> bookNames=seriesTitles.getItems();
+        bookNames.clear();
+        ArrayList<String> titles=DBConnection.getSeries();
+        for (int i=0;i<titles.size();i++){
+            if (titles.get(i).contains(seriesField.getText())){
+                MenuItem item=new MenuItem(titles.get(i));
+                item.setOnAction(new EventHandler<ActionEvent>() {
+                    public void handle(ActionEvent t) {
+                        seriesField.setText(item.getText());
+                        seriesTitles.setText(item.getText());
+                    }
+                });
+                bookNames.add(item);
+            }
+        }
+    }
+    
     /**
      * Creates a dropdown menu button to select the publisher of a new comic series.
      */
@@ -152,48 +167,49 @@ public class MakeEntryDialogController {
             }
         }
     }
-        
-    /**
-     * Updates stat values based on month and year button values.
-     */
-    public void updateView(){
-        publisher.setText("");
+
+    private void makeXmenButton(){
+        xmen=new CheckBox("X-Men?");
+        xmen.setLayoutX(100);
         xmen.setVisible(false);
-        xmen.setSelected(false);
+        pane.getChildren().add(1, xmen);
+    }
+    
+    private void makeXmenAdjButton(){
+        xmenAdj=new CheckBox("X-Men Adjacent?");
+        xmenAdj.setLayoutX(100);
+        xmenAdj.setLayoutY(30);
         xmenAdj.setVisible(false);
-        xmenAdj.setSelected(false);
-        seriesField.clear();
-        issuesField.clear();
-        dateField.clear();
-        seriesTitles.setText("");
-        today.setSelected(false);
-        makeTitlesButton();
-        statsController.updateView();
+        pane.getChildren().add(1, xmenAdj);
     }
 
-    /**
-     * Creates a dropdown menu button to select the title of a series that already exists.
-     */
-    public void makeTitlesButton(){
-        ObservableList<MenuItem> bookNames=seriesTitles.getItems();
-        bookNames.clear();
-        ArrayList<String> titles=DBConnection.getSeries();
-        for (int i=0;i<titles.size();i++){
-            if (titles.get(i).contains(seriesField.getText())){
-                MenuItem item=new MenuItem(titles.get(i));
-                item.setOnAction(new EventHandler<ActionEvent>() {
-                    public void handle(ActionEvent t) {
-                        seriesField.setText(item.getText());
-                        seriesTitles.setText(item.getText());
-                    }
-                });
-                bookNames.add(item);
+    private void makeTodayCheckbox(){
+        today=new CheckBox("Today?");
+        today.setLayoutY(245);
+        today.setLayoutX(185);
+        today.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent t) {
+                if (today.isSelected()){
+                    setDate();
+                }
+                else{
+                    dateField.clear();
+                }
             }
-        }
+        });
+        pane.getChildren().add(1, today);
     }
 
+    private void makeSeriesSearch(){
+        seriesField.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent t) {
+                makeTitlesButton();
+            }
+        });
+    }
+    
     /**
-     * Verifies that the contents of the date Text Field contains a valid date in the proper form of mm/dd/yyyy.
+     * Verifies that the contents of the date Text Field contains a valid date in the proper form of mm/dd/yy.
      * Years are stored only by the last 2 digits (ie: 2024-->24) and years entered as 2 digits will be accepted as well. 
      * @param dateString Text string retrieved from the date text field
      * @return true if date is properly formatted, false if not 
@@ -205,7 +221,7 @@ public class MakeEntryDialogController {
         }
         return true;
     }
-
+    
     /**
      * Creates and error message JavaFX alert with the given message.
      * @param title Title for the alert window
@@ -218,7 +234,7 @@ public class MakeEntryDialogController {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
+    
     /**
      * Gets and formats the current date in the form of mm/dd/yy
      * @return a string of the current date in the form mm/dd/yy
@@ -253,5 +269,4 @@ public class MakeEntryDialogController {
             dateField.setText(getToday());
         }
     }
-
 }

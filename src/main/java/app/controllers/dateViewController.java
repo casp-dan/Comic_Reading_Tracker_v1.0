@@ -134,7 +134,6 @@ public class dateViewController{
         return false;
     }
 
-
     private String[] getToday(){
         java.time.LocalDate ldt =java.time.LocalDate.now();
         String[] today=ldt.toString().split("-");
