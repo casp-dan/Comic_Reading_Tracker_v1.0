@@ -72,7 +72,7 @@ public class Entry {
      * @param comps array of the components of the date string 
      */
     private void addBook(int run, String[] comps){
-        if (num.contains("-")){
+        if (num.contains("-") && num.split("-")[0]!=""){
             String[] issues=num.split("-");
             int issue=Integer.parseInt(issues[0]);
             while (issue<=Integer.parseInt(issues[1])){

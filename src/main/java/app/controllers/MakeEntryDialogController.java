@@ -29,6 +29,7 @@ public class MakeEntryDialogController {
     
     private CheckBox xmen;
     private CheckBox xmenAdj;
+    private CheckBox today;
     private MenuButton year;
     @FXML private AnchorPane pane;
     @FXML private MenuButton month;
@@ -60,11 +61,22 @@ public class MakeEntryDialogController {
     public void setObjects() {
         xmen=new CheckBox("X-Men?");
         xmenAdj=new CheckBox("X-Men Adjacent?");
+        today=new CheckBox("Today?");
         seriesField.setOnKeyReleased(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent t) {
                 makeTitlesButton();
             }
-        }); 
+        });
+        today.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent t) {
+                if (today.isSelected()){
+                    setDate();
+                }
+                else{
+                    dateField.clear();
+                }
+            }
+        });
         xmen.setLayoutX(100);
         xmen.setVisible(false);
         xmenAdj.setLayoutX(100);
@@ -73,10 +85,13 @@ public class MakeEntryDialogController {
         year=new MenuButton("");
         year.setLayoutX(350);
         year.setVisible(false);
+        today.setLayoutY(245);
+        today.setLayoutX(185);
         updateView();
         pane.getChildren().add(1, xmen);
         pane.getChildren().add(1, xmenAdj);
         pane.getChildren().add(1, year);
+        pane.getChildren().add(1, today);
         makeYearButton();
         makeMonthsButton();
         makePublisherButton();
@@ -160,11 +175,6 @@ public class MakeEntryDialogController {
      */
     public void updateView(){
         int monthInt=MONTHS.indexOf(month.getText())-1;
-        publisher.setText("");
-        xmen.setVisible(false);
-        xmen.setSelected(false);
-        xmenAdj.setVisible(false);
-        xmenAdj.setSelected(false);
         if (month.getText().equals("") || month.getText().equals("Overview")){
             setStatValues(DBConnection.getTotal(), DBConnection.getNumXMen(), DBConnection.getNumPublisher("DC"), DBConnection.getNumPublisher("Marvel"), DBConnection.getNumPublisher("Image"), DBConnection.getNumSeries());
             year.setVisible(false);
@@ -176,10 +186,16 @@ public class MakeEntryDialogController {
         else{
             createMonthlyView(monthInt);
         }
-        seriesField.setText("");
-        issuesField.setText("");
-        dateField.setText("");
+        publisher.setText("");
+        xmen.setVisible(false);
+        xmen.setSelected(false);
+        xmenAdj.setVisible(false);
+        xmenAdj.setSelected(false);
+        seriesField.clear();
+        issuesField.clear();
+        dateField.clear();
         seriesTitles.setText("");
+        today.setSelected(false);;
         makeTitlesButton();
     }
 
@@ -367,6 +383,10 @@ public class MakeEntryDialogController {
         setStatValues((marvelSum+dcSum+imageSum), xmenSum, dcSum, marvelSum, seriesSum, imageSum);
     }
 
+    /**
+     * Gets and formats the current date in the form of mm/dd/yy
+     * @return a string of the current date in the form mm/dd/yy
+     */
     private String getToday(){
         java.time.LocalDate ldt =java.time.LocalDate.now();
         String[] today=ldt.toString().split("-");
@@ -375,6 +395,27 @@ public class MakeEntryDialogController {
         }
         today[0]=today[0].split("0")[1];
         return today[1]+"/"+today[2]+"/"+today[0];
+    }
+
+    /**
+     * Sets the date text field as the current date. 
+     * Will generate duplicate dates as necessary.
+     */
+    private void setDate(){
+        String issues=issuesField.getText();
+        if (issues.contains(",")){
+            String date="";
+            String[] issueList=issues.split(",");
+            int x=0;
+            while (x<issueList.length){
+                date+=getToday()+",";
+                x++;
+            }
+            dateField.setText(date);
+        }
+        else{
+            dateField.setText(getToday());
+        }
     }
 
 }

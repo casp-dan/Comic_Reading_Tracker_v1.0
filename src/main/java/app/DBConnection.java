@@ -19,7 +19,7 @@ public class DBConnection {
     private static String passwordString;
 
     public static void setLogin(String url, String password){
-        urlString=url;
+        urlString="jdbc:mysql://"+url;
         passwordString=password;
     }
 
