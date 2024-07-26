@@ -20,6 +20,11 @@
                 <fx:include fx:id="dateViewPage" source="dateView.fxml" />
             </content>
         </Tab>
+        <Tab text="Stats">
+            <content>
+                <fx:include fx:id="statsPage" source="stats.fxml" />
+            </content>
+        </Tab>
         <Tab text="Logout">
             <content>
                 <fx:include fx:id="logoutPage" source="logout.fxml" />

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="pane" prefHeight="216.0" prefWidth="202.0" style="-fx-background-color: B04759;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.controllers.StatsController">
+   <children>
+      <MenuButton fx:id="month" layoutX="18.0" xmlns:fx="http://javafx.com/fxml" />
+      <VBox layoutX="26.0" layoutY="32.0" prefHeight="133.0" prefWidth="150.0">
+         <children>
+            <Label fx:id="Total" text="Total: " prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+            <Label fx:id="TotalValue" prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
+            <Label fx:id="marvelTotal" text="Total Marvel: " prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+            <Label fx:id="marvelTotalValue" prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
+            <Label fx:id="dcTotal" text="Total DC: " prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+            <Label fx:id="dcTotalValue" prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
+            <Label fx:id="imageTotal" text="Total Image: " prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+            <Label fx:id="imageTotalValue" prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
+            <Label fx:id="darkHorseTotal" text="Total Dark Horse: " prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+            <Label fx:id="darkHorseTotalValue" prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
+            <Label fx:id="boomTotal" text="Total Boom: " prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+            <Label fx:id="boomTotalValue" prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
+            <Label fx:id="xmenTotal" text="Total X-Men: " prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+            <Label fx:id="xmenTotalValue" prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
+            <Label fx:id="seriesTotal" text="Total Series: " prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+            <Label fx:id="seriesTotalValue" prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
