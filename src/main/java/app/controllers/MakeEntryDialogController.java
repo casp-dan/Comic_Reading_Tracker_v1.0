@@ -367,4 +367,14 @@ public class MakeEntryDialogController {
         setStatValues((marvelSum+dcSum+imageSum), xmenSum, dcSum, marvelSum, seriesSum, imageSum);
     }
 
+    private String getToday(){
+        java.time.LocalDate ldt =java.time.LocalDate.now();
+        String[] today=ldt.toString().split("-");
+        if (Integer.parseInt(today[1])<10){
+            today[1]=today[1].split("0")[1];
+        }
+        today[0]=today[0].split("0")[1];
+        return today[1]+"/"+today[2]+"/"+today[0];
+    }
+
 }

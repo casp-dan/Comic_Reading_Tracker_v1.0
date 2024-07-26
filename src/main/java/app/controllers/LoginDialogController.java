@@ -9,8 +9,8 @@ import javafx.scene.control.TextField;
 /**
  * Controller for the login dialog
  *
- * @author Thomas Breimer
- * @version 5/29/23
+ * @author Daniel Casper
+ * @version 7/26/24
  */
 public class LoginDialogController {
 

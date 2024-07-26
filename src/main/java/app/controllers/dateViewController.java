@@ -103,12 +103,7 @@ public class dateViewController{
         String message="Please Properly Enter Date!";
         String title="Invalid Date";
         String[] date=dateString.split("/");
-        java.time.LocalDate ldt =java.time.LocalDate.now();
-            String[] today=ldt.toString().split("-");
-            if (Integer.parseInt(today[1])<10){
-                today[1]=today[1].split("0")[1];
-            }
-            today[0]=today[0].split("0")[1];
+        String[] today=getToday();
         if (date.length!=3){
             errorMessage(title, message);
             return false;
@@ -137,6 +132,17 @@ public class dateViewController{
         }
         errorMessage(title, message);
         return false;
+    }
+
+
+    private String[] getToday(){
+        java.time.LocalDate ldt =java.time.LocalDate.now();
+        String[] today=ldt.toString().split("-");
+        if (Integer.parseInt(today[1])<10){
+            today[1]=today[1].split("0")[1];
+        }
+        today[0]=today[0].split("0")[1];
+        return today;
     }
     
     /**
