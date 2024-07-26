@@ -15,15 +15,25 @@ import java.util.ArrayList;
 
 public class DBConnection {
 
+    private static String urlString;
+    private static String userString;
+    private static String passwordString;
+
+    public static void setLogin(String url, String user, String password){
+        urlString=url;
+        userString=user;
+        passwordString=password;
+    }
+
     /***
      * This opens the connection to the database
      * @return connection
      */
     @SuppressWarnings("exports")
     public static Connection connectDB(){
-        String url = "urlGoesHere"; 
-        String username = "username";
-        String password = "paassword";
+        String url=urlString;
+        String username=userString;
+        String password=passwordString;
         //ArrayList<String> tasks = new ArrayList<String>();
         Connection connection;
         try{
