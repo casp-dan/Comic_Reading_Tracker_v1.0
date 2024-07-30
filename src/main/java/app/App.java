@@ -21,6 +21,7 @@ public class App extends Application {
     @SuppressWarnings("exports")
     public Stage mainStage;
     private MainScenesController controller;
+    @SuppressWarnings("exports")
     public Stage loginStage;
 
 
@@ -32,7 +33,6 @@ public class App extends Application {
             FXMLLoader loginLoader = new FXMLLoader(getClass().getResource("loginDialog.fxml"));
             Parent loginRoot = (Parent) loginLoader.load();
             LoginDialogController loginController = (LoginDialogController) loginLoader.getController();
-            loginController.setMain();
 
             Scene loginScene = new Scene(loginRoot);
             loginStage = new Stage();

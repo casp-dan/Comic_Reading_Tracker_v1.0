@@ -36,19 +36,11 @@ public class seriesViewController{
     @FXML private AnchorPane pane;
     @FXML private Label totalIssues;
 
-
-
-
     /**
      * Sets variables and creates any unmade javaFX features 
      */    
     public void setObjects() {
-        issueTree=new TreeView<String>();
-        issueTree.setLayoutX(33);
-        issueTree.setLayoutY(30.0);
-        issueTree.setPrefHeight(268.0);
-        issueTree.setPrefWidth(355.0);
-        pane.getChildren().add(1, issueTree);
+        
         seriesField.setOnKeyReleased(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent t) {
                 makeTitlesButton();
@@ -82,8 +74,20 @@ public class seriesViewController{
     }
 
     /**
+     * Creates a tree view element and adds it to the AnchorPane
+     */
+    public void makeIssueTreeView(){
+        issueTree=new TreeView<String>();
+        issueTree.setLayoutX(33);
+        issueTree.setLayoutY(30.0);
+        issueTree.setPrefHeight(268.0);
+        issueTree.setPrefWidth(355.0);
+        pane.getChildren().add(1, issueTree);
+    }
+
+    /**
      * Searches the database for all issues of the designated series 
-     * and displays them in a table view
+     * and displays them in a tree view
      * @param mouseEvent
      * @throws IOException
      */
@@ -103,10 +107,10 @@ public class seriesViewController{
     }
 
     /**
-     * Creates a table view that displays each issue of a series 
+     * Creates a tree view that displays each issue of a series 
      * in the database along with the date it was read
      */
-    public void createIssueView(){
+    private void createIssueView(){
         pane.getChildren().remove(issueTree);
         TreeItem<String> rootItem = new CheckBoxTreeItem<>("Issues");
         ArrayList<String> issues=DBConnection.getIssuesBySeriesID(seriesField.getText());

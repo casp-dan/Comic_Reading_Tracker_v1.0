@@ -16,7 +16,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 /**
- * Controller for the series tree view tab page
+ * Controller for the date view tab's page
  *
  * @author Daniel Casper
  * @version 7/13/24
@@ -28,8 +28,6 @@ public class dateViewController{
     @FXML private TreeView<String> issueTree;
     @FXML private AnchorPane pane;
     @FXML private Label totalIssues;
-
-
 
 
     /**
@@ -48,8 +46,8 @@ public class dateViewController{
     }
 
     /**
-     * Searches the database for all issues of the designated series 
-     * and displays them in a table view
+     * Searches the database for all issues with the indicated date 
+     * and displays them in a tree view
      * @param mouseEvent
      * @throws IOException
      */
@@ -66,8 +64,8 @@ public class dateViewController{
     }
 
     /**
-     * Creates a table view that displays each issue of a series 
-     * in the database along with the date it was read
+     * Creates a tree view that displays each issue from a certain date
+     * in the database in the format of seriesTitle #issueName
      */
     public boolean createIssueView(){
         pane.getChildren().remove(issueTree);
@@ -94,10 +92,11 @@ public class dateViewController{
     }  
     
     /**
-     * Verifies that the contents of the date Text Field contains a valid date in the proper form of mm/dd/yyyy.
-     * Years are stored only by the last 2 digits (ie: 2024-->24) and years entered as 2 digits will be accepted as well. 
+     * Verifies that the contents of the date Text Field contains a valid date
+     * within the range of January 1 2022 (1/1/22) and the current date as 
+     * indicated by the LocalDate() method.
      * @param dateString Text string retrieved from the date text field
-     * @return true if date is properly formatted, false if not 
+     * @return true if date is valid, false if not 
      */
     private boolean properDate(String dateString){
         String message="Please Properly Enter Date!";
@@ -134,6 +133,11 @@ public class dateViewController{
         return false;
     }
 
+    /**
+     * Gets the current date based on the LocalDate method and 
+     * splits the string into an array of each component
+     * @return an array containing the components of the date
+     */
     private String[] getToday(){
         java.time.LocalDate ldt =java.time.LocalDate.now();
         String[] today=ldt.toString().split("-");

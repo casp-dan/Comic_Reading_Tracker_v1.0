@@ -13,6 +13,11 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
 
+/**
+ * Controller for the stats page.
+ * @author Daniel Casper
+ */
+
 public class StatsController {
 
     private MenuButton year;

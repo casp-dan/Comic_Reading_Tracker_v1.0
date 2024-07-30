@@ -20,12 +20,12 @@ public class LoginDialogController {
 
     @FXML private TextField urlField;
     @FXML private PasswordField passwordField;
-    
-    public void setMain() {
-        
-    }
 
-    public void login(MouseEvent mouseEvent) {
+    /**
+     * Called when the login button is clicked
+     * @param mouseEvent
+     */
+    public void login(@SuppressWarnings("exports") MouseEvent mouseEvent) {
         String password=passwordField.getText();
         String url=urlField.getText();
         DBConnection.setLogin(url,password);

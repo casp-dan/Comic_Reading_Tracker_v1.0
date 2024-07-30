@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import app.DBConnection;
 import app.Entry;
+import app.MainScenesController;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -29,7 +30,7 @@ public class MakeEntryDialogController {
     private CheckBox xmen;
     private CheckBox xmenAdj;
     private CheckBox today;
-    private StatsController statsController;
+    private MainScenesController mainController;
     @FXML private AnchorPane pane;
     @FXML private MenuButton publisher;
     @FXML private MenuButton seriesTitles;
@@ -46,8 +47,8 @@ public class MakeEntryDialogController {
     /**
      * Sets objects and creates Menu Buttons for the publisher, series title, month and year.
      */
-    public void setObjects(StatsController stats) {
-        statsController=stats;
+    public void setObjects(MainScenesController main) {
+        mainController=main;
         makeXmenButton();
         makeTitlesButton();
         makeSeriesSearch();
@@ -106,7 +107,7 @@ public class MakeEntryDialogController {
         seriesField.clear();
         issuesField.clear();
         publisher.setText("");
-        statsController.updateStats();
+        mainController.updateTabs();
         xmen.setVisible(false);
         xmen.setSelected(false);
         seriesTitles.setText("");
@@ -168,6 +169,10 @@ public class MakeEntryDialogController {
         }
     }
 
+    /**
+     * Creates a checkbox element to indicate whether 
+     * a marvel series is specifically an x-men book.
+     */
     private void makeXmenButton(){
         xmen=new CheckBox("X-Men?");
         xmen.setLayoutX(100);
@@ -175,6 +180,11 @@ public class MakeEntryDialogController {
         pane.getChildren().add(1, xmen);
     }
     
+    /**
+     * Creates a checkbox element to indicate whether 
+     * a specific issue of a non x-men marvel series 
+     * is specifically an x-men adjacent issue.
+     */
     private void makeXmenAdjButton(){
         xmenAdj=new CheckBox("X-Men Adjacent?");
         xmenAdj.setLayoutX(100);
@@ -183,6 +193,12 @@ public class MakeEntryDialogController {
         pane.getChildren().add(1, xmenAdj);
     }
 
+    /**
+     * Creates a checkbox element that automatically 
+     * fills the date text field with the current date 
+     * based on the LocalDate method for all issues in
+     * the issue field.
+     */
     private void makeTodayCheckbox(){
         today=new CheckBox("Today?");
         today.setLayoutY(245);
@@ -200,6 +216,9 @@ public class MakeEntryDialogController {
         pane.getChildren().add(1, today);
     }
 
+    /**
+     * Adds an event handler to the series text field.
+     */
     private void makeSeriesSearch(){
         seriesField.setOnKeyReleased(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent t) {

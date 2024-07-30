@@ -11,7 +11,7 @@ import app.controllers.seriesViewController;
 
 /**
  * Main controller
- * @author Daniel CAsper
+ * @author Daniel Casper
  */
 
 public class MainScenesController {
@@ -25,11 +25,12 @@ public class MainScenesController {
     @FXML private Parent dateViewPage;
     @FXML private dateViewController dateViewPageController;
     
+    @FXML private Parent statsPage;
+    @FXML private StatsController statsPageController;
+    
     @FXML private Parent logoutPage;
     @FXML private LogoutController logoutPageController;
     
-    @FXML private Parent statsPage;
-    @FXML private StatsController statsPageController;
 
     
     /**
@@ -39,8 +40,13 @@ public class MainScenesController {
         statsPageController.setObjects();
         dateViewPageController.setObjects();
         seriesViewPageController.setObjects();
+        makeEntryPageController.setObjects(this);
         logoutPageController.assignObjects(app);
-        makeEntryPageController.setObjects(statsPageController);
+    }
+
+    public void updateTabs(){
+        statsPageController.updateStats();
+        seriesViewPageController.makeTitlesButton();
     }
 
 }

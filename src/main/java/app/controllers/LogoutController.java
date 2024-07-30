@@ -8,7 +8,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 /**
- * Controller for the backlog tab
+ * Controller for the logout tab
  *
  * @author Daniel Casper
  * @version 7/26/24
@@ -34,7 +34,7 @@ public class LogoutController{
      * @throws java.io.IOException 
      */
     @FXML
-    public void logout(MouseEvent mouseEvent) throws java.io.IOException{
+    public void logout(@SuppressWarnings("exports") MouseEvent mouseEvent) throws java.io.IOException{
         Stage stage = (Stage) logoutButton.getScene().getWindow();
         stage.close();
         DBConnection.setLogin(null, null);
