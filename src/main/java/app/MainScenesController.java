@@ -2,6 +2,8 @@ package app;
 
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
+
 import java.io.IOException;
 import app.controllers.MakeEntryDialogController;
 import app.controllers.StatsController;
@@ -38,8 +40,8 @@ public class MainScenesController {
      */
     public void setObjects(App app) throws IOException {
         statsPageController.setObjects();
-        dateViewPageController.setObjects();
-        seriesViewPageController.setObjects();
+        dateViewPageController.setObjects(this);
+        seriesViewPageController.setObjects(this);
         makeEntryPageController.setObjects(this);
         logoutPageController.assignObjects(app);
     }
@@ -47,6 +49,19 @@ public class MainScenesController {
     public void updateTabs(){
         statsPageController.updateStats();
         seriesViewPageController.makeTitlesButton();
+    }
+
+    /**
+     * Creates and error message JavaFX alert with the given message.
+     * @param title Title for the alert window
+     * @param message Error message for the alert window
+     */
+    public void errorMessage(String title, String message){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
 }

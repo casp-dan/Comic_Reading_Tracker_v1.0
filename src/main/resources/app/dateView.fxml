@@ -8,6 +8,6 @@
       <TextField fx:id="dateField" prefHeight="25.0" prefWidth="135.0" promptText="Enter Date"/>
       
       <Button mnemonicParsing="false" prefHeight="25.0" onMouseClicked="#searchIssues" text="Search" layoutX="368.0" />
-      <Label fx:id="totalIssues" textAlignment="CENTER" textFill="BLACK" />
+      <Label fx:id="totalIssues" layoutX="150.0" layoutY="303.0" textAlignment="CENTER" textFill="BLACK" />
    </children>
 </AnchorPane>

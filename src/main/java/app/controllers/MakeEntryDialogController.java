@@ -19,6 +19,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import models.Date;
+import java.time.LocalDate;
 
 /**
  * Controller for the make entry tab
@@ -78,8 +80,9 @@ public class MakeEntryDialogController {
                 boolean isXmen=xmen.isSelected();
                 boolean isXmenAdj=xmenAdj.isSelected();
                 for (int i=0;i<issues.length;i++){
-                    if (properDate(dates[i])){
-                        Entry entry=new Entry(seriesName, issues[i], dates[i], publisherStr, isXmen,isXmenAdj);
+                    Date date=new Date(dates[i]);
+                    if (date.toString().equals("0/0/0")){
+                        Entry entry=new Entry(seriesName, issues[i], date, publisherStr, isXmen,isXmenAdj);
                         if (!entry.makeEntry()){
                             i=issues.length;
                         }
@@ -89,8 +92,9 @@ public class MakeEntryDialogController {
             }
         }
         else{
-            if (properDate(dateField.getText())){
-                Entry entry=new Entry(seriesField.getText(), issuesField.getText(), dateField.getText(), publisher.getText(), xmen.isSelected(),xmenAdj.isSelected());
+            Date date=new Date(dateField.getText());
+            if (date.toString().equals("0/0/0")){
+                Entry entry=new Entry(seriesField.getText(), issuesField.getText(), date, publisher.getText(), xmen.isSelected(),xmenAdj.isSelected());
                 entry.makeEntry();
                 clearFields();
             }
@@ -101,7 +105,7 @@ public class MakeEntryDialogController {
      * Clear all text fields and buttons and update 
      * the series button's contents
      */
-    public void clearFields(){
+    private void clearFields(){
         dateField.clear();
         makeTitlesButton();
         seriesField.clear();
@@ -119,7 +123,7 @@ public class MakeEntryDialogController {
     /**
      * Creates a dropdown menu button to select the title of a series that already exists.
      */
-    public void makeTitlesButton(){
+    private void makeTitlesButton(){
         ObservableList<MenuItem> bookNames=seriesTitles.getItems();
         bookNames.clear();
         ArrayList<String> titles=DBConnection.getSeries();
@@ -140,7 +144,7 @@ public class MakeEntryDialogController {
     /**
      * Creates a dropdown menu button to select the publisher of a new comic series.
      */
-    public void makePublisherButton(){
+    private void makePublisherButton(){
         ObservableList<MenuItem> publishers=publisher.getItems();
         for (int i=0;i<PUBLISHERS.size();i++){
             MenuItem item=new MenuItem(PUBLISHERS.get(i));
@@ -217,7 +221,8 @@ public class MakeEntryDialogController {
     }
 
     /**
-     * Adds an event handler to the series text field.
+     * Adds an event handler to the series text 
+     * field to search the Series table by substring.
      */
     private void makeSeriesSearch(){
         seriesField.setOnKeyReleased(new EventHandler<KeyEvent>() {
@@ -225,20 +230,6 @@ public class MakeEntryDialogController {
                 makeTitlesButton();
             }
         });
-    }
-    
-    /**
-     * Verifies that the contents of the date Text Field contains a valid date in the proper form of mm/dd/yy.
-     * Years are stored only by the last 2 digits (ie: 2024-->24) and years entered as 2 digits will be accepted as well. 
-     * @param dateString Text string retrieved from the date text field
-     * @return true if date is properly formatted, false if not 
-     */
-    private boolean properDate(String dateString){
-        if (dateString.split("/").length!=3){
-            errorMessage("Fields Empty", "Please Properly Enter Date!");
-            return false;
-        }
-        return true;
     }
     
     /**
@@ -259,13 +250,8 @@ public class MakeEntryDialogController {
      * @return a string of the current date in the form mm/dd/yy
      */
     private String getToday(){
-        java.time.LocalDate ldt =java.time.LocalDate.now();
-        String[] today=ldt.toString().split("-");
-        if (Integer.parseInt(today[1])<10){
-            today[1]=today[1].split("0")[1];
-        }
-        today[0]=today[0].split("0")[1];
-        return today[1]+"/"+today[2]+"/"+today[0];
+        Date today=new Date(LocalDate.now());
+        return today.toString();
     }
 
     /**

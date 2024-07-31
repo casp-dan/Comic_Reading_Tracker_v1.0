@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import app.DBConnection;
+import app.MainScenesController;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -35,20 +36,17 @@ public class seriesViewController{
     @FXML private TreeView<String> issueTree;
     @FXML private AnchorPane pane;
     @FXML private Label totalIssues;
+    private MainScenesController mainController;
+
 
     /**
      * Sets variables and creates any unmade javaFX features 
      */    
-    public void setObjects() {
-        
-        seriesField.setOnKeyReleased(new EventHandler<KeyEvent>() {
-            public void handle(KeyEvent t) {
-                makeTitlesButton();
-            }
-        });
+    public void setObjects(MainScenesController main) {
+        mainController=main;
+        makeIssueTreeView();
+        searchBySubstring();
         makeTitlesButton();
-        totalIssues.setLayoutX(150);
-        totalIssues.setLayoutY(303);
         totalIssues.setVisible(false);        
     }
 
@@ -74,18 +72,6 @@ public class seriesViewController{
     }
 
     /**
-     * Creates a tree view element and adds it to the AnchorPane
-     */
-    public void makeIssueTreeView(){
-        issueTree=new TreeView<String>();
-        issueTree.setLayoutX(33);
-        issueTree.setLayoutY(30.0);
-        issueTree.setPrefHeight(268.0);
-        issueTree.setPrefWidth(355.0);
-        pane.getChildren().add(1, issueTree);
-    }
-
-    /**
      * Searches the database for all issues of the designated series 
      * and displays them in a tree view
      * @param mouseEvent
@@ -104,6 +90,30 @@ public class seriesViewController{
             totalIssues.setText("Issues Read: " +DBConnection.getNumIssuesSeries(seriesField.getText()));
             totalIssues.setVisible(true);
         }
+    }
+
+    /**
+     * Adds an event handler to the series text 
+     * field to search the Series table by substring.
+     */
+    private void searchBySubstring(){
+        seriesField.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent t) {
+                makeTitlesButton();
+            }
+        });
+    }
+
+    /**
+     * Creates a tree view element and adds it to the AnchorPane
+     */
+    private void makeIssueTreeView(){
+        issueTree=new TreeView<String>();
+        issueTree.setLayoutX(33);
+        issueTree.setLayoutY(30.0);
+        issueTree.setPrefHeight(268.0);
+        issueTree.setPrefWidth(355.0);
+        pane.getChildren().add(1, issueTree);
     }
 
     /**

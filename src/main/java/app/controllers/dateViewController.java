@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import app.DBConnection;
+import app.MainScenesController;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -14,6 +14,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import models.Date;
 
 /**
  * Controller for the date view tab's page
@@ -28,20 +29,16 @@ public class dateViewController{
     @FXML private TreeView<String> issueTree;
     @FXML private AnchorPane pane;
     @FXML private Label totalIssues;
+    private MainScenesController mainController;
+
 
 
     /**
      * Sets variables and creates any unmade javaFX features 
      */    
-    public void setObjects() {
-        issueTree=new TreeView<String>();
-        issueTree.setLayoutX(33);
-        issueTree.setLayoutY(30.0);
-        issueTree.setPrefHeight(268.0);
-        issueTree.setPrefWidth(355.0);
-        pane.getChildren().add(1, issueTree);
-        totalIssues.setLayoutX(150);
-        totalIssues.setLayoutY(303);
+    public void setObjects(MainScenesController main) {
+        mainController=main;
+        makeIssueTreeView();
         totalIssues.setVisible(false);        
     }
 
@@ -52,22 +49,38 @@ public class dateViewController{
      * @throws IOException
      */
     public void searchIssues(@SuppressWarnings("exports") MouseEvent mouseEvent) throws IOException {
-        if (properDate(dateField.getText())){
+        Date search=new Date(dateField.getText());
+        if (!search.toString().equals("0/0/0") && search.withinRange()) {
             if (createIssueView()){
                 totalIssues.setText("Issues Read: "+ issueTree.getRoot().getChildren().size());
                 totalIssues.setVisible(true);
             }
             else{
-                errorMessage("Nothing Read", "You did not read any issues on this date!");
+                mainController.errorMessage("Nothing Read", "You did not read any issues on this date!");
             }
         }
+        else{
+            mainController.errorMessage("Invalid Date", "Please Properly Enter Date!");
+        }
+    }
+
+    /**
+     * Creates a tree view element and adds it to the AnchorPane
+     */
+    private void makeIssueTreeView(){
+        issueTree=new TreeView<String>();
+        issueTree.setLayoutX(33);
+        issueTree.setLayoutY(30.0);
+        issueTree.setPrefHeight(268.0);
+        issueTree.setPrefWidth(355.0);
+        pane.getChildren().add(1, issueTree);
     }
 
     /**
      * Creates a tree view that displays each issue from a certain date
      * in the database in the format of seriesTitle #issueName
      */
-    public boolean createIssueView(){
+    private boolean createIssueView(){
         pane.getChildren().remove(issueTree);
         TreeItem<String> rootItem = new CheckBoxTreeItem<>("Issues");
         ArrayList<String> issues=DBConnection.getIssuesByDate(dateField.getText());
@@ -90,75 +103,5 @@ public class dateViewController{
             return false; 
         }
     }  
-    
-    /**
-     * Verifies that the contents of the date Text Field contains a valid date
-     * within the range of January 1 2022 (1/1/22) and the current date as 
-     * indicated by the LocalDate() method.
-     * @param dateString Text string retrieved from the date text field
-     * @return true if date is valid, false if not 
-     */
-    private boolean properDate(String dateString){
-        String message="Please Properly Enter Date!";
-        String title="Invalid Date";
-        String[] date=dateString.split("/");
-        String[] today=getToday();
-        if (date.length!=3){
-            errorMessage(title, message);
-            return false;
-        }
-        else if (Integer.parseInt(date[2])>=22){
-            if (Integer.parseInt(date[2])==Integer.parseInt(today[0])){
-                if (Integer.parseInt(date[0])>Integer.parseInt(today[1])){
-                    errorMessage(title, message);
-                    return false;
-                }
-                else if (Integer.parseInt(date[1])>Integer.parseInt(today[2])){
-                    errorMessage(title, message);
-                    return false;
-                }
-                else{
-                    return true;
-                }
-            }
-            else if (Integer.parseInt(date[2])>Integer.parseInt(today[0])){
-                errorMessage(title, message);
-                return false;
-            }
-            else{
-                return true;
-            }
-        }
-        errorMessage(title, message);
-        return false;
-    }
-
-    /**
-     * Gets the current date based on the LocalDate method and 
-     * splits the string into an array of each component
-     * @return an array containing the components of the date
-     */
-    private String[] getToday(){
-        java.time.LocalDate ldt =java.time.LocalDate.now();
-        String[] today=ldt.toString().split("-");
-        if (Integer.parseInt(today[1])<10){
-            today[1]=today[1].split("0")[1];
-        }
-        today[0]=today[0].split("0")[1];
-        return today;
-    }
-    
-    /**
-     * Creates and error message JavaFX alert with the given message.
-     * @param title Title for the alert window
-     * @param message Error message for the alert window
-     */
-    private void errorMessage(String title, String message){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
 
 }

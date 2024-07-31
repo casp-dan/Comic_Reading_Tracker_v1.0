@@ -1,6 +1,9 @@
 package app;
 
 import java.io.IOException;
+import models.Date;
+
+
 import javafx.scene.control.Alert;
 
 /**
@@ -12,11 +15,10 @@ public class Entry {
 
     private String name;
     private String num;
-    private String date;
+    private Date date;
     private String publisher;
     private boolean xmen;
     private boolean xmenAdj;
-    private String[] comps;
 
     /**
      * Constructor for an entry object that sets all instance variable values
@@ -30,11 +32,7 @@ public class Entry {
      * (if true, will add series and issue to xmenadj tables) 
      * @throws IOException
      */
-    public Entry(String name, String num, String date, String publisher, boolean xmen, boolean xmenAdj) throws IOException{
-        this.comps=date.split("/");
-        if (comps[2].length()>2){
-            comps[2]=comps[2].split("0")[1];
-        }
+    public Entry(String name, String num, @SuppressWarnings("exports") Date date, String publisher, boolean xmen, boolean xmenAdj) throws IOException{
         this.name=name;
         this.num=num;
         this.date=date;
@@ -50,7 +48,7 @@ public class Entry {
     public boolean makeEntry(){
         int bookID=DBConnection.getSeriesIDByTitle(name);
         if (bookID!=0){
-            addBook(bookID,comps);
+            addBook(bookID);
             return true;
         }
         else{
@@ -60,7 +58,7 @@ public class Entry {
                 return false;
             }
             else{
-                addBook(bookID,comps);
+                addBook(bookID);
                 return true;
             }
             }
@@ -69,9 +67,8 @@ public class Entry {
     /**
      * Adds either a set of several issues or a single issue as new rows in the Comic table
      * @param run integer ID for a series (correlates to SeriesID in all tables in database)
-     * @param comps array of the components of the date string 
      */
-    private void addBook(int run, String[] comps){
+    private void addBook(int run){
         if (num.contains("-") && num.split("-")[0]!=""){
             String[] issues=num.split("-");
             int issue=Integer.parseInt(issues[0]);
@@ -90,8 +87,8 @@ public class Entry {
      * @param run integer ID for a series (correlates to SeriesID in all tables in database)
      */
     private void addIssue(int run, String issue){
-        if (!DBConnection.entryExists(run,issue,date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]))){
-            DBConnection.addIssue(run,issue,date,Integer.parseInt(comps[0]),Integer.parseInt(comps[1]),Integer.parseInt(comps[2]),xmenAdj);
+        if (!DBConnection.entryExists(run,issue,date.toString(),date.getMonth(),date.getDay(),date.getYear())){
+            DBConnection.addIssue(run,issue,date.toString(),date.getMonth(),date.getDay(),date.getYear(),xmenAdj);
         }
         else{
             errorMessage("Entry Exists", "This Entry Exists");
