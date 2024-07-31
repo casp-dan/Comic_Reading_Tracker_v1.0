@@ -69,16 +69,18 @@ public class Date {
     private boolean validate(String[] comps){
         boolean valid=true;
         int i=0;
-        Integer[] numComps=new Integer[comps.length];
-        while (i<comps.length){
-            try{
-            numComps[i]=Integer.parseInt(comps[i]);
-            }catch(NumberFormatException e){
-                valid=false;
+        if (comps!=null){
+            Integer[] numComps=new Integer[comps.length];
+            while (i<comps.length){
+                try{
+                    numComps[i]=Integer.parseInt(comps[i]);
+                }catch(NumberFormatException e){
+                    valid=false;
+                }
+                i++;
             }
-            i++;
         }
-        if (comps.length!=3){
+        else{
             valid=false;
         }
         return valid;
@@ -139,8 +141,13 @@ public class Date {
      */
     private String[] breakdown(String date){
         String[] comps=date.split("/");
-        if (comps[2].length()>2){
-            comps[2]=comps[2].split("0")[1];
+        if (comps.length==3){
+            if (comps[2].length()>2){
+                comps[2]=comps[2].split("0")[1];
+            }
+        }
+        else{
+            comps=null;
         }
         return comps;
     }

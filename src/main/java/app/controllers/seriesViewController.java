@@ -5,15 +5,11 @@ import java.util.ArrayList;
 
 import app.DBConnection;
 import app.MainScenesController;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -37,8 +33,8 @@ public class seriesViewController{
     @FXML private AnchorPane pane;
     @FXML private Label totalIssues;
     private MainScenesController mainController;
-
-
+    
+    
     /**
      * Sets variables and creates any unmade javaFX features 
      */    
@@ -46,31 +42,10 @@ public class seriesViewController{
         mainController=main;
         makeIssueTreeView();
         searchBySubstring();
-        makeTitlesButton();
+        mainController.makeTitlesButton(seriesTitles,seriesField);
         totalIssues.setVisible(false);        
     }
-
-    /**
-     * Creates a dropdown menu button to select the title of a series that already exists.
-     */
-    public void makeTitlesButton(){
-        ObservableList<MenuItem> bookNames=seriesTitles.getItems();
-        bookNames.clear();
-        ArrayList<String> titles=DBConnection.getSeries();
-        for (int i=0;i<titles.size();i++){
-            if (titles.get(i).contains(seriesField.getText())){
-                MenuItem item=new MenuItem(titles.get(i));
-                item.setOnAction(new EventHandler<ActionEvent>() {
-                    public void handle(ActionEvent t) {
-                        seriesField.setText(item.getText());
-                        seriesTitles.setText(item.getText());
-                    }
-                });
-                bookNames.add(item);
-            }
-        }
-    }
-
+    
     /**
      * Searches the database for all issues of the designated series 
      * and displays them in a tree view
@@ -79,17 +54,20 @@ public class seriesViewController{
      */
     public void searchIssues(@SuppressWarnings("exports") MouseEvent mouseEvent) throws IOException {
         if (!DBConnection.getSeries().contains(seriesField.getText())){
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Series Does Not Exist");
-            alert.setHeaderText(null);
-            alert.setContentText("Please enter a valid series title");
-            alert.showAndWait();
+            mainController.errorMessage("Series Does Not Exist", "Please enter a valid series title");
         }
         else{
             createIssueView();
             totalIssues.setText("Issues Read: " +DBConnection.getNumIssuesSeries(seriesField.getText()));
             totalIssues.setVisible(true);
         }
+    }
+    
+    /**
+     * Calls method of same name from mainController
+     */
+    public void makeTitlesButton(){
+        mainController.makeTitlesButton(seriesTitles,seriesField);
     }
 
     /**
@@ -99,10 +77,11 @@ public class seriesViewController{
     private void searchBySubstring(){
         seriesField.setOnKeyReleased(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent t) {
-                makeTitlesButton();
+                mainController.makeTitlesButton(seriesTitles,seriesField);
             }
         });
     }
+
 
     /**
      * Creates a tree view element and adds it to the AnchorPane

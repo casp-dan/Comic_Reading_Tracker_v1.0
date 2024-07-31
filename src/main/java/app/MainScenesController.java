@@ -1,10 +1,18 @@
 package app;
 
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
 
 import java.io.IOException;
+import java.util.ArrayList;
+
 import app.controllers.MakeEntryDialogController;
 import app.controllers.StatsController;
 import app.controllers.dateViewController;
@@ -62,6 +70,27 @@ public class MainScenesController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    /**
+     * Creates a dropdown menu button to select the title of a series that already exists.
+     */
+    public void makeTitlesButton(@SuppressWarnings("exports") MenuButton seriesTitles, @SuppressWarnings("exports") TextField seriesField){
+        ObservableList<MenuItem> bookNames=seriesTitles.getItems();
+        bookNames.clear();
+        ArrayList<String> titles=DBConnection.getSeries();
+        for (int i=0;i<titles.size();i++){
+            if (titles.get(i).contains(seriesField.getText())){
+                MenuItem item=new MenuItem(titles.get(i));
+                item.setOnAction(new EventHandler<ActionEvent>() {
+                    public void handle(ActionEvent t) {
+                        seriesField.setText(item.getText());
+                        seriesTitles.setText(item.getText());
+                    }
+                });
+                bookNames.add(item);
+            }
+        }
     }
 
 }

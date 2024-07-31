@@ -1,10 +1,9 @@
-package app;
+package models;
 
 import java.io.IOException;
-import models.Date;
 
-
-import javafx.scene.control.Alert;
+import app.DBConnection;
+import app.MainScenesController;
 
 /**
  * Creates entries in the database.
@@ -19,6 +18,7 @@ public class Entry {
     private String publisher;
     private boolean xmen;
     private boolean xmenAdj;
+    private MainScenesController mainController;
 
     /**
      * Constructor for an entry object that sets all instance variable values
@@ -32,7 +32,8 @@ public class Entry {
      * (if true, will add series and issue to xmenadj tables) 
      * @throws IOException
      */
-    public Entry(String name, String num, @SuppressWarnings("exports") Date date, String publisher, boolean xmen, boolean xmenAdj) throws IOException{
+    public Entry(String name, String num, Date date, String publisher, boolean xmen, boolean xmenAdj, MainScenesController main) throws IOException{
+        this.mainController=main;
         this.name=name;
         this.num=num;
         this.date=date;
@@ -54,7 +55,7 @@ public class Entry {
         else{
             bookID=DBConnection.createSeries(name, publisher, xmen); 
             if (publisher.equals("")){
-                errorMessage("No Publisher Selected", "Please Select a Publisher");
+                mainController.errorMessage("No Publisher Selected", "Please Select a Publisher");
                 return false;
             }
             else{
@@ -91,20 +92,8 @@ public class Entry {
             DBConnection.addIssue(run,issue,date.toString(),date.getMonth(),date.getDay(),date.getYear(),xmenAdj);
         }
         else{
-            errorMessage("Entry Exists", "This Entry Exists");
+            mainController.errorMessage("Entry Exists", "This Entry Exists");
         }
     }
 
-    /**
-     * Creates and error message JavaFX alert with the given message.
-     * @param title Title for the alert window
-     * @param message Error message for the alert window
-     */
-    private void errorMessage(String title, String message){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
 }

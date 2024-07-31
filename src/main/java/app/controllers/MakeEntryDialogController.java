@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import app.DBConnection;
-import app.Entry;
 import app.MainScenesController;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -20,6 +18,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import models.Date;
+import models.Entry;
+
 import java.time.LocalDate;
 
 /**
@@ -52,11 +52,11 @@ public class MakeEntryDialogController {
     public void setObjects(MainScenesController main) {
         mainController=main;
         makeXmenButton();
-        makeTitlesButton();
         makeSeriesSearch();
         makeXmenAdjButton();
         makeTodayCheckbox();
         makePublisherButton();
+        mainController.makeTitlesButton(seriesTitles,seriesField);
     }
 
     /**
@@ -66,13 +66,13 @@ public class MakeEntryDialogController {
      */
     public void makeEntry(@SuppressWarnings("exports") MouseEvent mouseEvent) throws IOException {
         if (seriesField.getText().equals("") || issuesField.getText().equals("") || dateField.getText().equals("")){
-            errorMessage("Fields Empty", "Please Fill Out All Fields!");
+            mainController.errorMessage("Fields Empty", "Please Fill Out All Fields!");
         }
         else if (issuesField.getText().contains(",")){
             String[] issues=issuesField.getText().split(",");
             String[] dates=dateField.getText().split(",");
             if (issues.length!=dates.length){
-                errorMessage("Improper Entry", "Please ensure each set of issues has a correspondig date!");
+                mainController.errorMessage("Improper Entry", "Please ensure each set of issues has a correspondig date!");
             }
             else{
                 String publisherStr=publisher.getText();
@@ -81,8 +81,8 @@ public class MakeEntryDialogController {
                 boolean isXmenAdj=xmenAdj.isSelected();
                 for (int i=0;i<issues.length;i++){
                     Date date=new Date(dates[i]);
-                    if (date.toString().equals("0/0/0")){
-                        Entry entry=new Entry(seriesName, issues[i], date, publisherStr, isXmen,isXmenAdj);
+                    if (!date.toString().equals("0/0/0")){
+                        Entry entry=new Entry(seriesName, issues[i], date, publisherStr, isXmen,isXmenAdj, mainController);
                         if (!entry.makeEntry()){
                             i=issues.length;
                         }
@@ -93,8 +93,8 @@ public class MakeEntryDialogController {
         }
         else{
             Date date=new Date(dateField.getText());
-            if (date.toString().equals("0/0/0")){
-                Entry entry=new Entry(seriesField.getText(), issuesField.getText(), date, publisher.getText(), xmen.isSelected(),xmenAdj.isSelected());
+            if (!date.toString().equals("0/0/0")){
+                Entry entry=new Entry(seriesField.getText(),issuesField.getText(),date,publisher.getText(),xmen.isSelected(),xmenAdj.isSelected(),mainController);
                 entry.makeEntry();
                 clearFields();
             }
@@ -107,7 +107,7 @@ public class MakeEntryDialogController {
      */
     private void clearFields(){
         dateField.clear();
-        makeTitlesButton();
+        mainController.makeTitlesButton(seriesTitles,seriesField);
         seriesField.clear();
         issuesField.clear();
         publisher.setText("");
@@ -118,27 +118,6 @@ public class MakeEntryDialogController {
         today.setSelected(false);
         xmenAdj.setVisible(false);
         xmenAdj.setSelected(false);
-    }
-    
-    /**
-     * Creates a dropdown menu button to select the title of a series that already exists.
-     */
-    private void makeTitlesButton(){
-        ObservableList<MenuItem> bookNames=seriesTitles.getItems();
-        bookNames.clear();
-        ArrayList<String> titles=DBConnection.getSeries();
-        for (int i=0;i<titles.size();i++){
-            if (titles.get(i).contains(seriesField.getText())){
-                MenuItem item=new MenuItem(titles.get(i));
-                item.setOnAction(new EventHandler<ActionEvent>() {
-                    public void handle(ActionEvent t) {
-                        seriesField.setText(item.getText());
-                        seriesTitles.setText(item.getText());
-                    }
-                });
-                bookNames.add(item);
-            }
-        }
     }
     
     /**
@@ -227,22 +206,9 @@ public class MakeEntryDialogController {
     private void makeSeriesSearch(){
         seriesField.setOnKeyReleased(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent t) {
-                makeTitlesButton();
+                mainController.makeTitlesButton(seriesTitles,seriesField);
             }
         });
-    }
-    
-    /**
-     * Creates and error message JavaFX alert with the given message.
-     * @param title Title for the alert window
-     * @param message Error message for the alert window
-     */
-    private void errorMessage(String title, String message){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
     
     /**

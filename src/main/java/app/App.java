@@ -9,8 +9,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.io.IOException;
 
-import app.controllers.LoginDialogController;
-
 /**
  * Main App Class
  * @author Daniel Casper
@@ -32,8 +30,6 @@ public class App extends Application {
 
             FXMLLoader loginLoader = new FXMLLoader(getClass().getResource("loginDialog.fxml"));
             Parent loginRoot = (Parent) loginLoader.load();
-            LoginDialogController loginController = (LoginDialogController) loginLoader.getController();
-
             Scene loginScene = new Scene(loginRoot);
             loginStage = new Stage();
 
