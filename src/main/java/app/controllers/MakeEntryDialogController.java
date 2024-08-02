@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import app.DBConnection;
 import app.MainScenesController;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
@@ -64,7 +64,7 @@ public class MakeEntryDialogController {
      * @param mouseEvent
      * @throws IOException 
      */
-    public void makeEntry(@SuppressWarnings("exports") MouseEvent mouseEvent) throws IOException {
+    public void entryButton(@SuppressWarnings("exports") MouseEvent mouseEvent) throws IOException {
         if (seriesField.getText().equals("") || issuesField.getText().equals("") || dateField.getText().equals("")){
             mainController.errorMessage("Fields Empty", "Please Fill Out All Fields!");
         }
@@ -72,7 +72,7 @@ public class MakeEntryDialogController {
             String[] issues=issuesField.getText().split(",");
             String[] dates=dateField.getText().split(",");
             if (issues.length!=dates.length){
-                mainController.errorMessage("Improper Entry", "Please ensure each set of issues has a correspondig date!");
+                mainController.errorMessage("Improper Entry","Please ensure each set of issues has a correspondig date!");
             }
             else{
                 String publisherStr=publisher.getText();
@@ -82,8 +82,8 @@ public class MakeEntryDialogController {
                 for (int i=0;i<issues.length;i++){
                     Date date=new Date(dates[i]);
                     if (!date.toString().equals("0/0/0")){
-                        Entry entry=new Entry(seriesName, issues[i], date, publisherStr, isXmen,isXmenAdj, mainController);
-                        if (!entry.makeEntry()){
+                        Entry entry=new Entry(seriesName,issues[i],date,publisherStr,isXmen,isXmenAdj);
+                        if (!makeEntry(entry)){
                             i=issues.length;
                         }
                         clearFields();           
@@ -94,8 +94,8 @@ public class MakeEntryDialogController {
         else{
             Date date=new Date(dateField.getText());
             if (!date.toString().equals("0/0/0")){
-                Entry entry=new Entry(seriesField.getText(),issuesField.getText(),date,publisher.getText(),xmen.isSelected(),xmenAdj.isSelected(),mainController);
-                entry.makeEntry();
+                Entry entry=new Entry(seriesField.getText(),issuesField.getText(),date,publisher.getText(),xmen.isSelected(),xmenAdj.isSelected());
+                makeEntry(entry);
                 clearFields();
             }
         }
@@ -238,6 +238,45 @@ public class MakeEntryDialogController {
         }
         else{
             dateField.setText(getToday());
+        }
+    }
+
+    /**
+     * Creates a new entry in the database, creating a new series if needed and adding all indicated issues
+     * @return true if entry made successfully, false if error message is displayed
+     */
+    private boolean makeEntry(Entry entry){
+        int bookID=DBConnection.getSeriesIDByTitle(entry.getName());
+        if (bookID!=0){
+            addBook(entry,bookID);
+            return true;
+        }
+        else{
+            bookID=DBConnection.createSeries(entry.getName(), entry.getPublisher(), entry.getXmen()); 
+            if (entry.getPublisher().equals("")){
+                mainController.errorMessage("No Publisher Selected", "Please Select a Publisher");
+                return false;
+            }
+            else{
+                addBook(entry,bookID);
+                return true;
+            }
+        }
+    }
+
+    /**
+     * Adds either a set of several issues or a single issue as new rows in the Comic table
+     * @param bookID integer ID for a series (correlates to SeriesID in all tables in database)
+     */
+    private void addBook(Entry entry, int bookID){
+        Date date=entry.getDate();
+        for (String issue: entry.getIssues()){
+            if (!DBConnection.entryExists(bookID,issue,date.toString(),date.getMonth(),date.getDay(),date.getYear())){
+                DBConnection.addIssue(bookID,issue,date.toString(),date.getMonth(),date.getDay(),date.getYear(),entry.getXmenAdj());
+            }
+            else{
+                mainController.errorMessage("Entry Exists", "This Entry Exists");
+            }
         }
     }
 }

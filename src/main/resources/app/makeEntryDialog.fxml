@@ -23,7 +23,7 @@
             <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
             <TextField fx:id="dateField" prefHeight="25.0" prefWidth="135.0" promptText="Enter Date"/>
             <Separator orientation="VERTICAL" prefWidth="200.0" visible="false" />
-            <Button mnemonicParsing="false" prefHeight="25.0" onMouseClicked="#makeEntry" prefWidth="168.0" text="Make Entry" />
+            <Button mnemonicParsing="false" prefHeight="25.0" onMouseClicked="#entryButton" prefWidth="168.0" text="Make Entry" />
          </children>
       </VBox>
    </children>

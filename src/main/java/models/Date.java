@@ -59,100 +59,6 @@ public class Date {
     }
 
     /**
-     * Checks if the input string is all numbers 
-     * and there is an input for the month, day, 
-     * and year.
-     * @param comps array of strings for the date in the form of
-     * mm/dd/yy (single digit numbers will be # rather than 0#)
-     * @return true if the input is valid, false if not
-     */
-    private boolean validate(String[] comps){
-        boolean valid=true;
-        int i=0;
-        if (comps!=null){
-            Integer[] numComps=new Integer[comps.length];
-            while (i<comps.length){
-                try{
-                    numComps[i]=Integer.parseInt(comps[i]);
-                }catch(NumberFormatException e){
-                    valid=false;
-                }
-                i++;
-            }
-        }
-        else{
-            valid=false;
-        }
-        return valid;
-    }
-
-    /**
-     * Checks if the given date exists on a calendar
-     * @return true if the date exists on the calendar,
-     * false if not.
-     */
-    private boolean realDate(){
-        boolean real=true;
-        if (month>12){
-            real=false;
-        }
-        else if (month==2){
-            real=leapYear();
-        }
-        else if (THIRTYONE.contains(month)){
-            if (day>31){
-                real=false;
-            }
-        }
-        else if (THIRTY.contains(month)){
-            if (day>30){
-                real=false;
-            }
-        }
-        return real;
-    }
-
-    /**
-     * Checks if the given year is a leap year and whether 
-     * or not the day is a real date for that year
-     * @return true if the day exists on a given year, 
-     * and false if not
-     */
-    private boolean leapYear(){
-        if (year%4==0){
-            if (day>29){
-                return false;
-            }
-        }
-        else{
-            if (day>28){
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Breaks down the input string into an array with the 
-     * month, day, and year with formatting.
-     * @param date input string to the constructor
-     * @return array of strings for the date in the form of
-     * mm/dd/yy (single digit numbers will be # rather than 0#)
-     */
-    private String[] breakdown(String date){
-        String[] comps=date.split("/");
-        if (comps.length==3){
-            if (comps[2].length()>2){
-                comps[2]=comps[2].split("0")[1];
-            }
-        }
-        else{
-            comps=null;
-        }
-        return comps;
-    }
-
-    /**
      * Getter for the day
      * @return integer of the day variable
      */
@@ -258,5 +164,99 @@ public class Date {
             tooLate=false;
         }
         return tooLate;
+    }
+
+    /**
+     * Checks if the input string is all numbers 
+     * and there is an input for the month, day, 
+     * and year.
+     * @param comps array of strings for the date in the form of
+     * mm/dd/yy (single digit numbers will be # rather than 0#)
+     * @return true if the input is valid, false if not
+     */
+    private boolean validate(String[] comps){
+        boolean valid=true;
+        int i=0;
+        if (comps!=null){
+            Integer[] numComps=new Integer[comps.length];
+            while (i<comps.length){
+                try{
+                    numComps[i]=Integer.parseInt(comps[i]);
+                }catch(NumberFormatException e){
+                    valid=false;
+                }
+                i++;
+            }
+        }
+        else{
+            valid=false;
+        }
+        return valid;
+    }
+
+    /**
+     * Checks if the given date exists on a calendar
+     * @return true if the date exists on the calendar,
+     * false if not.
+     */
+    private boolean realDate(){
+        boolean real=true;
+        if (month>12){
+            real=false;
+        }
+        else if (month==2){
+            real=leapYear();
+        }
+        else if (THIRTYONE.contains(month)){
+            if (day>31){
+                real=false;
+            }
+        }
+        else if (THIRTY.contains(month)){
+            if (day>30){
+                real=false;
+            }
+        }
+        return real;
+    }
+
+    /**
+     * Checks if the given year is a leap year and whether 
+     * or not the day is a real date for that year
+     * @return true if the day exists on a given year, 
+     * and false if not
+     */
+    private boolean leapYear(){
+        if (year%4==0){
+            if (day>29){
+                return false;
+            }
+        }
+        else{
+            if (day>28){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Breaks down the input string into an array with the 
+     * month, day, and year with formatting.
+     * @param date input string to the constructor
+     * @return array of strings for the date in the form of
+     * mm/dd/yy (single digit numbers will be # rather than 0#)
+     */
+    private String[] breakdown(String date){
+        String[] comps=date.split("/");
+        if (comps.length==3){
+            if (comps[2].length()>2){
+                comps[2]=comps[2].split("0")[1];
+            }
+        }
+        else{
+            comps=null;
+        }
+        return comps;
     }
 }

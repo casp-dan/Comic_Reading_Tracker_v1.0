@@ -1,9 +1,6 @@
 package models;
 
-import java.io.IOException;
-
-import app.DBConnection;
-import app.MainScenesController;
+import java.util.ArrayList;
 
 /**
  * Creates entries in the database.
@@ -13,12 +10,11 @@ import app.MainScenesController;
 public class Entry {
 
     private String name;
-    private String num;
+    private ArrayList<String> issues;
     private Date date;
     private String publisher;
     private boolean xmen;
     private boolean xmenAdj;
-    private MainScenesController mainController;
 
     /**
      * Constructor for an entry object that sets all instance variable values
@@ -32,10 +28,9 @@ public class Entry {
      * (if true, will add series and issue to xmenadj tables) 
      * @throws IOException
      */
-    public Entry(String name, String num, Date date, String publisher, boolean xmen, boolean xmenAdj, MainScenesController main) throws IOException{
-        this.mainController=main;
+    public Entry(String name, String issueName, Date date, String publisher, boolean xmen, boolean xmenAdj) {
         this.name=name;
-        this.num=num;
+        this.issues=makeIssueList(issueName);
         this.date=date;
         this.publisher=publisher;
         this.xmen=xmen;
@@ -43,57 +38,76 @@ public class Entry {
     }
     
     /**
-     * Creates a new entry in the database, creating a new series if needed and adding all indicated issues
-     * @return true if entry made successfully, false if error message is displayed
+     * Getter for the name variable
+     * @return string of the name
      */
-    public boolean makeEntry(){
-        int bookID=DBConnection.getSeriesIDByTitle(name);
-        if (bookID!=0){
-            addBook(bookID);
-            return true;
-        }
-        else{
-            bookID=DBConnection.createSeries(name, publisher, xmen); 
-            if (publisher.equals("")){
-                mainController.errorMessage("No Publisher Selected", "Please Select a Publisher");
-                return false;
-            }
-            else{
-                addBook(bookID);
-                return true;
-            }
-            }
-        }
+    public String getName(){
+        return name;
+    }
+    
+    /**
+     * Getter for the num variable
+     * @return string of the issues
+     */
+    public ArrayList<String> getIssues(){
+        return issues;
+    }
+    
+    /**
+     * Getter for the date variable
+     * @return string of the date
+     */
+    public Date getDate(){
+        return date;
+    }
+    
+    /**
+     * Getter for the publisher variable
+     * @return string of the publisher
+     */
+    public String getPublisher(){
+        return publisher;
+    }
+    
+    /**
+     * Getter for the xmen variable
+     * @return boolean value of xmen variable
+     */
+    public boolean getXmen(){
+        return xmen;
+    }
+    
+    /**
+     * Getter for the xmenAdj variable
+     * @return boolean value of xmenAdj variable
+     */
+    public boolean getXmenAdj(){
+        return xmenAdj;
+    }
 
     /**
-     * Adds either a set of several issues or a single issue as new rows in the Comic table
-     * @param run integer ID for a series (correlates to SeriesID in all tables in database)
+     * Create an array list of all the issue names for the entry
+     * @param issueName the string that was provided as the input 
+     * for the issues text field of the controller
+     * @return an ArrayList containig the names of all the issues 
+     * for the entry in order
      */
-    private void addBook(int run){
-        if (num.contains("-") && num.split("-")[0]!=""){
-            String[] issues=num.split("-");
-            int issue=Integer.parseInt(issues[0]);
-            while (issue<=Integer.parseInt(issues[1])){
-                addIssue(run,Integer.toString(issue));
+    private ArrayList<String> makeIssueList(String issueName){
+        if (issueName.contains("-") && issueName.split("-")[0]!=""){
+            String[] issuesList=issueName.split("-");
+            int issue=Integer.parseInt(issuesList[0]);
+            int issueEnd=Integer.parseInt(issuesList[1]);
+            issues=new ArrayList<String>();
+            while (issue<=issueEnd){
+                issues.add(Integer.toString(issue));
                 issue++;
             }
         }
         else{
-            addIssue(run,num);
+            issues=new ArrayList<String>();  
+            issues.add(issueName);
         }
-    }
-
-    /**
-     * Adds an individual issue of a comic to the database as a new row in the Comic table
-     * @param run integer ID for a series (correlates to SeriesID in all tables in database)
-     */
-    private void addIssue(int run, String issue){
-        if (!DBConnection.entryExists(run,issue,date.toString(),date.getMonth(),date.getDay(),date.getYear())){
-            DBConnection.addIssue(run,issue,date.toString(),date.getMonth(),date.getDay(),date.getYear(),xmenAdj);
-        }
-        else{
-            mainController.errorMessage("Entry Exists", "This Entry Exists");
-        }
+        return issues;
     }
 
 }
