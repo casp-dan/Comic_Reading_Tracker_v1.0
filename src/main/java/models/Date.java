@@ -107,6 +107,27 @@ public class Date {
         }
         return validDate;
     }
+    
+    public int compareTo(Date otherDate) {
+        if (tooEarly(otherDate)){
+            return -1;
+        }
+        else if (tooLate(otherDate)){
+            return 1;
+        }
+        else{
+            return 0;
+        }
+    }
+    
+    public boolean equals(Date otherDate) {
+        if (toString().equals(otherDate.toString())){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 
     /**
      * Checks if the date is from before 
@@ -259,4 +280,5 @@ public class Date {
         }
         return comps;
     }
+
 }

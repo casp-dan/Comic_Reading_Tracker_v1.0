@@ -14,6 +14,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
+
 import org.mockito.Mockito;
 
 import org.junit.Test;
@@ -31,76 +33,91 @@ import models.*;
 
 public class EntryTests {
 
-    //private Student s;
-    //private Group g;
-
+    private Entry entry;
 
     @Before
     public void Setup(){
-        //s = Mockito.mock(Student.class);
-        //g = new Group(s);
-
+        entry=new Entry("title", "1", new Date("1/1/23"), "test", true, false);
     }
 
 
     @After
     public void tearDown(){
-        //g = null;
-        //s =null;
+        entry=null;
     }
 
 
     @Test
-    public void addStudent(){
-        //g.addStudent(new Student("student1",0));
-//
-//
-        //assertEquals(1, g.getSize());
-    }
-
-
-    @Test
-    public void getStudent(){
-        //g.addStudent(new Student("student1",0));
-//
-        //Mockito.when(s.getName()).thenReturn("student1");
-//
-        //assertEquals("student1",g.getStudent(0).getName());
-    }
-
-
-    @Test
-    public void deleteStudent(){
-        //g.addStudent(new Student("student1",0));
-//
-        //assertEquals(1, g.getSize());
-//
-        //g.deleteStudent(0);
-//
-        //assertEquals(0, g.getSize());
+    public void getSeriesName(){
+        assertEquals("Test getSeriesName method", "title", entry.getSeriesName());
     }
 
     @Test
-    public void getSize(){
-        //g.addStudent(new Student("student1",0));
-        //g.addStudent(new Student("student2",1));
-        //g.addStudent(new Student("student3",2));
-        //g.addStudent(new Student("student4",3));
-//
-        //assertEquals(4, g.getSize());
+    public void getIssues(){
+        ArrayList<String> issues=new ArrayList<String>();
+        issues.add("1");
+        assertEquals("Test getIssues method", issues, entry.getIssues());
     }
 
     @Test
-    public void getName(){
-        //g.setName("group1");
-        //assertEquals("group1",g.getName());
+    public void getDate(){
+        Date date=new Date("1/1/23");
+        assertEquals("Test getDate method", true, entry.getDate().equals(date));
     }
 
     @Test
-    public void getId(){
-        //assertEquals(0, g.getID());
+    public void getPublisher(){
+        assertEquals("Test getPublisher method", "test", entry.getPublisher());
     }
 
+    @Test
+    public void getXmen(){
+        assertEquals("Test getXmen method", true, entry.getXmen());
+    }
 
+    @Test
+    public void getXmenAdj(){
+        assertEquals("Test getXmenAdj method", false, entry.getXmenAdj());
+    }
+
+    @Test
+    public void equalsTest(){
+        Entry newEntry=new Entry("title", "1", new Date("1/1/23"), "test", true, false);
+        assertEquals("Test equals method with duplicate entry", true, entry.equals(newEntry));
+    }
+    @Test
+    public void equalsTestWrongTitle(){
+        Entry newEntry=new Entry("wrongTitle", "1", new Date("1/1/23"), "test", true, false);
+        assertEquals("Test equals method with duplicate entry but wrong seriesName", false, entry.equals(newEntry));
+    }
+        
+    @Test
+    public void equalsTestWrongIssue(){
+        Entry newEntry=new Entry("title", "2", new Date("1/1/23"), "test", true, false);
+        assertEquals("Test equals method with duplicate entry but wrong issueName", false, entry.equals(newEntry));
+    }
+        
+    @Test
+    public void equalsTestWrongDate(){
+        Entry newEntry=new Entry("title", "1", new Date("1/2/23"), "test", true, false);
+        assertEquals("Test equals method with duplicate entry but wrong date", false, entry.equals(newEntry));
+    }
+        
+    @Test
+    public void equalsTestWrongPublisher(){
+        Entry newEntry=new Entry("title", "1", new Date("1/1/23"), "wrongTest", true, false);
+        assertEquals("Test equals method with duplicate entry but wrong publisher", false, entry.equals(newEntry));
+    }
+        
+    @Test
+    public void equalsTestWrongXmen(){
+        Entry newEntry=new Entry("title", "1", new Date("1/1/23"), "test", false, false);
+        assertEquals("Test equals method with duplicate entry but wrong xmen boolean", false, entry.equals(newEntry));
+    }
+        
+    @Test
+    public void equalsTestWrongXmenAdj(){
+        Entry newEntry=new Entry("title", "1", new Date("1/1/23"), "test", false, true);
+        assertEquals("Test equals method with duplicate entry but wrong xmenAdj boolean", false, entry.equals(newEntry));
+    }       
 }
-

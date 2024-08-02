@@ -63,36 +63,100 @@ public class DateTests {
     }
 
     @Test
-    public void withinRange(){
-        Date tooEarly=new Date("1/1/20");
-        Date tooLate=new Date("1/1/99");
+    public void withinRangeTrue(){
         assertTrue("Using a valid date returns true for withinRange method", d.withinRange());
+    }
+    
+    @Test
+    public void withinRangeEarly(){
+        Date tooEarly=new Date("1/1/20");
         assertFalse("Using an invalid date that is too early returns false for withinRange method", tooEarly.withinRange());
-        assertFalse("Using an invalid date that is too early returns false for withinRange method", tooLate.withinRange());
+    }
+    
+    @Test
+    public void withinRangeLate(){
+        Date tooLate=new Date("1/1/99");
+        assertFalse("Using an invalid date that is too late returns false for withinRange method", tooLate.withinRange());
     }
 
     @Test
     public void constructorTest(){
-        Date date;
         assertEquals("Test constructor with a valid date",dStr,d.toString());
-        date=new Date("1/2/");
+        
+    }
+
+    @Test
+    public void constructorTestNoYear(){
+        Date date=new Date("1/2/");
         assertEquals("Test constructor with only month and date","0/0/0",date.toString());
-        date=new Date("/2/23");
+        
+    }
+
+    @Test
+    public void constructorTestNoMonth(){
+        Date date=new Date("/2/23");
         assertEquals("Test constructor with only day and year","0/0/0",date.toString());
-        date=new Date("1//23");
-        assertEquals("Test constructor with only month and year","0/0/0",date.toString());
-        date=new Date("1/2/w");
-        assertEquals("Test constructor with non-integer in year","0/0/0",date.toString());
-        date=new Date("w/2/23");
-        assertEquals("Test constructor with non-integer in month","0/0/0",date.toString());
-        date=new Date("1/w/23");
-        assertEquals("Test constructor with non-integer in day","0/0/0",date.toString());
-        date=new Date("");
-        assertEquals("Test constructor with empty input","0/0/0",date.toString());
+    }
+
+    @Test
+    public void constructorTestNoDay(){
+        Date date=new Date("1//23");
+        assertEquals("Test constructor with only month and year","0/0/0",date.toString());    
+    }
+
+    @Test
+    public void constructorTestLetterYear(){
+        Date date=new Date("1/2/w");
+        assertEquals("Test constructor with non-integer in year","0/0/0",date.toString());    
+    }
+
+    @Test
+    public void constructorTestLetterMonth(){
+        Date date=new Date("w/2/23");
+        assertEquals("Test constructor with non-integer in month","0/0/0",date.toString());   
+    }
+
+    @Test
+    public void constructorTestLetterDay(){
+        Date date=new Date("1/w/23");
+        assertEquals("Test constructor with non-integer in day","0/0/0",date.toString());    
+    }
+
+    @Test
+    public void constructorTestEmpty(){        
+        Date date=new Date("");
+        assertEquals("Test constructor with empty input","0/0/0",date.toString());       
+    }
+    
+    @Test
+    public void constructorTestLD(){ 
         Month jan=Month.of(1);
         LocalDate today=LocalDate.of(2023,jan,1);
-        date=new Date(today);
+        Date date=new Date(today);
         assertEquals("Test LocalDate constructor with a valid date",dStr,date.toString());
     }
 
+
+    @Test
+    public void compareTestEqual(){
+        Date date=new Date("1/1/23");
+        assertEquals("Test compareTo with two equal dates",0,d.compareTo(date));
+        assertEquals("Test equals with two equal dates",true,d.equals(date));
+        
+    }
+    
+    @Test
+    public void compareTestLate(){
+        Date date=new Date("1/1/22");
+        assertEquals("Test compareTo when d is later than date",1,d.compareTo(date));
+        assertEquals("Test equals with two unequal dates",false,d.equals(date));
+
+    }
+    
+    @Test
+    public void compareTestEarly(){
+        Date date=new Date("1/1/24");
+        assertEquals("Test compareTo when d is earlier than date",-1,d.compareTo(date));
+        assertEquals("Test equals with two unequal dates",false,d.equals(date));
+    }
 }

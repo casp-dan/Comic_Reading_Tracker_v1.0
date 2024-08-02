@@ -1,6 +1,7 @@
 package app.controllers;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -19,8 +20,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import models.Date;
 import models.Entry;
-
-import java.time.LocalDate;
 
 /**
  * Controller for the make entry tab
@@ -246,13 +245,13 @@ public class MakeEntryDialogController {
      * @return true if entry made successfully, false if error message is displayed
      */
     private boolean makeEntry(Entry entry){
-        int bookID=DBConnection.getSeriesIDByTitle(entry.getName());
+        int bookID=DBConnection.getSeriesIDByTitle(entry.getSeriesName());
         if (bookID!=0){
             addBook(entry,bookID);
             return true;
         }
         else{
-            bookID=DBConnection.createSeries(entry.getName(), entry.getPublisher(), entry.getXmen()); 
+            bookID=DBConnection.createSeries(entry.getSeriesName(), entry.getPublisher(), entry.getXmen()); 
             if (entry.getPublisher().equals("")){
                 mainController.errorMessage("No Publisher Selected", "Please Select a Publisher");
                 return false;

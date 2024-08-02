@@ -9,7 +9,7 @@ import java.util.ArrayList;
  */
 public class Entry {
 
-    private String name;
+    private String seriesName;
     private ArrayList<String> issues;
     private Date date;
     private String publisher;
@@ -18,7 +18,7 @@ public class Entry {
 
     /**
      * Constructor for an entry object that sets all instance variable values
-     * @param name Name of a series (correlates to SeriesTitle column in Series table)
+     * @param seriesName Name of a series (correlates to SeriesTitle column in Series table)
      * @param num Issue numbers/title (correlates to IssueName column in Comic table) 
      * Can contain a set of issues in the form of "firstIssue-lastIssue"
      * @param date Date for the entry (correlates to dateString column in Comic table) 
@@ -28,8 +28,8 @@ public class Entry {
      * (if true, will add series and issue to xmenadj tables) 
      * @throws IOException
      */
-    public Entry(String name, String issueName, Date date, String publisher, boolean xmen, boolean xmenAdj) {
-        this.name=name;
+    public Entry(String seriesName, String issueName, Date date, String publisher, boolean xmen, boolean xmenAdj) {
+        this.seriesName=seriesName;
         this.issues=makeIssueList(issueName);
         this.date=date;
         this.publisher=publisher;
@@ -41,8 +41,8 @@ public class Entry {
      * Getter for the name variable
      * @return string of the name
      */
-    public String getName(){
-        return name;
+    public String getSeriesName(){
+        return seriesName;
     }
     
     /**
@@ -83,6 +83,28 @@ public class Entry {
      */
     public boolean getXmenAdj(){
         return xmenAdj;
+    }
+
+    public boolean equals(Entry otherEntry){
+        if (!seriesName.equals(otherEntry.getSeriesName())){
+            return false;
+        }
+        else if (!issues.equals(otherEntry.getIssues())){
+            return false;
+        }
+        else if (!date.equals(otherEntry.getDate())){
+            return false; 
+        }
+        else if (!publisher.equals(otherEntry.getPublisher())){
+            return false;
+        }
+        else if (xmen && !otherEntry.getXmen()){
+            return false;
+        }
+        else if (xmenAdj && !otherEntry.getXmenAdj()){
+            return false;
+        }
+        return true;
     }
 
     /**
