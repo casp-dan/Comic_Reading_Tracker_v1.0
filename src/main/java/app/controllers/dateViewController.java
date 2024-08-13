@@ -5,7 +5,9 @@ import java.util.ArrayList;
 
 import app.DBConnection;
 import app.MainScenesController;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -15,6 +17,8 @@ import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import models.Date;
+import java.time.LocalDate;
+
 
 /**
  * Controller for the date view tab's page
@@ -29,6 +33,7 @@ public class dateViewController{
     @FXML private TreeView<String> issueTree;
     @FXML private AnchorPane pane;
     @FXML private Label totalIssues;
+    private CheckBox today;
     private MainScenesController mainController;
 
 
@@ -39,6 +44,7 @@ public class dateViewController{
     public void setObjects(MainScenesController main) {
         mainController=main;
         makeIssueTreeView();
+        makeTodayCheckbox();
         totalIssues.setVisible(false);        
     }
 
@@ -103,5 +109,46 @@ public class dateViewController{
             return false; 
         }
     }  
+
+    /**
+     * Creates a checkbox element that automatically 
+     * fills the date text field with the current date 
+     * based on the LocalDate method for all issues in
+     * the issue field.
+     */
+    private void makeTodayCheckbox(){
+        today=new CheckBox("Today?");
+        today.setLayoutY(4);
+        today.setLayoutX(140);
+        today.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent t) {
+                if (today.isSelected()){
+                    setDate();
+                }
+                else{
+                    dateField.clear();
+                }
+            }
+        });
+        pane.getChildren().add(1, today);
+    }
+
+    /**
+     * Sets the date text field as the current date. 
+     * Will generate duplicate dates as necessary.
+     */
+    private void setDate(){
+        dateField.setText(getToday());
+    }
+
+     /**
+     * Gets and formats the current date in the form of mm/dd/yy
+     * @return a string of the current date in the form mm/dd/yy
+     */
+    private String getToday(){
+        Date today=new Date(LocalDate.now());
+        return today.toString();
+    }
+
 
 }

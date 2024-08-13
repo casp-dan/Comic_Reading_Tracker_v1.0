@@ -13,7 +13,7 @@
             <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />  
             <PasswordField fx:id="passwordField" prefHeight="25.0" prefWidth="135.0" promptText="Password"/>
             <Separator orientation="VERTICAL" prefWidth="200.0" visible="false" />
-            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="168.0" text="Login" onMouseClicked="#login" />
+            <Button fx:id="loginButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="168.0" text="Login" onMouseClicked="#login" />
          </children>
       </VBox>
    </children>

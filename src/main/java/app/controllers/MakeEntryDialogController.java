@@ -251,12 +251,12 @@ public class MakeEntryDialogController {
             return true;
         }
         else{
-            bookID=DBConnection.createSeries(entry.getSeriesName(), entry.getPublisher(), entry.getXmen()); 
             if (entry.getPublisher().equals("")){
                 mainController.errorMessage("No Publisher Selected", "Please Select a Publisher");
                 return false;
             }
             else{
+                bookID=DBConnection.createSeries(entry.getSeriesName(), entry.getPublisher(), entry.getXmen()); 
                 addBook(entry,bookID);
                 return true;
             }

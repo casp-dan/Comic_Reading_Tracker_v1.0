@@ -6,7 +6,6 @@
 <AnchorPane fx:id="pane" prefHeight="216.0" prefWidth="202.0" style="-fx-background-color: B04759;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.controllers.MakeEntryDialogController">
    <children>
       <MenuButton fx:id="publisher" xmlns:fx="http://javafx.com/fxml" />
-      <MenuButton fx:id="month" layoutX="180.0" xmlns:fx="http://javafx.com/fxml" />
       <VBox layoutX="26.0" layoutY="50.0" prefHeight="133.0" prefWidth="150.0">
          <children>
             <Label alignment="CENTER" prefHeight="16.0" prefWidth="200.0" text="Series Name" textAlignment="CENTER" textFill="WHITE" />
