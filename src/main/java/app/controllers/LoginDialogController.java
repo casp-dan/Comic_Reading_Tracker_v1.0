@@ -66,5 +66,21 @@ public class LoginDialogController {
                 }
             }
         });
+        urlField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent ke) {
+                if (ke.getCode().equals(KeyCode.ENTER)) {
+                    login(null);
+                }
+            }
+        });
+        passwordField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent ke) {
+                if (ke.getCode().equals(KeyCode.ENTER)) {
+                    login(null);
+                }
+            }
+        });
     }
 }
