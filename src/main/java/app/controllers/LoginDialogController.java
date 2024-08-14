@@ -7,12 +7,19 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.Node;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.CheckBox;
+import javafx.collections.ObservableList;
+
 
 /**
  * Controller for the login dialog
@@ -23,11 +30,22 @@ import javafx.scene.control.TextField;
 public class LoginDialogController {
 
     @FXML private TextField urlField;
+    @FXML private AnchorPane pane;
     @FXML private Button loginButton;
     @FXML private PasswordField passwordField;
+    @FXML private VBox box;
+    private TextField visiblePassword;
+    private CheckBox visibility;
 
     public void setLoginButton(){
         loginAction();
+        visiblePassword=new TextField();
+        visiblePassword.setLayoutX(26.5);
+        visiblePassword.setLayoutY(106.5);
+        visiblePassword.setVisible(false);
+        pane.getChildren().add(visiblePassword);
+        makeShowPassword();
+
     }
     /**
      * Called when the login button is clicked
@@ -48,7 +66,7 @@ public class LoginDialogController {
             alert.setHeaderText(null);
             alert.setContentText("Invalid credentials. Please enter a valid url and password.");
             alert.showAndWait();
-            urlField.setText("");
+            //urlField.setText("");
             passwordField.setText("");
         }
     }
@@ -82,5 +100,27 @@ public class LoginDialogController {
                 }
             }
         });
+    }
+
+    private void makeShowPassword(){
+        visibility=new CheckBox("Show Password");
+        visibility.setLayoutY(106.5);
+        visibility.setLayoutX(26.5);
+        visibility.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent t) {
+                if (visibility.isSelected()){
+                    visiblePassword.setVisible(true);
+                    visiblePassword.setText(passwordField.getText());
+                    passwordField.setVisible(false);
+                }
+                else{
+                    visiblePassword.setVisible(false);
+                    passwordField.setText(visiblePassword.getText());
+
+                    passwordField.setVisible(true);
+                }
+            }
+        });
+        box.getChildren().add((box.getChildren().size())-2,visibility);
     }
 }

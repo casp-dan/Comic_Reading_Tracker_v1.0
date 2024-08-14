@@ -3,9 +3,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="216.0" prefWidth="202.0" style="-fx-background-color: B04759;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.controllers.LoginDialogController">
+<AnchorPane fx:id="pane" prefHeight="216.0" prefWidth="202.0" style="-fx-background-color: B04759;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.controllers.LoginDialogController">
    <children>
-      <VBox layoutX="26.0" layoutY="42.0" prefHeight="133.0" prefWidth="150.0">
+      <VBox fx:id="box" layoutX="26.0" layoutY="42.0" prefHeight="133.0" prefWidth="150.0">
          <children>
             <Label alignment="CENTER" prefHeight="16.0" prefWidth="200.0" text="Connect to Database" textAlignment="CENTER" textFill="WHITE" />
             <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
@@ -13,6 +13,7 @@
             <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />  
             <PasswordField fx:id="passwordField" prefHeight="25.0" prefWidth="135.0" promptText="Password"/>
             <Separator orientation="VERTICAL" prefWidth="200.0" visible="false" />
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />  
             <Button fx:id="loginButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="168.0" text="Login" onMouseClicked="#login" />
          </children>
       </VBox>
