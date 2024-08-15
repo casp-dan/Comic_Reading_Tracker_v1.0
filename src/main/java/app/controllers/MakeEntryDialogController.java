@@ -15,6 +15,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -56,6 +57,7 @@ public class MakeEntryDialogController {
         makeTodayCheckbox();
         makePublisherButton();
         mainController.makeTitlesButton(seriesTitles,seriesField);
+        actionOnEnter();
     }
 
     /**
@@ -63,7 +65,7 @@ public class MakeEntryDialogController {
      * @param mouseEvent
      * @throws IOException 
      */
-    public void entryButton(@SuppressWarnings("exports") MouseEvent mouseEvent) throws IOException {
+    public void entryButton(@SuppressWarnings("exports") MouseEvent mouseEvent){
         if (seriesField.getText().equals("") || issuesField.getText().equals("") || dateField.getText().equals("")){
             mainController.errorMessage("Fields Empty", "Please Fill Out All Fields!");
         }
@@ -277,5 +279,72 @@ public class MakeEntryDialogController {
                 mainController.errorMessage("Entry Exists", "This Entry Exists");
             }
         }
+    }
+
+    private void actionOnEnter(){
+        xmen.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent ke) {
+                if (ke.getCode().equals(KeyCode.ENTER)) {
+                    entryButton(null);
+                }
+            }
+        });
+        xmenAdj.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent ke) {
+                if (ke.getCode().equals(KeyCode.ENTER)) {
+                    entryButton(null);
+                }
+            }
+        });
+        publisher.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent ke) {
+                if (ke.getCode().equals(KeyCode.ENTER)) {
+                    entryButton(null);
+                }
+            }
+        });
+        seriesTitles.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent ke) {
+                if (ke.getCode().equals(KeyCode.ENTER)) {
+                    entryButton(null);
+                }
+            }
+        });
+        issuesField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent ke) {
+                if (ke.getCode().equals(KeyCode.ENTER)) {
+                    entryButton(null);
+                }
+            }
+        });
+        seriesField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent ke) {
+                if (ke.getCode().equals(KeyCode.ENTER)) {
+                    entryButton(null);
+                }
+            }
+        });
+        dateField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent ke) {
+                if (ke.getCode().equals(KeyCode.ENTER)) {
+                    entryButton(null);
+                }
+            }
+        });
+        today.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent ke) {
+                if (ke.getCode().equals(KeyCode.ENTER)) {
+                    entryButton(null);
+                }
+            }
+        });
     }
 }

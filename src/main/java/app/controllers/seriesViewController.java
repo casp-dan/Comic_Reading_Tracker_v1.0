@@ -14,6 +14,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldTreeCell;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -44,6 +45,7 @@ public class seriesViewController{
         searchBySubstring();
         mainController.makeTitlesButton(seriesTitles,seriesField);
         totalIssues.setVisible(false);        
+        actionOnEnter();
     }
     
     /**
@@ -52,7 +54,7 @@ public class seriesViewController{
      * @param mouseEvent
      * @throws IOException
      */
-    public void searchIssues(@SuppressWarnings("exports") MouseEvent mouseEvent) throws IOException {
+    public void searchIssues(@SuppressWarnings("exports") MouseEvent mouseEvent){
         if (!DBConnection.getSeries().contains(seriesField.getText())){
             mainController.errorMessage("Series Does Not Exist", "Please enter a valid series title");
         }
@@ -115,4 +117,24 @@ public class seriesViewController{
         issueTree.setShowRoot(false);
         pane.getChildren().add(issueTree);
     }  
+
+    private void actionOnEnter(){
+        seriesField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent ke) {
+                if (ke.getCode().equals(KeyCode.ENTER)) {
+                    searchIssues(null);
+                }
+            }
+        });
+        seriesTitles.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent ke) {
+                if (ke.getCode().equals(KeyCode.ENTER)) {
+                    searchIssues(null);
+                    seriesTitles.disarm();
+                }
+            }
+        });
+    }
 }

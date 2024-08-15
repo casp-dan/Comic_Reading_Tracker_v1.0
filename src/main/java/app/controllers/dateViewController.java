@@ -14,6 +14,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldTreeCell;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import models.Date;
@@ -45,6 +47,7 @@ public class dateViewController{
         mainController=main;
         makeIssueTreeView();
         makeTodayCheckbox();
+        actionOnEnter();
         totalIssues.setVisible(false);        
     }
 
@@ -54,7 +57,7 @@ public class dateViewController{
      * @param mouseEvent
      * @throws IOException
      */
-    public void searchIssues(@SuppressWarnings("exports") MouseEvent mouseEvent) throws IOException {
+    public void searchIssues(@SuppressWarnings("exports") MouseEvent mouseEvent){
         Date search=new Date(dateField.getText());
         if (!search.toString().equals("0/0/0") && search.withinRange()) {
             if (createIssueView()){
@@ -151,4 +154,22 @@ public class dateViewController{
     }
 
 
+    private void actionOnEnter(){
+        dateField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent ke) {
+                if (ke.getCode().equals(KeyCode.ENTER)) {
+                    searchIssues(null);
+                }
+            }
+        });
+        today.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent ke) {
+                if (ke.getCode().equals(KeyCode.ENTER)) {
+                    searchIssues(null);
+                }
+            }
+        });
+    }
 }
