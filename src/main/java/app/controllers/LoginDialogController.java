@@ -7,8 +7,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.Node;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.input.MouseEvent;
@@ -18,7 +16,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.CheckBox;
-import javafx.collections.ObservableList;
 
 
 /**
@@ -38,13 +35,16 @@ public class LoginDialogController {
     private CheckBox visibility;
 
     public void setLoginButton(){
-        loginAction();
         visiblePassword=new TextField();
-        visiblePassword.setLayoutX(26.5);
-        visiblePassword.setLayoutY(106.5);
+        visiblePassword.setLayoutX(26);
+        visiblePassword.setLayoutY(106);
         visiblePassword.setVisible(false);
+        visiblePassword.setPromptText("Password");
+        visiblePassword.setPrefWidth(150);
         pane.getChildren().add(visiblePassword);
         makeShowPassword();
+        loginAction();
+        linkPasswords();
 
     }
     /**
@@ -71,6 +71,20 @@ public class LoginDialogController {
         }
     }
 
+
+    private void linkPasswords(){
+        passwordField.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent t) {
+                visiblePassword.setText(passwordField.getText());
+            }
+        });
+        visiblePassword.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent t) {
+                passwordField.setText(visiblePassword.getText());
+            }
+        });
+    }
+
     /**
      * Adds an event handler to the series text 
      * field to search the Series table by substring.
@@ -93,6 +107,14 @@ public class LoginDialogController {
             }
         });
         passwordField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent ke) {
+                if (ke.getCode().equals(KeyCode.ENTER)) {
+                    login(null);
+                }
+            }
+        });
+        visiblePassword.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent ke) {
                 if (ke.getCode().equals(KeyCode.ENTER)) {
