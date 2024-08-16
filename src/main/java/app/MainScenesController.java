@@ -56,7 +56,7 @@ public class MainScenesController {
 
     public void updateTabs(){
         statsPageController.updateStats();
-        seriesViewPageController.makeTitlesButton();
+        seriesViewPageController.updateTitles();
     }
 
     /**
