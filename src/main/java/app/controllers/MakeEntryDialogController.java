@@ -87,7 +87,6 @@ public class MakeEntryDialogController {
                         if (!makeEntry(entry)){
                             i=issues.length;
                         }
-                        clearFields();           
                     }     
                 }
             }
@@ -97,7 +96,6 @@ public class MakeEntryDialogController {
             if (!date.toString().equals("0/0/0")){
                 Entry entry=new Entry(seriesField.getText(),issuesField.getText(),date,publisher.getText(),xmen.isSelected(),xmenAdj.isSelected());
                 makeEntry(entry);
-                clearFields();
             }
         }
     }
@@ -250,6 +248,7 @@ public class MakeEntryDialogController {
         int bookID=DBConnection.getSeriesIDByTitle(entry.getSeriesName());
         if (bookID!=0){
             addBook(entry,bookID);
+            clearFields();
             return true;
         }
         else{
@@ -260,6 +259,7 @@ public class MakeEntryDialogController {
             else{
                 bookID=DBConnection.createSeries(entry.getSeriesName(), entry.getPublisher(), entry.getXmen()); 
                 addBook(entry,bookID);
+                clearFields();
                 return true;
             }
         }

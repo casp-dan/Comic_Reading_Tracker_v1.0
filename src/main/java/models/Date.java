@@ -15,9 +15,9 @@ public class Date {
     private int month;
     private int year;
 
-    private String START="1/1/22";
-    private ArrayList<Integer> THIRTYONE=new ArrayList<Integer>(Arrays.asList(1,3,5,7,8,10,12));
-    private ArrayList<Integer> THIRTY=new ArrayList<Integer>(Arrays.asList(4,6,9,11));
+    private final String START="1/1/22";
+    private final ArrayList<Integer> THIRTYONE=new ArrayList<>(Arrays.asList(1,3,5,7,8,10,12));
+    private final ArrayList<Integer> THIRTY=new ArrayList<>(Arrays.asList(4,6,9,11));
 
     /**
      * Default constructor
@@ -86,6 +86,7 @@ public class Date {
      * Returns a string representation of the date in the form of mm/dd/yy
      * (single digit numbers will be # rather than 0#)
      */
+    @Override
     public String toString(){
         return Integer.toString(month)+"/"+Integer.toString(day)+"/"+Integer.toString(year);
     }
@@ -121,12 +122,7 @@ public class Date {
     }
     
     public boolean equals(Date otherDate) {
-        if (toString().equals(otherDate.toString())){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return toString().equals(otherDate.toString());
     }
 
     /**
@@ -144,12 +140,7 @@ public class Date {
                 if (month<start.getMonth()){
                     tooEarly=true;
                 }
-                else if (day<start.getDay()){               
-                    tooEarly=true;
-                }
-                else{
-                    tooEarly=false;
-                }
+                else tooEarly = day<start.getDay();
             }
         }
         else{
@@ -166,24 +157,14 @@ public class Date {
      * current date, false if not
      */
     private boolean tooLate(Date today){
-        boolean tooLate=false;
+        boolean tooLate;
         if (year==today.getYear()){
             if (month>today.getMonth()){
                 tooLate=true;
             }
-            else if (day>today.getDay()){               
-                tooLate=true;
-            }
-            else{
-                tooLate=false;
-            }
+            else tooLate = day>today.getDay() && month>=today.getMonth();
         }
-        else if (year>today.getYear()){
-            tooLate=true;
-        }
-        else{
-            tooLate=false;
-        }
+        else tooLate = year>today.getYear();
         return tooLate;
     }
 
@@ -199,10 +180,9 @@ public class Date {
         boolean valid=true;
         int i=0;
         if (comps!=null){
-            Integer[] numComps=new Integer[comps.length];
             while (i<comps.length){
                 try{
-                    numComps[i]=Integer.parseInt(comps[i]);
+                    Integer.valueOf(comps[i]); 
                 }catch(NumberFormatException e){
                     valid=false;
                 }
