@@ -261,4 +261,8 @@ public class Date {
         return comps;
     }
 
+    public int getNumMonths(){
+        return (getYear()-22)*12+getMonth();
+    }
+
 }
