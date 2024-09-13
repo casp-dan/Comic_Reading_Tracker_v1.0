@@ -19,14 +19,13 @@ public class Entry {
     /**
      * Constructor for an entry object that sets all instance variable values
      * @param seriesName Name of a series (correlates to SeriesTitle column in Series table)
-     * @param num Issue numbers/title (correlates to IssueName column in Comic table) 
+     * @param issueName Issue numbers/title (correlates to IssueName column in Comic table)
      * Can contain a set of issues in the form of "firstIssue-lastIssue"
      * @param date Date for the entry (correlates to dateString column in Comic table) 
      * @param publisher Name of a series publisher (correlates to Publisher column in Series table) 
-     * @param xmen Boolean indicating whether or not the series is an x-men series (correlates to xmen column in Series table) 
+     * @param xmen Boolean indicating whether or not the series is an x-men series (correlates to xmen column in Series table)
      * @param xmenAdj Boolean indicating whether or not an entry contains x-men adjacent issues 
      * (if true, will add series and issue to xmenadj tables) 
-     * @throws IOException
      */
     public Entry(String seriesName, String issueName, Date date, String publisher, boolean xmen, boolean xmenAdj) {
         this.seriesName=seriesName;
@@ -47,7 +46,7 @@ public class Entry {
     
     /**
      * Getter for the num variable
-     * @return string of the issues
+     * @return list of the issues
      */
     public ArrayList<String> getIssues(){
         return issues;
@@ -101,32 +100,29 @@ public class Entry {
         else if (xmen && !otherEntry.getXmen()){
             return false;
         }
-        else if (xmenAdj && !otherEntry.getXmenAdj()){
-            return false;
-        }
-        return true;
+        else return !xmenAdj || otherEntry.getXmenAdj();
     }
 
     /**
      * Create an array list of all the issue names for the entry
      * @param issueName the string that was provided as the input 
      * for the issues text field of the controller
-     * @return an ArrayList containig the names of all the issues 
+     * @return an ArrayList containing the names of all the issues
      * for the entry in order
      */
     private ArrayList<String> makeIssueList(String issueName){
-        if (issueName.contains("-") && issueName.split("-")[0]!=""){
+        if (issueName.contains("-") && !issueName.split("-")[0].isEmpty()){
             String[] issuesList=issueName.split("-");
             int issue=Integer.parseInt(issuesList[0]);
             int issueEnd=Integer.parseInt(issuesList[1]);
-            issues=new ArrayList<String>();
+            issues= new ArrayList<>();
             while (issue<=issueEnd){
                 issues.add(Integer.toString(issue));
                 issue++;
             }
         }
         else{
-            issues=new ArrayList<String>();  
+            issues= new ArrayList<>();
             issues.add(issueName);
         }
         return issues;

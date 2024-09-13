@@ -47,7 +47,7 @@ public class MainScenesController {
      * Called by App. Passes in object refs so they can be shared.
      */
     public void setObjects(App app) throws IOException {
-        statsPageController.setObjects(this);
+        statsPageController.setObjects();
         dateViewPageController.setObjects(this);
         seriesViewPageController.setObjects(this);
         makeEntryPageController.setObjects(this);

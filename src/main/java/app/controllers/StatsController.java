@@ -28,7 +28,7 @@ import java.time.LocalDate;
 public class StatsController {
 
     private MenuButton year;
-    private MainScenesController mainController;
+    //private MainScenesController mainController;
     @FXML private AnchorPane pane;
     @FXML private MenuButton month;
     @FXML private Label TotalValue;
@@ -42,16 +42,16 @@ public class StatsController {
     @FXML private CheckBox percents;
     private CheckBox upTo;
 
-    private ArrayList<String> MONTHS=new ArrayList<String>(Arrays.asList("Overview","Yearly","January","February","March","April","May","June","July","August","September","October","November","December"));
-    private ArrayList<String> YEARS=new ArrayList<String>(Arrays.asList("2022","2023","2024"));
+    private final ArrayList<String> MONTHS=new ArrayList<String>(Arrays.asList("Overview","Yearly","January","February","March","April","May","June","July","August","September","October","November","December"));
+    private final ArrayList<String> YEARS=new ArrayList<String>(Arrays.asList("2022","2023","2024"));
 
     /**
      * Sets objects and creates Menu Buttons for the publisher, series title, month and year.
      */
-    public void setObjects(MainScenesController main) {
-        mainController=main;
+    public void setObjects() {
+        //mainController=main;
         makeYearButton();
-        makeUpToBox();
+        //makeUpToBox();
         updateStats();
         makePercentBox();
         makeMonthsButton();
@@ -63,16 +63,18 @@ public class StatsController {
      */
     public void updateStats(){
         int monthInt=MONTHS.indexOf(month.getText())-1;
-        if (month.getText().equals("") || month.getText().equals("Overview")){
+        if (month.getText().isEmpty() || month.getText().equals("Overview")){
             setStatValues(DBConnection.getTotal(), DBConnection.getNumXMen(), DBConnection.getNumPublisher("DC"), DBConnection.getNumPublisher("Marvel"), DBConnection.getNumPublisher("Image"), DBConnection.getNumPublisher("Dark Horse"), DBConnection.getNumPublisher("Boom"), DBConnection.getNumSeries());
             year.setVisible(false);
             year.setText("");
         }
         else if (month.getText().equals("Yearly")){
-            createView(0);
+            ArrayList<Integer> totals=DBConnection.tempTableYear(Integer.parseInt(year.getText().split("0")[1]));
+            setStatValues(totals.get(0),totals.get(1),totals.get(2),totals.get(3),totals.get(4),totals.get(5),totals.get(6),totals.get(7));
         }
         else{
-            createView(monthInt);
+            ArrayList<Integer> totals=DBConnection.tempTableMonth(Integer.parseInt(year.getText().split("0")[1]),monthInt);
+            setStatValues(totals.get(0),totals.get(1),totals.get(2),totals.get(3),totals.get(4),totals.get(5),totals.get(6),totals.get(7));
         }
     }
 
@@ -111,7 +113,7 @@ public class StatsController {
             boomTotalValue.setText((String.format("%.2f", (((double)boom/(double)total)*100)))+"%"); 
             xmenTotalValue.setText((String.format("%.2f", (((double)xmen/(double)marvel)*100)))+"%");
             marvelTotalValue.setText((String.format("%.2f", (((double)marvel/(double)total)*100)))+"%");
-            if (month.getText().equals("") || month.getText().equals("Overview")){
+            if (month.getText().isEmpty() || month.getText().equals("Overview")){
                 seriesTotalValue.setText(String.format("%.2f",((double)series/(double)numMonths)));
             }
             else{
@@ -135,13 +137,13 @@ public class StatsController {
      */
     private void makeMonthsButton(){
         ObservableList<MenuItem> monthsItems=month.getItems();
-        for (int i=0;i<MONTHS.size();i++){
-            MenuItem item=new MenuItem(MONTHS.get(i));
+        for (String s : MONTHS) {
+            MenuItem item = new MenuItem(s);
             item.setOnAction(new EventHandler<ActionEvent>() {
                 public void handle(ActionEvent t) {
                     month.setText(item.getText());
                     year.setVisible(true);
-                    if (!year.getText().equals("")){
+                    if (!year.getText().isEmpty()) {
                         updateStats();
                     }
                 }
@@ -158,8 +160,8 @@ public class StatsController {
         year.setLayoutX(150);
         year.setVisible(false);
         ObservableList<MenuItem> years=year.getItems();
-        for (int i=0;i<YEARS.size();i++){
-            MenuItem item=new MenuItem(YEARS.get(i));
+        for (String yearStr : YEARS) {
+            MenuItem item = new MenuItem(yearStr);
             item.setOnAction(new EventHandler<ActionEvent>() {
                 public void handle(ActionEvent t) {
                     year.setText(item.getText());
@@ -171,103 +173,25 @@ public class StatsController {
         pane.getChildren().add(1, year);
     }
     
-    /**
-     * Creates a dropdown menu button to select the year for the stats view.
-     */
-    private void makeUpToBox(){
-        upTo=new CheckBox("Switch Modes");
-        upTo.setLayoutX(215);
-        upTo.setLayoutY(5);
-        upTo.setVisible(true);
-        upTo.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            public void handle(MouseEvent t) {
-                if (year.getText().equals("") && upTo.isSelected()){
-                    mainController.errorMessage("Fields Empty", "Select a Month to Snapshot!");
-                    upTo.setSelected(false);
-                }
-                else{
-                    createView(MONTHS.indexOf(month.getText())-1);
-                }
-            }
-        });
-        pane.getChildren().add(1, upTo);
-    }
-
-    /**
-     * Retrieves integer values for stats based on the month and year 
-     * button selections if a calendar month is selected
-     * @param monthInt integer value for the month field (1-12)
-     */
-    private void createView(int monthInt){
-        int dcSum=0;
-        int xmenSum=0;
-        int marvelSum=0;
-        int imageSum=0;
-        int darkHorseSum=0;
-        int boomSum=0;
-        int seriesSum=0;
-        String yearStr=year.getText().split("0")[1];
-        if (monthInt==0){
-            TotalValue.setText(Integer.toString(DBConnection.getTotalYear(Integer.parseInt(yearStr))));
-        }
-        else if (upTo.isSelected()){
-            TotalValue.setText(Integer.toString(DBConnection.getTotalSnapshot(monthInt,Integer.parseInt(yearStr))));
-        }
-        else{
-            TotalValue.setText(Integer.toString(DBConnection.getTotalMonth(monthInt,Integer.parseInt(yearStr))));
-        }
-        int idMax=DBConnection.getFinalSeriesID();
-        for (int i=1;i<=idMax;i++){
-            String publisher=DBConnection.getPublisherByID(i);
-            int addTo;
-            if (monthInt==0){
-                addTo=DBConnection.getNumByYear(i,Integer.parseInt(yearStr));
-            }
-            else if (upTo.isSelected()){
-                addTo=DBConnection.getNumSnapshot(i,monthInt,Integer.parseInt(yearStr));
-            }
-            else{
-                addTo=DBConnection.getNumByMonth(i,monthInt,Integer.parseInt(yearStr));
-            }
-            switch(publisher){
-                case "Marvel": marvelSum+=addTo; break; 
-                case "Image": imageSum+=addTo; break;
-                case "Dark Horse": darkHorseSum+=addTo; break;
-                case "Boom": boomSum+=addTo; break;
-                case "DC": dcSum+=addTo; break;
-            }
-            if (addTo>0){
-                seriesSum++;
-            }  
-        }
-        ArrayList<Integer> list=DBConnection.getXmen();
-        int x=0;
-        while (x<list.size()){
-            if (monthInt==0){
-                xmenSum+=DBConnection.getNumByYear(list.get(x),Integer.parseInt(yearStr));
-            }
-            else if (upTo.isSelected()){
-                xmenSum+=DBConnection.getNumSnapshot(list.get(x),monthInt,Integer.parseInt(yearStr));
-            }
-            else{
-                xmenSum+=DBConnection.getNumByMonth(list.get(x),monthInt,Integer.parseInt(yearStr));
-            }
-            x++;
-        }
-        list=DBConnection.getXmenAdj();
-        x=0;
-        while (x<list.size()){
-            if (monthInt==0){
-                xmenSum+=DBConnection.getNumXmenByYear(list.get(x),Integer.parseInt(yearStr));
-            }
-            else if (upTo.isSelected()){
-                xmenSum+=DBConnection.getNumXmenSnapshot(list.get(x),monthInt,Integer.parseInt(yearStr));
-            }
-            else{
-                xmenSum+=DBConnection.getNumXmenByMonth(list.get(x),monthInt,Integer.parseInt(yearStr));
-            }
-            x++;
-        }
-        setStatValues((marvelSum+dcSum+imageSum+darkHorseSum+boomSum), xmenSum, dcSum, marvelSum, imageSum, darkHorseSum, boomSum, seriesSum);
-    }
+    //**
+    // * Creates a dropdown menu button to select the year for the stats view.
+    // */
+    //private void makeUpToBox(){
+    //    upTo=new CheckBox("Switch Modes");
+    //    upTo.setLayoutX(215);
+    //    upTo.setLayoutY(5);
+    //    upTo.setVisible(true);
+    //    upTo.setOnMouseReleased(new EventHandler<MouseEvent>() {
+    //        public void handle(MouseEvent t) {
+    //            if (year.getText().isEmpty() && upTo.isSelected()){
+    //                mainController.errorMessage("Fields Empty", "Select a Month to Snapshot!");
+    //                upTo.setSelected(false);
+    //            }
+    //            else{
+    //                updateStats();
+    //            }
+    //        }
+    //    });
+    //    pane.getChildren().add(1, upTo);
+    //}
 }

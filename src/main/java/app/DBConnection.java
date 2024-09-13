@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-
+import java.util.Arrays;
 
 
 /**
@@ -43,9 +43,9 @@ public class DBConnection {
 
     /**
      * This closes the connection
-     * @param connection
+     * @param connection database connection
      */
-    public static void closeDB(@SuppressWarnings("exports") Connection connection){
+    public static void closeDB(Connection connection){
         try{
             connection.close();
         }catch(SQLException e){
@@ -345,7 +345,7 @@ public class DBConnection {
     
     /**
      * Get a list of all the issues in a series from the Comic table
-     * @param SeriesTitle string in the SeriesTitle column of a given row of the Series table
+     * @param dateString string for the dateString column of the new row
      * @return an ArrayList containing strings of all the issueNames with 
      * the given SeriesID in the Comic table
      */
@@ -378,7 +378,7 @@ public class DBConnection {
     
     /**
      * Get a list of all the issues in a series from the Comic table
-     * @param SeriesTitle string in the SeriesTitle column of a given row of the Series table
+     * @param dateString string for the dateString column of the new row
      * @return an ArrayList containing strings of all the issueNames with 
      * the given SeriesID in the Comic table
      */
@@ -533,9 +533,10 @@ public class DBConnection {
     
     /**
      * Increment the issueID column in the XmenAdjSeries table for the given series by one
+     *
      * @param SeriesID integer in the SeriesID of a given row of the XmenAdjSeries table
      */
-    public static int updateXIssueCount(int SeriesID){
+    public static void updateXIssueCount(int SeriesID){
         Connection connection = connectDB();
         try {
             Statement statement = connection.createStatement();
@@ -552,7 +553,6 @@ public class DBConnection {
             throw new RuntimeException("Problem querying database", e);
         }
         closeDB(connection);
-        return SeriesID;
     }
     
     /**
@@ -592,9 +592,8 @@ public class DBConnection {
     /**
      * @param SeriesID integer for the SeriesID column of the new row
      * @param SeriesTitle string for the SeriesTitle column of the new row
-     * @return integer in the SeriesID column of the new row, -1 if the series already exists
      */
-    public static int createXmenAdjSeries(int SeriesID, String SeriesTitle){
+    public static void createXmenAdjSeries(int SeriesID, String SeriesTitle){
         Connection connection = connectDB();
         try{
             Statement statement = connection.createStatement();
@@ -611,7 +610,6 @@ public class DBConnection {
             throw new RuntimeException("Problem with database", e);
         }
         closeDB(connection);
-        return SeriesID;
     }
 
     /**
@@ -636,30 +634,7 @@ public class DBConnection {
         closeDB(connection);
         return sum;
     }
-    
-    /**
-     * Get the total number of issues in the Comic table that were read in a specific month and year
-     * @return the number of rows in the Comic table with the given month and year column values
-     */
-    public static int getTotalMonth(int month, int year){
-        Connection connection = connectDB();
-        int sum = 0;
-        try{
-            Statement st = connection.createStatement();
-            ResultSet res = st.executeQuery("SELECT COUNT(issueID) FROM COMIC WHERE month="+month+" AND year="+year+";");
-            while (res.next()) {
-                int c = res.getInt(1);
-                sum = sum + c;
-            } 
-            res.close();
-            st.close();
-        }catch(SQLException e){
-            throw new RuntimeException("Problem querying database", e);
-        }
-        closeDB(connection);
-        return sum;
-    }
-    
+
     /**
      * Get the total number of issues in the Comic table that were read in a specific month and year
      * @return the number of rows in the Comic table with the given month and year column values
@@ -678,29 +653,6 @@ public class DBConnection {
             st.close();
             st = connection.createStatement();
             res = st.executeQuery("SELECT COUNT(issueID) FROM COMIC WHERE month<="+month+" AND year="+year+";");
-            while (res.next()) {
-                int c = res.getInt(1);
-                sum = sum + c;
-            } 
-            res.close();
-            st.close();
-        }catch(SQLException e){
-            throw new RuntimeException("Problem querying database", e);
-        }
-        closeDB(connection);
-        return sum;
-    }
-    
-    /**
-     * Get the total number of issues in the Comic table that were read in a specific year
-     * @return the number of rows in the Comic table with the given year column value
-     */
-    public static int getTotalYear(int year){
-        Connection connection = connectDB();
-        int sum = 0;
-        try{
-            Statement st = connection.createStatement();
-            ResultSet res = st.executeQuery("SELECT COUNT(issueID) FROM COMIC WHERE year="+year+";");
             while (res.next()) {
                 int c = res.getInt(1);
                 sum = sum + c;
@@ -736,30 +688,7 @@ public class DBConnection {
         closeDB(connection);
         return sum;
     }
-    
-    /**
-     * Get the total number of issues for a given series in the Comic table that were read in a specific month and year
-     * @return the number of rows in the Comic table with the given month, seriesID, and year column values
-     */
-    public static int getNumByMonth(int seriesID, int month, int year){
-        Connection connection = connectDB();
-        int sum = 0;
-        try{
-            Statement st = connection.createStatement();
-            ResultSet res = st.executeQuery("SELECT COUNT(issueID) FROM COMIC WHERE month="+month+" AND year="+year+" and seriesID="+seriesID+";");
-            while (res.next()) {
-                int c = res.getInt(1);
-                sum = sum + c;
-            } 
-            res.close();
-            st.close();
-        }catch(SQLException e){
-            throw new RuntimeException("Problem querying database", e);
-        }
-        closeDB(connection);
-        return sum;
-    }
-    
+
     /**
      * Get the total number of issues for a given series in the Comic table that were read in a specific month and year
      * @return the number of rows in the Comic table with the given month, seriesID, and year column values
@@ -790,53 +719,7 @@ public class DBConnection {
         closeDB(connection);
         return sum;
     }
-    
-    /**
-     * Get the total number of issues for a given series in the Comic table that were read in a specific year
-     * @return the number of rows in the Comic table with the given seriesID and year column values
-     */
-    public static int getNumByYear(int seriesID, int year){
-        Connection connection = connectDB();
-        int sum = 0;
-        try{
-            Statement st = connection.createStatement();
-            ResultSet res = st.executeQuery("SELECT COUNT(issueID) FROM COMIC WHERE year="+year+" and seriesID="+seriesID+";");
-            while (res.next()) {
-                int c = res.getInt(1);
-                sum = sum + c;
-            } 
-            res.close();
-            st.close();
-        }catch(SQLException e){
-            throw new RuntimeException("Problem querying database", e);
-        }
-        closeDB(connection);
-        return sum;
-    }
-    
-    /**
-     * Get the total number of issues for a given series in the XmenAdjComic table that were read in a specific month and year
-     * @return the number of rows in the XmenAdjComic table with the given month, seriesID, and year column values
-     */
-    public static int getNumXmenByMonth(int seriesID, int month, int year){
-        Connection connection = connectDB();
-        int sum = 0;
-        try{
-            Statement st = connection.createStatement();
-            ResultSet res = st.executeQuery("SELECT COUNT(issueID) FROM XmenAdjComic WHERE month="+month+" AND year="+year+" and seriesID="+seriesID+";");
-            while (res.next()) {
-                int c = res.getInt(1);
-                sum = sum + c;
-            } 
-            res.close();
-            st.close();
-        }catch(SQLException e){
-            throw new RuntimeException("Problem querying database", e);
-        }
-        closeDB(connection);
-        return sum;
-    }
-    
+
     /**
      * Get the total number of issues for a given series in the XmenAdjComic table that were read in a specific month and year
      * @return the number of rows in the XmenAdjComic table with the given month, seriesID, and year column values
@@ -868,30 +751,7 @@ public class DBConnection {
         closeDB(connection);
         return sum;
     }
-    
-    /**
-     * Get the total number of issues for a given series in the XmenAdjComic table that were read in a specific year
-     * @return the number of rows in the XmenAdjComic table with the given seriesID and year column values
-     */
-    public static int getNumXmenByYear(int seriesID, int year){
-        Connection connection = connectDB();
-        int sum = 0;
-        try{
-            Statement st = connection.createStatement();
-            ResultSet res = st.executeQuery("SELECT COUNT(issueID) FROM XmenAdjComic WHERE year="+year+" and seriesID="+seriesID+";");
-            while (res.next()) {
-                int c = res.getInt(1);
-                sum = sum + c;
-            } 
-            res.close();
-            st.close();
-        }catch(SQLException e){
-            throw new RuntimeException("Problem querying database", e);
-        }
-        closeDB(connection);
-        return sum;
-    }
-    
+
     /**
      * Get the total number of issues read that are from X-Men series
      * @return the sum of all the issueIDs in the Series table where 
@@ -1004,4 +864,235 @@ public class DBConnection {
         }
         closeDB(connection);
     }
+
+    public static ArrayList<Integer> tempTableMonth(int year, int month){
+        int dcSum=0;
+        int totalSum=0;
+        int xmenSum=0;
+        int marvelSum=0;
+        int imageSum=0;
+        int darkHorseSum=0;
+        int boomSum=0;
+        int seriesSum=0;
+        ArrayList<Integer> totals=new ArrayList<Integer>();
+        Connection connection = connectDB();
+        try{
+            Statement statement = connection.createStatement();
+            String sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Comic WHERE year="+year+" and month="+month+";";
+            statement.execute(sql);
+            statement.close();
+
+            statement = connection.createStatement();
+            sql="SELECT DISTINCT SeriesID FROM tempComic;";
+            ResultSet rs = statement.executeQuery(sql);
+            ArrayList<Integer> ids=new ArrayList<Integer>();
+            rs.next();
+            ids.add(rs.getInt("SeriesID"));
+            if (rs.getRow()==0){
+                int x=2;
+            }
+            while(rs.next()){
+                ids.add(rs.getInt("SeriesID"));
+            }
+            rs.close();
+            statement.close();
+
+            for (int series: ids){
+                String publisher=getPublisherByID(series);
+                int addTo;
+                statement = connection.createStatement();
+                rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where SeriesID="+series+";");
+                rs.next();
+                if (rs.getRow()==0){
+                    addTo=0;
+                }
+                addTo= rs.getInt("count");
+                rs.close();
+                statement.close();
+                switch(publisher) {
+                    case "Marvel":
+                        marvelSum += addTo;
+                        if (seriesIsXmen(series)) {
+                            xmenSum += addTo;
+                        }
+                        break;
+                    case "Image":
+                        imageSum += addTo;
+                        break;
+                    case "Dark Horse":
+                        darkHorseSum += addTo;
+                        break;
+                    case "Boom":
+                        boomSum += addTo;
+                        break;
+                    case "DC":
+                        dcSum += addTo;
+                        break;
+                }
+            }
+            getXmenAdjMonth(month,year);
+            seriesSum=ids.size();
+            statement = connection.createStatement();
+            rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic;");
+            rs.next();
+            if (rs.getRow()==0){
+                totalSum=0;
+            }
+            totalSum= rs.getInt("count");
+            rs.close();
+            statement.close();
+            totals=new ArrayList<Integer>(Arrays.asList(totalSum, xmenSum, dcSum, marvelSum, imageSum, darkHorseSum, boomSum, seriesSum));
+        }catch(SQLException e){
+            throw new RuntimeException("Problem with database", e);
+        }
+        closeDB(connection);
+        return totals;
+    }
+
+    public static ArrayList<Integer> tempTableYear(int year){
+        int dcSum=0;
+        int totalSum=0;
+        int xmenSum=0;
+        int marvelSum=0;
+        int imageSum=0;
+        int darkHorseSum=0;
+        int boomSum=0;
+        int seriesSum=0;
+        ArrayList<Integer> totals=new ArrayList<Integer>();        Connection connection = connectDB();
+        try{
+            Statement statement = connection.createStatement();
+            String sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Comic WHERE year="+year+";";
+            statement.execute(sql);
+            statement.close();
+
+            statement = connection.createStatement();
+            sql="SELECT DISTINCT SeriesID FROM tempComic;";
+            ResultSet rs = statement.executeQuery(sql);
+            ArrayList<Integer> ids=new ArrayList<Integer>();
+            rs.next();
+            ids.add(rs.getInt("SeriesID"));
+            if (rs.getRow()==0){
+                int x=2;
+            }
+            while(rs.next()){
+                ids.add(rs.getInt("SeriesID"));
+            }
+            rs.close();
+            statement.close();
+
+            for (int series: ids){
+                String publisher=getPublisherByID(series);
+                int addTo;
+                statement = connection.createStatement();
+                rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where SeriesID="+series+";");
+                rs.next();
+                if (rs.getRow()==0){
+                    addTo=0;
+                }
+                addTo= rs.getInt("count");
+                rs.close();
+                statement.close();
+                switch(publisher) {
+                    case "Marvel":
+                        marvelSum += addTo;
+                        if (seriesIsXmen(series)) {
+                            xmenSum += addTo;
+                        }
+                        break;
+                    case "Image":
+                        imageSum += addTo;
+                        break;
+                    case "Dark Horse":
+                        darkHorseSum += addTo;
+                        break;
+                    case "Boom":
+                        boomSum += addTo;
+                        break;
+                    case "DC":
+                        dcSum += addTo;
+                        break;
+                }
+            }
+            getXmenAdjYear(year);
+            seriesSum=ids.size();
+            statement = connection.createStatement();
+            rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic;");
+            rs.next();
+            if (rs.getRow()==0){
+                totalSum=0;
+            }
+            totalSum= rs.getInt("count");
+            rs.close();
+            statement.close();
+            totals=new ArrayList<Integer>(Arrays.asList(totalSum, xmenSum, dcSum, marvelSum, imageSum, darkHorseSum, boomSum, seriesSum));
+        }catch(SQLException e){
+            throw new RuntimeException("Problem with database", e);
+        }
+        closeDB(connection);
+        return totals;
+    }
+
+    public static boolean seriesIsXmen(int seriesID){
+        boolean xmen;
+        Connection connection = connectDB();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT xmen FROM Series WHERE seriesID="+seriesID+";");
+
+            rs.next();
+            if (rs.getRow()==0){
+                return false;
+            }
+            xmen= rs.getBoolean("xmen");
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return xmen;
+    }
+
+    public static int getXmenAdjMonth(int month, int year){
+        int count;
+        getNumXMenAdj();
+        Connection connection = connectDB();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT COUNT(*) AS count FROM xmenAdjComic WHERE month="+month+" AND year="+year+";");
+            rs.next();
+            if (rs.getRow()==0){
+                return 0;
+            }
+            count = rs.getInt("count");
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return count;
+    }
+
+    public static int getXmenAdjYear(int year){
+        int count;
+        getNumXMenAdj();
+        Connection connection = connectDB();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT COUNT(*) AS count FROM xmenAdjComic WHERE year="+year+";");
+            rs.next();
+            if (rs.getRow()==0){
+                return 0;
+            }
+            count = rs.getInt("count");
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return count;
+    }
+
 }
