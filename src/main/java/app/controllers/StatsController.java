@@ -28,7 +28,7 @@ import java.time.LocalDate;
 public class StatsController {
 
     private MenuButton year;
-    //private MainScenesController mainController;
+    private MainScenesController mainController;
     @FXML private AnchorPane pane;
     @FXML private MenuButton month;
     @FXML private Label TotalValue;
@@ -48,10 +48,10 @@ public class StatsController {
     /**
      * Sets objects and creates Menu Buttons for the publisher, series title, month and year.
      */
-    public void setObjects() {
-        //mainController=main;
+    public void setObjects(MainScenesController main) {
+        mainController=main;
         makeYearButton();
-        //makeUpToBox();
+        makeUpToBox();
         updateStats();
         makePercentBox();
         makeMonthsButton();
@@ -73,8 +73,14 @@ public class StatsController {
             setStatValues(totals.get(0),totals.get(1),totals.get(2),totals.get(3),totals.get(4),totals.get(5),totals.get(6),totals.get(7));
         }
         else{
-            ArrayList<Integer> totals=DBConnection.tempTableMonth(Integer.parseInt(year.getText().split("0")[1]),monthInt);
-            setStatValues(totals.get(0),totals.get(1),totals.get(2),totals.get(3),totals.get(4),totals.get(5),totals.get(6),totals.get(7));
+            if (upTo.isSelected()){
+                ArrayList<Integer> totals = DBConnection.tempTableSnap(Integer.parseInt(year.getText().split("0")[1]), monthInt);
+                setStatValues(totals.get(0), totals.get(1), totals.get(2), totals.get(3), totals.get(4), totals.get(5), totals.get(6), totals.get(7));
+            }
+            else {
+                ArrayList<Integer> totals = DBConnection.tempTableMonth(Integer.parseInt(year.getText().split("0")[1]), monthInt);
+                setStatValues(totals.get(0), totals.get(1), totals.get(2), totals.get(3), totals.get(4), totals.get(5), totals.get(6), totals.get(7));
+            }
         }
     }
 
@@ -173,25 +179,25 @@ public class StatsController {
         pane.getChildren().add(1, year);
     }
     
-    //**
-    // * Creates a dropdown menu button to select the year for the stats view.
-    // */
-    //private void makeUpToBox(){
-    //    upTo=new CheckBox("Switch Modes");
-    //    upTo.setLayoutX(215);
-    //    upTo.setLayoutY(5);
-    //    upTo.setVisible(true);
-    //    upTo.setOnMouseReleased(new EventHandler<MouseEvent>() {
-    //        public void handle(MouseEvent t) {
-    //            if (year.getText().isEmpty() && upTo.isSelected()){
-    //                mainController.errorMessage("Fields Empty", "Select a Month to Snapshot!");
-    //                upTo.setSelected(false);
-    //            }
-    //            else{
-    //                updateStats();
-    //            }
-    //        }
-    //    });
-    //    pane.getChildren().add(1, upTo);
-    //}
+    /**
+     * Creates a dropdown menu button to select the year for the stats view.
+     */
+    private void makeUpToBox(){
+        upTo=new CheckBox("Switch Modes");
+        upTo.setLayoutX(215);
+        upTo.setLayoutY(5);
+        upTo.setVisible(true);
+        upTo.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent t) {
+                if (year.getText().isEmpty() && upTo.isSelected()){
+                    mainController.errorMessage("Fields Empty", "Select a Month to Snapshot!");
+                    upTo.setSelected(false);
+                }
+                else{
+                    updateStats();
+                }
+            }
+        });
+        pane.getChildren().add(1, upTo);
+    }
 }
