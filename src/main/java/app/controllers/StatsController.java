@@ -37,6 +37,7 @@ public class StatsController {
     @FXML private Label imageTotalValue;
     @FXML private Label darkHorseTotalValue;
     @FXML private Label boomTotalValue;
+    @FXML private Label otherTotalValue;
     @FXML private Label xmenTotalValue;
     @FXML private Label seriesTotalValue;
     @FXML private CheckBox percents;
@@ -64,22 +65,22 @@ public class StatsController {
     public void updateStats(){
         int monthInt=MONTHS.indexOf(month.getText())-1;
         if (month.getText().isEmpty() || month.getText().equals("Overview")){
-            setStatValues(DBConnection.getTotal(), DBConnection.getNumXMen(), DBConnection.getNumPublisher("DC"), DBConnection.getNumPublisher("Marvel"), DBConnection.getNumPublisher("Image"), DBConnection.getNumPublisher("Dark Horse"), DBConnection.getNumPublisher("Boom"), DBConnection.getNumSeries());
+            setStatValues(DBConnection.getTotal(), DBConnection.getNumXMen(), DBConnection.getNumPublisher("DC"), DBConnection.getNumPublisher("Marvel"), DBConnection.getNumPublisher("Image"), DBConnection.getNumPublisher("Dark Horse"), DBConnection.getNumPublisher("Boom"), DBConnection.getNumPublisher("Other"), DBConnection.getNumSeries());
             year.setVisible(false);
             year.setText("");
         }
         else if (month.getText().equals("Yearly")){
             ArrayList<Integer> totals=DBConnection.tempTableYear(Integer.parseInt(year.getText().split("0")[1]));
-            setStatValues(totals.get(0),totals.get(1),totals.get(2),totals.get(3),totals.get(4),totals.get(5),totals.get(6),totals.get(7));
+            setStatValues(totals.get(0),totals.get(1),totals.get(2),totals.get(3),totals.get(4),totals.get(5),totals.get(6),totals.get(7), totals.get(8));
         }
         else{
             if (upTo.isSelected()){
                 ArrayList<Integer> totals = DBConnection.tempTableSnap(Integer.parseInt(year.getText().split("0")[1]), monthInt);
-                setStatValues(totals.get(0), totals.get(1), totals.get(2), totals.get(3), totals.get(4), totals.get(5), totals.get(6), totals.get(7));
+                setStatValues(totals.get(0), totals.get(1), totals.get(2), totals.get(3), totals.get(4), totals.get(5), totals.get(6), totals.get(7), totals.get(8));
             }
             else {
                 ArrayList<Integer> totals = DBConnection.tempTableMonth(Integer.parseInt(year.getText().split("0")[1]), monthInt);
-                setStatValues(totals.get(0), totals.get(1), totals.get(2), totals.get(3), totals.get(4), totals.get(5), totals.get(6), totals.get(7));
+                setStatValues(totals.get(0), totals.get(1), totals.get(2), totals.get(3), totals.get(4), totals.get(5), totals.get(6), totals.get(7), totals.get(8));
             }
         }
     }
@@ -88,7 +89,7 @@ public class StatsController {
         percents.setOnMouseReleased(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent t) {
                 if (percents.isSelected()){
-                    setStatValues(Integer.parseInt(TotalValue.getText()), Integer.parseInt(xmenTotalValue.getText()), Integer.parseInt(dcTotalValue.getText()), Integer.parseInt(marvelTotalValue.getText()), Integer.parseInt(imageTotalValue.getText()), Integer.parseInt(darkHorseTotalValue.getText()), Integer.parseInt(boomTotalValue.getText()), Integer.parseInt(seriesTotalValue.getText()));
+                    setStatValues(Integer.parseInt(TotalValue.getText()), Integer.parseInt(xmenTotalValue.getText()), Integer.parseInt(dcTotalValue.getText()), Integer.parseInt(marvelTotalValue.getText()), Integer.parseInt(imageTotalValue.getText()), Integer.parseInt(darkHorseTotalValue.getText()), Integer.parseInt(boomTotalValue.getText()), Integer.parseInt(otherTotalValue.getText()), Integer.parseInt(seriesTotalValue.getText()));
                 }
                 else{
                     updateStats();
@@ -106,9 +107,10 @@ public class StatsController {
      * @param image Total number of individual rows in comic table that is part of an Image Series
      * @param darkHorse Total number of individual rows in comic table that is part of a Dark Horse Series
      * @param boom Total number of individual rows in comic table that is part of a Boom Series
+     * @param other Total number of individual rows in comic table that is part of a series published by any other independent publishing house
      * @param series Total number of individual rows in Series table
      */
-    private void setStatValues(int total, int xmen, int dc, int marvel, int image, int darkHorse, int boom, int series){
+    private void setStatValues(int total, int xmen, int dc, int marvel, int image, int darkHorse, int boom, int other, int series){
         if (percents.isSelected()){
             Date today=new Date(LocalDate.now());
             int numMonths=today.getNumMonths();
@@ -116,7 +118,8 @@ public class StatsController {
             dcTotalValue.setText((String.format("%.2f", (((double)dc/(double)total)*100)))+"%");                   
             imageTotalValue.setText((String.format("%.2f", (((double)image/(double)total)*100)))+"%"); 
             darkHorseTotalValue.setText((String.format("%.2f", (((double)darkHorse/(double)total)*100)))+"%"); 
-            boomTotalValue.setText((String.format("%.2f", (((double)boom/(double)total)*100)))+"%"); 
+            boomTotalValue.setText((String.format("%.2f", (((double)boom/(double)total)*100)))+"%");
+            otherTotalValue.setText((String.format("%.2f", (((double)other/(double)total)*100)))+"%");
             xmenTotalValue.setText((String.format("%.2f", (((double)xmen/(double)marvel)*100)))+"%");
             marvelTotalValue.setText((String.format("%.2f", (((double)marvel/(double)total)*100)))+"%");
             if (month.getText().isEmpty() || month.getText().equals("Overview")){
@@ -131,7 +134,8 @@ public class StatsController {
             dcTotalValue.setText(Integer.toString(dc));                   
             imageTotalValue.setText(Integer.toString(image)); 
             darkHorseTotalValue.setText(Integer.toString(darkHorse)); 
-            boomTotalValue.setText(Integer.toString(boom)); 
+            boomTotalValue.setText(Integer.toString(boom));
+            otherTotalValue.setText(Integer.toString(other));
             xmenTotalValue.setText(Integer.toString(xmen));
             marvelTotalValue.setText(Integer.toString(marvel));
             seriesTotalValue.setText(Integer.toString(series));

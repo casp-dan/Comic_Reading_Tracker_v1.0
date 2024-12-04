@@ -923,6 +923,7 @@ public class DBConnection {
         int imageSum=0;
         int darkHorseSum=0;
         int boomSum=0;
+        int otherSum=0;
         int seriesSum=0;
         ArrayList<Integer> totals=new ArrayList<Integer>();
         Connection connection = connectDB();
@@ -979,6 +980,9 @@ public class DBConnection {
                     case "DC":
                         dcSum += addTo;
                         break;
+                    case "Other":
+                        otherSum += addTo;
+                        break;
                 }
             }
             xmenSum+=getXmenAdjMonth(month,year);
@@ -989,7 +993,7 @@ public class DBConnection {
             totalSum= rs.getInt("count");
             rs.close();
             statement.close();
-            totals=new ArrayList<Integer>(Arrays.asList(totalSum, xmenSum, dcSum, marvelSum, imageSum, darkHorseSum, boomSum, seriesSum));
+            totals=new ArrayList<Integer>(Arrays.asList(totalSum, xmenSum, dcSum, marvelSum, imageSum, darkHorseSum, boomSum, otherSum, seriesSum));
         }catch(SQLException e){
             throw new RuntimeException("Problem with database", e);
         }
@@ -1027,6 +1031,7 @@ public class DBConnection {
         int imageSum=0;
         int darkHorseSum=0;
         int boomSum=0;
+        int otherSum=0;
         int seriesSum=0;
         ArrayList<Integer> totals=new ArrayList<Integer>();        Connection connection = connectDB();
         try{
@@ -1082,6 +1087,9 @@ public class DBConnection {
                     case "DC":
                         dcSum += addTo;
                         break;
+                    case "Other":
+                        otherSum += addTo;
+                        break;
                 }
             }
             xmenSum+=getXmenAdjYear(year);
@@ -1092,7 +1100,7 @@ public class DBConnection {
             totalSum= rs.getInt("count");
             rs.close();
             statement.close();
-            totals=new ArrayList<Integer>(Arrays.asList(totalSum, xmenSum, dcSum, marvelSum, imageSum, darkHorseSum, boomSum, seriesSum));
+            totals=new ArrayList<Integer>(Arrays.asList(totalSum, xmenSum, dcSum, marvelSum, imageSum, darkHorseSum, boomSum, otherSum, seriesSum));
         }catch(SQLException e){
             throw new RuntimeException("Problem with database", e);
         }
@@ -1130,6 +1138,7 @@ public class DBConnection {
         int imageSum=0;
         int darkHorseSum=0;
         int boomSum=0;
+        int otherSum=0;
         int seriesSum=0;
         ArrayList<Integer> totals=new ArrayList<Integer>();
         Connection connection = connectDB();
@@ -1186,6 +1195,9 @@ public class DBConnection {
                     case "DC":
                         dcSum += addTo;
                         break;
+                    case "Other":
+                        otherSum += addTo;
+                        break;
                 }
             }
             xmenSum+=getXmenAdjSnap(month,year);
@@ -1196,7 +1208,7 @@ public class DBConnection {
             totalSum= rs.getInt("count");
             rs.close();
             statement.close();
-            totals=new ArrayList<Integer>(Arrays.asList(totalSum, xmenSum, dcSum, marvelSum, imageSum, darkHorseSum, boomSum, seriesSum));
+            totals=new ArrayList<Integer>(Arrays.asList(totalSum, xmenSum, dcSum, marvelSum, imageSum, darkHorseSum, boomSum, otherSum, seriesSum));
         }catch(SQLException e){
             throw new RuntimeException("Problem with database", e);
         }

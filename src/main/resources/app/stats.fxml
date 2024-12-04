@@ -27,6 +27,9 @@
             <Label fx:id="boomTotal" text="Total Boom: " prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
             <Label fx:id="boomTotalValue" prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
             <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
+            <Label fx:id="otherTotal" text="Total Other: " prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+            <Label fx:id="otherTotalValue" prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
             <Label fx:id="xmenTotal" text="Total X-Men: " prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
             <Label fx:id="xmenTotalValue" prefHeight="16.0" prefWidth="200.0" textAlignment="CENTER" textFill="WHITE" />
             <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />

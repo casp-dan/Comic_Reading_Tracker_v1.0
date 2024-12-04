@@ -43,7 +43,7 @@ public class MakeEntryDialogController {
     @SuppressWarnings("exports")
     @FXML public TextField issuesField; 
     
-    private final ArrayList<String> PUBLISHERS=new ArrayList<String>(Arrays.asList("DC","Marvel","Image","Dark Horse", "Boom"));
+    private final ArrayList<String> PUBLISHERS=new ArrayList<String>(Arrays.asList("DC","Marvel","Image","Dark Horse", "Boom", "Other"));
 
 
     /**
