@@ -64,7 +64,7 @@ public class StatsController {
      */
     public void updateStats(){
         int monthInt=MONTHS.indexOf(month.getText())-1;
-        if (month.getText().isEmpty() || month.getText().equals("Overview")){
+        if (month.getText().isEmpty()){
             setStatValues(DBConnection.getTotal(), DBConnection.getNumXMen(), DBConnection.getNumPublisher("DC"), DBConnection.getNumPublisher("Marvel"), DBConnection.getNumPublisher("Image"), DBConnection.getNumPublisher("Dark Horse"), DBConnection.getNumPublisher("Boom"), DBConnection.getNumPublisher("Other"), DBConnection.getNumSeries());
             year.setVisible(false);
             year.setText("");
@@ -151,10 +151,16 @@ public class StatsController {
             MenuItem item = new MenuItem(s);
             item.setOnAction(new EventHandler<ActionEvent>() {
                 public void handle(ActionEvent t) {
-                    month.setText(item.getText());
-                    year.setVisible(true);
-                    if (!year.getText().isEmpty()) {
+                    if (item.getText().equals("Overview")){
+                        month.setText("");
                         updateStats();
+                    }
+                    else{
+                        month.setText(item.getText());
+                        year.setVisible(true);
+                        if (!year.getText().isEmpty()) {
+                            updateStats();
+                        }
                     }
                 }
             });
