@@ -54,7 +54,6 @@ public class DBConnection {
 
     }
 
-
     /**
  * Get a list of all the issues in a series from the comic table
  * @param dateString string for the dateString column of the new row
@@ -95,7 +94,6 @@ public class DBConnection {
         return issues;
     }
 
-
     /**
      * Create a new series in a new row in the series table
      * @param order integer by which to order the table
@@ -124,7 +122,6 @@ public class DBConnection {
         closeDB(connection);
         return SeriesName;
         }
-
 
     /**
      * Add a new issue to the comic table
@@ -155,8 +152,6 @@ public class DBConnection {
         }
         closeDB(connection);
     }
-
-
 
     /**
      * Get the number of issues read of a specific series
@@ -255,7 +250,6 @@ public class DBConnection {
         return issues;
     }
 
-
     /**
      * Get the total number of issues in the comic table
      * @return the number of rows in the comic table
@@ -304,13 +298,12 @@ public class DBConnection {
         return sum;
     }
 
-
     /**
          * Get the total number of issues read that are from X-Men series
          * @return the sum of all the issueIDs in the series table where
          * the xmen column is true
          */
-        public static int getNumXMen(){
+    public static int getNumXMen(){
             Connection connection = connectDB();
             int sum = 0;
             try{
@@ -345,7 +338,6 @@ public class DBConnection {
             return sum;
         }
 
-
     /**
      * Get the total number of issues in the comic table from a specific publisher
      * @return the sum of all the issueIDs in the series table with the given Publisher column value
@@ -369,7 +361,6 @@ public class DBConnection {
         closeDB(connection);
         return sum;
     }
-
 
     public static ArrayList<Integer> tempTableYear(int year){
         int dcSum=0;
@@ -656,7 +647,6 @@ public class DBConnection {
         return totals;
         }
 
-
     public static boolean seriesIsXmen(String series){
             boolean xmen;
             Connection connection = connectDB();
@@ -686,12 +676,6 @@ public class DBConnection {
      */
     public static String getPublisher(String SeriesName){
         String Publisher;
-        if (SeriesName.indexOf('\'')!=-1){
-            String[] series=SeriesName.split("'");
-            SeriesName=series[0]+"\'"+series[1];
-            int x=2;
-        }
-        System.out.println(SeriesName);
         Connection connection = connectDB();
         try {
             assert connection != null;
