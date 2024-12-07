@@ -245,39 +245,40 @@ public class MakeEntryDialogController {
      * @return true if entry made successfully, false if error message is displayed
      */
     private boolean makeEntry(Entry entry){
-        int bookID=DBConnection.getSeriesIDByTitle(entry.getSeriesName());
-        if (bookID!=0){
-            addBook(entry,bookID);
+        // int bookID=DBConnection.getSeriesIDByTitle(entry.getSeriesName());
+        // if (bookID!=0){
+        //     addBook(entry,bookID);
+        //     clearFields();
+        //     return true;
+        // }
+        if (entry.getPublisher().equals("")){
+            mainController.errorMessage("No Publisher Selected", "Please Select a Publisher");
+            return false;
+        }
+        else{
+            // order,  SeriesName,  Publisher,  xmen
+            DBConnection.createSeries(DBConnection.getTotalSeries(), entry.getSeriesName(), entry.getPublisher(), entry.getXmen()); 
+            addBook(entry,entry.getSeriesName());
             clearFields();
             return true;
         }
-        else{
-            if (entry.getPublisher().equals("")){
-                mainController.errorMessage("No Publisher Selected", "Please Select a Publisher");
-                return false;
-            }
-            else{
-                bookID=DBConnection.createSeries(entry.getSeriesName(), entry.getPublisher(), entry.getXmen()); 
-                addBook(entry,bookID);
-                clearFields();
-                return true;
-            }
-        }
+        // }
     }
 
     /**
      * Adds either a set of several issues or a single issue as new rows in the Comic table
-     * @param bookID integer ID for a series (correlates to SeriesID in all tables in database)
+     * @param seriesName integer ID for a series (correlates to SeriesID in all tables in database)
      */
-    private void addBook(Entry entry, int bookID){
+    private void addBook(Entry entry, String seriesName){
         Date date=entry.getDate();
-        for (String issue: entry.getIssues()){
-            if (!DBConnection.entryExists(bookID,issue,date.toString(),date.getMonth(),date.getDay(),date.getYear())){
-                DBConnection.addIssue(bookID,issue,date.toString(),date.getMonth(),date.getDay(),date.getYear(),entry.getXmenAdj());
-            }
-            else{
-                mainController.errorMessage("Entry Exists", "This Entry Exists");
-            }
+        for (String issueName: entry.getIssues()){
+            int orderNum=DBConnection.getTotalIssues()+1;
+            DBConnection.addIssue(orderNum,issueName,seriesName,entry.getXmenAdj(),date.toDateString());
+            // if (!DBConnection.entryExists(bookID,issue,date.toString(),date.getMonth(),date.getDay(),date.getYear())){
+            // }
+            // else{
+                // mainController.errorMessage("Entry Exists", "This Entry Exists");
+            // }
         }
     }
 

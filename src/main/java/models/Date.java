@@ -91,6 +91,20 @@ public class Date {
         return Integer.toString(month)+"/"+Integer.toString(day)+"/"+Integer.toString(year);
     }
 
+    public String toDateString(){
+        String sMonth=Integer.toString(month);
+        String sDay=Integer.toString(day);
+        if (month<10){
+            sMonth="0"+sMonth;
+        }
+        if (day<10){
+            sDay="0"+sDay;
+        }
+        return "20"+Integer.toString(year)+"/"+sMonth+"/"+sDay;
+        // return Integer.toString(month)+"/"+Integer.toString(day)+"/"+Integer.toString(year);
+    }
+
+
     /**
      * Checks if the date falls between the constant start 
      * date and the current date according to the LocalDate module.

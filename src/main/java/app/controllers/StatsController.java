@@ -1,22 +1,22 @@
 package app.controllers;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import app.DBConnection;
 import app.MainScenesController;
-import models.Date;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.control.CheckBox;
-import java.time.LocalDate;
+import models.Date;
 
 
 
@@ -65,7 +65,7 @@ public class StatsController {
     public void updateStats(){
         int monthInt=MONTHS.indexOf(month.getText())-1;
         if (month.getText().isEmpty()){
-            setStatValues(DBConnection.getTotal(), DBConnection.getNumXMen(), DBConnection.getNumPublisher("DC"), DBConnection.getNumPublisher("Marvel"), DBConnection.getNumPublisher("Image"), DBConnection.getNumPublisher("Dark Horse"), DBConnection.getNumPublisher("Boom"), DBConnection.getNumPublisher("Other"), DBConnection.getNumSeries());
+            setStatValues(DBConnection.getTotalIssues(), DBConnection.getNumXMen(), DBConnection.getNumPublisher("DC"), DBConnection.getNumPublisher("Marvel"), DBConnection.getNumPublisher("Image"), DBConnection.getNumPublisher("Dark Horse"), DBConnection.getNumPublisher("Boom"), DBConnection.getNumPublisher("Other"), DBConnection.getTotalSeries());
             year.setVisible(false);
             year.setText("");
         }
@@ -79,7 +79,11 @@ public class StatsController {
                 setStatValues(totals.get(0), totals.get(1), totals.get(2), totals.get(3), totals.get(4), totals.get(5), totals.get(6), totals.get(7), totals.get(8));
             }
             else {
-                ArrayList<Integer> totals = DBConnection.tempTableMonth(Integer.parseInt(year.getText().split("0")[1]), monthInt);
+                String sMonth=Integer.toString(monthInt);
+                if (monthInt<10){
+                    sMonth="0"+sMonth;
+                }
+                ArrayList<Integer> totals = DBConnection.tempTableMonth(year.getText(), sMonth);
                 setStatValues(totals.get(0), totals.get(1), totals.get(2), totals.get(3), totals.get(4), totals.get(5), totals.get(6), totals.get(7), totals.get(8));
             }
         }

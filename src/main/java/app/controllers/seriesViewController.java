@@ -133,11 +133,11 @@ public class seriesViewController{
     }
 
     private void createIssueView(TreeItem<String> title){
-        ArrayList<String> issues=DBConnection.getIssuesBySeriesID(title.getValue());
-        ArrayList<String> dates=DBConnection.getDatesBySeriesID(title.getValue());
+        ArrayList<ArrayList<String>> issues=DBConnection.getIssuesBySeriesName(title.getValue());
+        // ArrayList<String> dates=DBConnection.getDatesBySeriesID(title.getValue());
         for (int i = 0; i < issues.size(); i++) {
-            String thisIssue = issues.get(i);
-            String thisDate = dates.get(i);
+            String thisIssue = issues.get(i).get(0);
+            String thisDate = issues.get(i).get(1);
             TreeItem<String> treeIssue = new TreeItem<>(thisIssue+"    "+thisDate);
             title.getChildren().add(treeIssue);
         }

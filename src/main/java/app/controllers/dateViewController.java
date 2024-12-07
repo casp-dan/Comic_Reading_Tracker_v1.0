@@ -92,12 +92,13 @@ public class dateViewController{
     private boolean createIssueView(){
         pane.getChildren().remove(issueTree);
         TreeItem<String> rootItem = new CheckBoxTreeItem<>("Issues");
-        ArrayList<String> issues=DBConnection.getIssuesByDate(dateField.getText());
-        ArrayList<Integer> series=DBConnection.getSeriesByDate(dateField.getText());
+        Date newDate=new Date(dateField.getText());
+        ArrayList<ArrayList<String>> issues=DBConnection.getIssuesByDate(newDate.toDateString());
+        // ArrayList<Integer> series=DBConnection.getSeriesByDate(dateField.getText());
         if (issues!=null){
             for (int i = 0; i < issues.size(); i++) {
-                String thisSeries = DBConnection.getSeriesTitleByID(series.get(i));
-                String thisIssue = issues.get(i);
+                String thisSeries = issues.get(i).get(1);
+                String thisIssue = issues.get(i).get(0);
                 TreeItem<String> treeIssue = new TreeItem<>(thisSeries+" #"+thisIssue);
                 rootItem.getChildren().add(treeIssue);
             }
@@ -144,7 +145,7 @@ public class dateViewController{
         dateField.setText(getToday());
     }
 
-     /**
+    /**
      * Gets and formats the current date in the form of mm/dd/yy
      * @return a string of the current date in the form mm/dd/yy
      */
