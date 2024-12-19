@@ -3,7 +3,7 @@ package app.controllers;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Optional;
 
 import app.DBConnection;
 import app.MainScenesController;
@@ -15,6 +15,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -42,9 +43,6 @@ public class MakeEntryDialogController {
     @FXML public TextField dateField;
     @SuppressWarnings("exports")
     @FXML public TextField issuesField; 
-    
-    private final ArrayList<String> PUBLISHERS=new ArrayList<String>(Arrays.asList("DC","Marvel","Image","Dark Horse", "Boom", "Other"));
-
 
     /**
      * Sets objects and creates Menu Buttons for the publisher, series title, month and year.
@@ -124,9 +122,11 @@ public class MakeEntryDialogController {
      */
     private void makePublisherButton(){
         ObservableList<MenuItem> publishers=publisher.getItems();
-        for (int i=0;i<PUBLISHERS.size();i++){
-            MenuItem item=new MenuItem(PUBLISHERS.get(i));
-            if (PUBLISHERS.get(i).equals("Marvel")){
+        publishers.clear();
+        ArrayList<String> pub_list=DBConnection.getPublishers();
+        for (int i=0;i<pub_list.size();i++){
+            MenuItem item=new MenuItem(pub_list.get(i));
+            if (pub_list.get(i).equals("Marvel")){
                 item.setOnAction(new EventHandler<ActionEvent>() {
                     public void handle(ActionEvent t) {
                         publisher.setText(item.getText());
@@ -149,6 +149,23 @@ public class MakeEntryDialogController {
                 publishers.add(item);
             }
         }
+        MenuItem item=new MenuItem("Add Publisher");
+        item.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) {
+                TextInputDialog dialog = new TextInputDialog();
+                dialog.setTitle("New Publisher");
+                dialog.setHeaderText("New Publisher");
+                dialog.setContentText("Publisher Name: ");
+
+                Optional<String> result = dialog.showAndWait();
+                if (result!=null){
+                    DBConnection.addPublisher(result.get());
+                    makePublisherButton();
+                    mainController.updateTabs();
+                }
+            }
+        });
+        publishers.add(item);
     }
 
     /**

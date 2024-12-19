@@ -8,6 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
@@ -25,6 +26,8 @@ import app.controllers.seriesViewController;
  */
 
 public class MainScenesController {
+
+    @FXML private TabPane tabs;
 
     @FXML private Parent makeEntryPage;
     @FXML private MakeEntryDialogController makeEntryPageController;
@@ -47,14 +50,17 @@ public class MainScenesController {
      * Called by App. Passes in object refs so they can be shared.
      */
     public void setObjects(App app) throws IOException {
+        double h=tabs.getPrefHeight();
+        tabs.setPrefHeight(h+=DBConnection.getPublishers().size()*40);
         statsPageController.setObjects(this);
         dateViewPageController.setObjects(this);
         seriesViewPageController.setObjects(this);
         makeEntryPageController.setObjects(this);
         logoutPageController.assignObjects(app);
     }
-
+    
     public void updateTabs(){
+        statsPageController.makePage();
         statsPageController.updateStats();
         seriesViewPageController.updateTitles();
     }
