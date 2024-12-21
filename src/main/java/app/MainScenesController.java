@@ -44,14 +44,15 @@ public class MainScenesController {
     @FXML private Parent logoutPage;
     @FXML private LogoutController logoutPageController;
     
-
+    public double height;
     
     /**
      * Called by App. Passes in object refs so they can be shared.
      */
     public void setObjects(App app) throws IOException {
         double h=tabs.getPrefHeight();
-        tabs.setPrefHeight(h+=DBConnection.getPublishers().size()*40);
+        height=h+=DBConnection.getPublishers().size()*40;
+        tabs.setPrefHeight(height);
         statsPageController.setObjects(this);
         dateViewPageController.setObjects(this);
         seriesViewPageController.setObjects(this);

@@ -45,6 +45,7 @@ public class dateViewController{
      */    
     public void setObjects(MainScenesController main) {
         mainController=main;
+        totalIssues.setLayoutY(mainController.height-63);
         makeIssueTreeView();
         makeTodayCheckbox();
         actionOnEnter();
@@ -79,8 +80,8 @@ public class dateViewController{
     private void makeIssueTreeView(){
         issueTree=new TreeView<String>();
         issueTree.setLayoutX(33);
-        issueTree.setLayoutY(30.0);
-        issueTree.setPrefHeight(268.0);
+        issueTree.setLayoutY(35.0);
+        issueTree.setPrefHeight(mainController.height-110);
         issueTree.setPrefWidth(355.0);
         pane.getChildren().add(1, issueTree);
     }
@@ -144,7 +145,7 @@ public class dateViewController{
         dateField.setText(getToday());
     }
 
-     /**
+    /**
      * Gets and formats the current date in the form of mm/dd/yy
      * @return a string of the current date in the form mm/dd/yy
      */

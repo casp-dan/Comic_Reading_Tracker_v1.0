@@ -31,7 +31,6 @@ CREATE TABLE Date(
 
 
 
-
 CREATE TABLE Series (
     SeriesID INTEGER not null auto_increment primary key,
     SeriesTitle VARCHAR(45),

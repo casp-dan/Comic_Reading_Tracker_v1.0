@@ -981,7 +981,10 @@ public class DBConnection {
             statement.close();
 
             ArrayList<String> pub_list=getPublishers();
-            Integer[] sums=new Integer[pub_list.size()];
+            ArrayList<Integer> sums=new ArrayList<Integer>();
+            for (int i = 0; i < pub_list.size(); i++) {
+                sums.add(0);
+            }
             for (int series: ids){
                 String publisher=getPublisherByID(series);
                 int addTo;
@@ -991,20 +994,20 @@ public class DBConnection {
                 if (rs.getRow()==0){
                     addTo=0;
                 }
-                addTo= rs.getInt("count");
+                addTo=rs.getInt("count");
                 rs.close();
                 statement.close();
                 if (pub_list.contains(publisher)){
-                    if (publisher.equals("Marvel")){
-                        sums[pub_list.indexOf(publisher)]+=addTo;
-                        //marvelSum += addTo;
-                        if (seriesIsXmen(series)) {
-                            xmenSum += addTo;
-                        }
+                    int ind=pub_list.indexOf(publisher);
+                    sums.set(ind,sums.get(ind)+addTo);
+                    // if (publisher.equals("Marvel")){
+                    if (seriesIsXmen(series)) {
+                        xmenSum += addTo;
                     }
-                    else{
-                        sums[pub_list.indexOf(publisher)]+=addTo;
-                    }
+                    // else{
+                    //     sums.add(sums.get(ind)+addTo,ind);
+                    //     sums[pub_list.indexOf(publisher)]+=addTo;
+                    // }
                 }
                 // switch(publisher) {
                 //     case "Marvel":
@@ -1039,8 +1042,8 @@ public class DBConnection {
             rs.close();
             statement.close();
             totals.add(totalSum);
-            for (int i=0;i<sums.length;i++){
-                totals.add(sums[i]);
+            for (int i=0;i<sums.size();i++){
+                totals.add(sums.get(i));
             }
             totals.add(xmenSum);
             totals.add(seriesSum);
