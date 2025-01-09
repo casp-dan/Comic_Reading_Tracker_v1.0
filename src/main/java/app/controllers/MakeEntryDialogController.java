@@ -11,7 +11,9 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
@@ -43,11 +45,24 @@ public class MakeEntryDialogController {
     @FXML public TextField dateField;
     @SuppressWarnings("exports")
     @FXML public TextField issuesField; 
+    @SuppressWarnings("exports")
+    @FXML public Button log;
+    @SuppressWarnings("exports")
+    @FXML public Button collection;
+    @SuppressWarnings("exports")
+    @FXML public Button collectEntry;
+    @SuppressWarnings("exports")
+    @FXML public Button logEntry;
+    @SuppressWarnings("exports")
+    @FXML public Label dateLabel;
+    private int scene;
+
 
     /**
      * Sets objects and creates Menu Buttons for the publisher, series title, month and year.
      */
     public void setObjects(MainScenesController main) {
+        scene=1;
         mainController=main;
         makeXmenButton();
         makeSeriesSearch();
@@ -112,6 +127,7 @@ public class MakeEntryDialogController {
         xmen.setVisible(false);
         xmen.setSelected(false);
         seriesTitles.setText("");
+        seriesTitles.setPrefHeight(scene);
         today.setSelected(false);
         xmenAdj.setVisible(false);
         xmenAdj.setSelected(false);
@@ -364,4 +380,28 @@ public class MakeEntryDialogController {
             }
         });
     }
+
+    public void logScene(){
+        if (scene==2){
+            scene=1;
+            setScene();
+        }
+        
+    }
+    
+    public void collectScene(){
+        if (scene==1){
+            scene=2;
+            setScene();
+        }
+    }
+
+    private void setScene(){
+            collectEntry.setVisible(!collectEntry.isVisible());
+            logEntry.setVisible(!logEntry.isVisible());
+            dateLabel.setVisible(!dateLabel.isVisible());
+            dateField.setVisible(!dateField.isVisible());
+            today.setVisible(!today.isVisible());
+    }
+
 }

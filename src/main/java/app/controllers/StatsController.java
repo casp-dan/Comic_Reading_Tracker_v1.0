@@ -42,7 +42,7 @@ public class StatsController {
     private ArrayList<Label> values;
 
     private final ArrayList<String> MONTHS=new ArrayList<String>(Arrays.asList("Overview","Yearly","January","February","March","April","May","June","July","August","September","October","November","December"));
-    private final ArrayList<String> YEARS=new ArrayList<String>(Arrays.asList("2022","2023","2024"));
+    private final ArrayList<String> YEARS=new ArrayList<String>(Arrays.asList("2022","2023","2024","2025"));
 
     /**
      * Sets objects and creates Menu Buttons for the publisher, series title, month and year.
@@ -167,11 +167,6 @@ public class StatsController {
                 totals.add(DBConnection.getNumPublisher(pub_list.get(i)));
 
             }
-            // totals.add(DBConnection.getNumPublisher("Marvel"));
-            // totals.add(DBConnection.getNumPublisher("Image"));
-            // totals.add(DBConnection.getNumPublisher("Dark Horse"));
-            // totals.add(DBConnection.getNumPublisher("Boom"));
-            // totals.add(DBConnection.getNumPublisher("Other"));
             totals.add(DBConnection.getNumXMen());
             totals.add(DBConnection.getNumSeries());
             setStatValues(totals);
@@ -181,37 +176,36 @@ public class StatsController {
         else if (month.getText().equals("Yearly")){
             ArrayList<Integer> totals=DBConnection.tempTableYear(Integer.parseInt(year.getText().split("0")[1]));
             setStatValues(totals);
-            //setStatValues(totals.get(0),totals.get(1),totals.get(2),totals.get(3),totals.get(4),totals.get(5),totals.get(6),totals.get(7), totals.get(8));
         }
         else{
             if (upTo.isSelected()){
                 ArrayList<Integer> totals = DBConnection.tempTableSnap(Integer.parseInt(year.getText().split("0")[1]), monthInt);
                 setStatValues(totals);
-                //setStatValues(totals.get(0), totals.get(1), totals.get(2), totals.get(3), totals.get(4), totals.get(5), totals.get(6), totals.get(7), totals.get(8));
             }
             else {
                 ArrayList<Integer> totals = DBConnection.tempTableMonth(Integer.parseInt(year.getText().split("0")[1]), monthInt);
                 setStatValues(totals);
-                //setStatValues(totals.get(0), totals.get(1), totals.get(2), totals.get(3), totals.get(4), totals.get(5), totals.get(6), totals.get(7), totals.get(8));
             }
         }
+    }
+
+    private ArrayList<Integer> setPercents(ArrayList<Integer> totals){
+        if (percents.isSelected()){
+            double marvel=(double) (totals.get(2));
+            for (int i=1;i<values.size()-2;i++){
+                int z=(int) Math.round(((double) totals.get(i)/(double) totals.get(0))*100);
+                totals.set(i,(int) Math.round(((double) totals.get(i)/(double) totals.get(0))*100));
+                totals.set(i,z);
+            }
+            totals.set(totals.size()-2,(int) Math.round(((double) (totals.get(totals.size()-2))/marvel)*100));
+        }
+        return totals;
     }
 
     private void makePercentBox(){
         percents.setOnMouseReleased(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent t) {
-                if (percents.isSelected()){
-                    //setStatValues(
-                    ArrayList<Integer> totals=new ArrayList<Integer>();
-                    for (int i=0;i<values.size();i++){
-                        totals.add(Integer.parseInt(values.get(i).getText()));
-
-                    }
-                    setStatValues(totals);
-                }
-                else{
-                    updateStats();
-                }
+                updateStats();
             }
         });
     }
@@ -233,7 +227,7 @@ public class StatsController {
             Date today=new Date(LocalDate.now());
             int numMonths=today.getNumMonths();
             //TotalValue.setText(Integer.toString(totals.get(0)));
-            for (int i=0;i<=values.size();i++){
+            for (int i=0;i<values.size();i++){
                 values.get(i).setText(Integer.toString(totals.get(i)));
             }
             if (month.getText().isEmpty() || month.getText().equals("Overview")){
@@ -241,6 +235,12 @@ public class StatsController {
             }
             else{
                 values.get(values.size()-1).setText(Integer.toString(totals.get(totals.size()-1)));
+            }
+            if (percents.isSelected()){
+                totals=setPercents(totals);
+                for (int i=1;i<totals.size()-1;i++){
+                    values.get(i).setText(Integer.toString(totals.get(i))+"%");
+                }
             }
 
             // dcTotalValue.setText((String.format("%.2f", (((double)dc/(double)total)*100)))+"%");                   

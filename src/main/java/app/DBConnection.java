@@ -44,7 +44,7 @@ public class DBConnection {
      * This closes the connection
      * @param connection database connection
      */
-    public static void closeDB(Connection connection){
+    public static void closeDB(@SuppressWarnings("exports") Connection connection){
         try{
             connection.close();
         }catch(SQLException e){
@@ -66,34 +66,6 @@ public class DBConnection {
             assert connection != null;
             Statement statement = connection.createStatement();
             ResultSet rs = statement.executeQuery("SELECT SeriesID FROM series WHERE SeriesTitle=\""+SeriesTitle+"\";");
-
-
-            rs.next();
-
-            if (rs.getRow()==0){
-                return 0;
-            }
-            SeriesID= rs.getInt("SeriesID");
-            rs.close();
-            statement.close();
-        }catch(SQLException e){
-            throw new RuntimeException("Problem querying database", e);
-        }
-        closeDB(connection);
-        return SeriesID;
-    }
-
-    /**
-     * Gets the SeriesID of the most recently added item in the series table
-     * @return the SeriesID of the most recently added item in the series table
-     */
-    public static int getFinalSeriesID(){
-        int SeriesID;
-        Connection connection = connectDB();
-        try {
-            assert connection != null;
-            Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT SeriesID FROM series ORDER BY SeriesID DESC LIMIT 1;");
 
 
             rs.next();
@@ -455,72 +427,63 @@ public class DBConnection {
         return issues;
     }
 
-    /**
-     * Get a list of all the series in the series table that
-     * are designated as X-Men series
-     * @return an array list containing integers of all the
-     * SeriesIDs that have true in the xmen column of the series table
-     */
-    public static ArrayList<Integer> getXmen(){
-        ArrayList<Integer> titles=new ArrayList<Integer>();
-        Connection connection = connectDB();
-        try {
-            assert connection != null;
-            Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery("Select SeriesID from series where xmen=1;");
-
-            rs.next();
-            titles.add(rs.getInt("SeriesID"));
-            if (rs.getRow()==0){
-                return null;
-            }
-
-            while(rs.next()){
-                titles.add(rs.getInt("SeriesID"));
-            }
-
-
-            rs.close();
-            statement.close();
-        }catch(SQLException e){
-            throw new RuntimeException("Problem querying database", e);
-        }
-        closeDB(connection);
-        return titles;
-    }
-
-    /**
-     * Get a list of all the series in the xmenadjseries table
-     * @return an array list containing integers of all the
-     * SeriesIDs in the xmenadjseries table
-     */
-    public static ArrayList<Integer> getXmenAdj(){
-        ArrayList<Integer> titles=new ArrayList<Integer>();
-        Connection connection = connectDB();
-        try {
-            assert connection != null;
-            Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery("Select SeriesID from xmenadjseries;");
-
-            rs.next();
-            titles.add(rs.getInt("SeriesID"));
-            if (rs.getRow()==0){
-                return null;
-            }
-
-            while(rs.next()){
-                titles.add(rs.getInt("SeriesID"));
-            }
-
-
-            rs.close();
-            statement.close();
-        }catch(SQLException e){
-            throw new RuntimeException("Problem querying database", e);
-        }
-        closeDB(connection);
-        return titles;
-    }
+    // /**
+    //  * Get a list of all the series in the series table that
+    //  * are designated as X-Men series
+    //  * @return an array list containing integers of all the
+    //  * SeriesIDs that have true in the xmen column of the series table
+    //  */
+    // public static ArrayList<Integer> getXmen(){
+    //     ArrayList<Integer> titles=new ArrayList<Integer>();
+    //     Connection connection = connectDB();
+    //     try {
+    //         assert connection != null;
+    //         Statement statement = connection.createStatement();
+    //         ResultSet rs = statement.executeQuery("Select SeriesID from series where xmen=1;");
+    //         rs.next();
+    //         titles.add(rs.getInt("SeriesID"));
+    //         if (rs.getRow()==0){
+    //             return null;
+    //         }
+    //         while(rs.next()){
+    //             titles.add(rs.getInt("SeriesID"));
+    //         }
+    //         rs.close();
+    //         statement.close();
+    //     }catch(SQLException e){
+    //         throw new RuntimeException("Problem querying database", e);
+    //     }
+    //     closeDB(connection);
+    //     return titles;
+    // }
+    // /**
+    //  * Get a list of all the series in the xmenadjseries table
+    //  * @return an array list containing integers of all the
+    //  * SeriesIDs in the xmenadjseries table
+    //  */
+    // public static ArrayList<Integer> getXmenAdj(){
+    //     ArrayList<Integer> titles=new ArrayList<Integer>();
+    //     Connection connection = connectDB();
+    //     try {
+    //         assert connection != null;
+    //         Statement statement = connection.createStatement();
+    //         ResultSet rs = statement.executeQuery("Select SeriesID from xmenadjseries;");
+    //         rs.next();
+    //         titles.add(rs.getInt("SeriesID"));
+    //         if (rs.getRow()==0){
+    //             return null;
+    //         }
+    //         while(rs.next()){
+    //             titles.add(rs.getInt("SeriesID"));
+    //         }
+    //         rs.close();
+    //         statement.close();
+    //     }catch(SQLException e){
+    //         throw new RuntimeException("Problem querying database", e);
+    //     }
+    //     closeDB(connection);
+    //     return titles;
+    // }
 
     /**
      * Increment the issueID column in the series table for the given series by one
@@ -654,37 +617,37 @@ public class DBConnection {
         return sum;
     }
 
-    /**
-     * Get the total number of issues in the comic table that were read in a specific month and year
-     * @return the number of rows in the comic table with the given month and year column values
-     */
-    public static int getTotalSnapshot(int month, int year){
-        Connection connection = connectDB();
-        int sum = 0;
-        try{
-            assert connection != null;
-            Statement st = connection.createStatement();
-            ResultSet res = st.executeQuery("SELECT COUNT(issueID) FROM comic WHERE year<"+year+";");
-            while (res.next()) {
-                int c = res.getInt(1);
-                sum = sum + c;
-            }
-            res.close();
-            st.close();
-            st = connection.createStatement();
-            res = st.executeQuery("SELECT COUNT(issueID) FROM comic WHERE month<="+month+" AND year="+year+";");
-            while (res.next()) {
-                int c = res.getInt(1);
-                sum = sum + c;
-            }
-            res.close();
-            st.close();
-        }catch(SQLException e){
-            throw new RuntimeException("Problem querying database", e);
-        }
-        closeDB(connection);
-        return sum;
-    }
+    // /**
+    //  * Get the total number of issues in the comic table that were read in a specific month and year
+    //  * @return the number of rows in the comic table with the given month and year column values
+    //  */
+    // public static int getTotalSnapshot(int month, int year){
+    //     Connection connection = connectDB();
+    //     int sum = 0;
+    //     try{
+    //         assert connection != null;
+    //         Statement st = connection.createStatement();
+    //         ResultSet res = st.executeQuery("SELECT COUNT(issueID) FROM comic WHERE year<"+year+";");
+    //         while (res.next()) {
+    //             int c = res.getInt(1);
+    //             sum = sum + c;
+    //         }
+    //         res.close();
+    //         st.close();
+    //         st = connection.createStatement();
+    //         res = st.executeQuery("SELECT COUNT(issueID) FROM comic WHERE month<="+month+" AND year="+year+";");
+    //         while (res.next()) {
+    //             int c = res.getInt(1);
+    //             sum = sum + c;
+    //         }
+    //         res.close();
+    //         st.close();
+    //     }catch(SQLException e){
+    //         throw new RuntimeException("Problem querying database", e);
+    //     }
+    //     closeDB(connection);
+    //     return sum;
+    // }
 
     /**
      * Get the total number of issues in the comic table from a specific publisher
@@ -710,70 +673,70 @@ public class DBConnection {
         return sum;
     }
 
-    /**
-     * Get the total number of issues for a given series in the comic table that were read in a specific month and year
-     * @return the number of rows in the comic table with the given month, seriesID, and year column values
-     */
-    public static int getNumSnapshot(int seriesID, int month, int year){
-        Connection connection = connectDB();
-        int sum = 0;
-        try{
-            assert connection != null;
-            Statement st = connection.createStatement();
-            ResultSet res = st.executeQuery("SELECT COUNT(issueID) FROM comic WHERE year<"+year+" and seriesID="+seriesID+";");
-            while (res.next()) {
-                int c = res.getInt(1);
-                sum = sum + c;
-            }
-            res.close();
-            st.close();
-            st = connection.createStatement();
-            res = st.executeQuery("SELECT COUNT(issueID) FROM comic WHERE month<="+month+" AND year="+year+" and seriesID="+seriesID+";");
-            while (res.next()) {
-                int c = res.getInt(1);
-                sum = sum + c;
-            }
-            res.close();
-            st.close();
-        }catch(SQLException e){
-            throw new RuntimeException("Problem querying database", e);
-        }
-        closeDB(connection);
-        return sum;
-    }
+    // /**
+    //  * Get the total number of issues for a given series in the comic table that were read in a specific month and year
+    //  * @return the number of rows in the comic table with the given month, seriesID, and year column values
+    //  */
+    // public static int getNumSnapshot(int seriesID, int month, int year){
+    //     Connection connection = connectDB();
+    //     int sum = 0;
+    //     try{
+    //         assert connection != null;
+    //         Statement st = connection.createStatement();
+    //         ResultSet res = st.executeQuery("SELECT COUNT(issueID) FROM comic WHERE year<"+year+" and seriesID="+seriesID+";");
+    //         while (res.next()) {
+    //             int c = res.getInt(1);
+    //             sum = sum + c;
+    //         }
+    //         res.close();
+    //         st.close();
+    //         st = connection.createStatement();
+    //         res = st.executeQuery("SELECT COUNT(issueID) FROM comic WHERE month<="+month+" AND year="+year+" and seriesID="+seriesID+";");
+    //         while (res.next()) {
+    //             int c = res.getInt(1);
+    //             sum = sum + c;
+    //         }
+    //         res.close();
+    //         st.close();
+    //     }catch(SQLException e){
+    //         throw new RuntimeException("Problem querying database", e);
+    //     }
+    //     closeDB(connection);
+    //     return sum;
+    // }
 
-    /**
-     * Get the total number of issues for a given series in the xmenadjcomic table that were read in a specific month and year
-     * @return the number of rows in the xmenadjcomic table with the given month, seriesID, and year column values
-     */
-    public static int getNumXmenSnapshot(int seriesID, int month, int year){
-        Connection connection = connectDB();
-        int sum = 0;
-        try{
+    // /**
+    //  * Get the total number of issues for a given series in the xmenadjcomic table that were read in a specific month and year
+    //  * @return the number of rows in the xmenadjcomic table with the given month, seriesID, and year column values
+    //  */
+    // public static int getNumXmenSnapshot(int seriesID, int month, int year){
+    //     Connection connection = connectDB();
+    //     int sum = 0;
+    //     try{
 
-            assert connection != null;
-            Statement st = connection.createStatement();
-            ResultSet res = st.executeQuery("SELECT COUNT(issueID) FROM xmenadjcomic WHERE year<"+year+" and seriesID="+seriesID+";");
-            while (res.next()) {
-                int c = res.getInt(1);
-                sum = sum + c;
-            }
-            res.close();
-            st.close();
-            st = connection.createStatement();
-            res = st.executeQuery("SELECT COUNT(issueID) FROM xmenadjcomic WHERE month<="+month+" AND year="+year+" and seriesID="+seriesID+";");
-            while (res.next()) {
-                int c = res.getInt(1);
-                sum = sum + c;
-            }
-            res.close();
-            st.close();
-        }catch(SQLException e){
-            throw new RuntimeException("Problem querying database", e);
-        }
-        closeDB(connection);
-        return sum;
-    }
+    //         assert connection != null;
+    //         Statement st = connection.createStatement();
+    //         ResultSet res = st.executeQuery("SELECT COUNT(issueID) FROM xmenadjcomic WHERE year<"+year+" and seriesID="+seriesID+";");
+    //         while (res.next()) {
+    //             int c = res.getInt(1);
+    //             sum = sum + c;
+    //         }
+    //         res.close();
+    //         st.close();
+    //         st = connection.createStatement();
+    //         res = st.executeQuery("SELECT COUNT(issueID) FROM xmenadjcomic WHERE month<="+month+" AND year="+year+" and seriesID="+seriesID+";");
+    //         while (res.next()) {
+    //             int c = res.getInt(1);
+    //             sum = sum + c;
+    //         }
+    //         res.close();
+    //         st.close();
+    //     }catch(SQLException e){
+    //         throw new RuntimeException("Problem querying database", e);
+    //     }
+    //     closeDB(connection);
+    //     return sum;
+    // }
 
     /**
      * Get the total number of issues read that are from X-Men series
@@ -947,14 +910,8 @@ public class DBConnection {
     }
 
     public static ArrayList<Integer> tempTableMonth(int year, int month){
-        //int dcSum=0;
         int totalSum=0;
         int xmenSum=0;
-        //int marvelSum=0;
-        //int imageSum=0;
-        //int darkHorseSum=0;
-        //int boomSum=0;
-        //int otherSum=0;
         int seriesSum=0;
         ArrayList<Integer> totals=new ArrayList<Integer>();
         Connection connection = connectDB();
@@ -971,11 +928,10 @@ public class DBConnection {
             ArrayList<Integer> ids=new ArrayList<Integer>();
             rs.next();
             ids.add(rs.getInt("SeriesID"));
-            if (rs.getRow()==0){
-                int x=2;
-            }
-            while(rs.next()){
-                ids.add(rs.getInt("SeriesID"));
+            if (rs.getRow()!=0){
+                while(rs.next()){
+                    ids.add(rs.getInt("SeriesID"));
+                }
             }
             rs.close();
             statement.close();
@@ -1000,38 +956,11 @@ public class DBConnection {
                 if (pub_list.contains(publisher)){
                     int ind=pub_list.indexOf(publisher);
                     sums.set(ind,sums.get(ind)+addTo);
-                    // if (publisher.equals("Marvel")){
                     if (seriesIsXmen(series)) {
                         xmenSum += addTo;
                     }
-                    // else{
-                    //     sums.add(sums.get(ind)+addTo,ind);
-                    //     sums[pub_list.indexOf(publisher)]+=addTo;
-                    // }
                 }
-                // switch(publisher) {
-                //     case "Marvel":
-                //         marvelSum += addTo;
-                //         if (seriesIsXmen(series)) {
-                //             xmenSum += addTo;
-                //         }
-                //         break;
-                //     case "Image":
-                //         imageSum += addTo;
-                //         break;
-                //     case "Dark Horse":
-                //         darkHorseSum += addTo;
-                //         break;
-                //     case "Boom":
-                //         boomSum += addTo;
-                //         break;
-                //     case "DC":
-                //         dcSum += addTo;
-                //         break;
-                //     case "Other":
-                //         otherSum += addTo;
-                //         break;
-                // }
+                
             }
             xmenSum+=getXmenAdjMonth(month,year);
             seriesSum=ids.size();
@@ -1047,7 +976,6 @@ public class DBConnection {
             }
             totals.add(xmenSum);
             totals.add(seriesSum);
-            //totals=new ArrayList<Integer>(Arrays.asList(totalSum, dcSum, marvelSum, imageSum, darkHorseSum, boomSum, otherSum, xmenSum, seriesSum));
         }catch(SQLException e){
             throw new RuntimeException("Problem with database", e);
         }
@@ -1078,14 +1006,8 @@ public class DBConnection {
     }
 
     public static ArrayList<Integer> tempTableYear(int year){
-        //int dcSum=0;
         int totalSum=0;
         int xmenSum=0;
-        //int marvelSum=0;
-        //int imageSum=0;
-        //int darkHorseSum=0;
-        //int boomSum=0;
-        //int otherSum=0;
         int seriesSum=0;
         ArrayList<Integer> totals=new ArrayList<Integer>();
         Connection connection = connectDB();
@@ -1102,17 +1024,19 @@ public class DBConnection {
             ArrayList<Integer> ids=new ArrayList<Integer>();
             rs.next();
             ids.add(rs.getInt("SeriesID"));
-            if (rs.getRow()==0){
-                int x=2;
-            }
-            while(rs.next()){
-                ids.add(rs.getInt("SeriesID"));
+            if (rs.getRow()!=0){
+                while(rs.next()){
+                    ids.add(rs.getInt("SeriesID"));
+                }
             }
             rs.close();
             statement.close();
 
             ArrayList<String> pub_list=getPublishers();
-            Integer[] sums=new Integer[pub_list.size()];
+            ArrayList<Integer> sums=new ArrayList<Integer>();
+            for (int i = 0; i < pub_list.size(); i++) {
+                sums.add(0);
+            }
             for (int series: ids){
                 String publisher=getPublisherByID(series);
                 int addTo;
@@ -1126,40 +1050,13 @@ public class DBConnection {
                 rs.close();
                 statement.close();
                 if (pub_list.contains(publisher)){
-                    if (publisher.equals("Marvel")){
-                        sums[pub_list.indexOf(publisher)]+=addTo;
-                        //marvelSum += addTo;
-                        if (seriesIsXmen(series)) {
-                            xmenSum += addTo;
-                        }
-                    }
-                    else{
-                        sums[pub_list.indexOf(publisher)]+=addTo;
+                    int ind=pub_list.indexOf(publisher);
+                    sums.set(ind,sums.get(ind)+addTo);
+                    if (seriesIsXmen(series)) {
+                        xmenSum += addTo;
                     }
                 }
-                // switch(publisher) {
-                //     case "Marvel":
-                //         marvelSum += addTo;
-                //         if (seriesIsXmen(series)) {
-                //             xmenSum += addTo;
-                //         }
-                //         break;
-                //     case "Image":
-                //         imageSum += addTo;
-                //         break;
-                //     case "Dark Horse":
-                //         darkHorseSum += addTo;
-                //         break;
-                //     case "Boom":
-                //         boomSum += addTo;
-                //         break;
-                //     case "DC":
-                //         dcSum += addTo;
-                //         break;
-                //     case "Other":
-                //         otherSum += addTo;
-                //         break;
-                // }
+                
             }
             xmenSum+=getXmenAdjYear(year);
             seriesSum=ids.size();
@@ -1170,8 +1067,8 @@ public class DBConnection {
             rs.close();
             statement.close();
             totals.add(totalSum);
-            for (int i=0;i<sums.length;i++){
-                totals.add(sums[i]);
+            for (int i=0;i<sums.size();i++){
+                totals.add(sums.get(i));
             }
             totals.add(xmenSum);
             totals.add(seriesSum);
@@ -1205,14 +1102,8 @@ public class DBConnection {
     }
 
     public static ArrayList<Integer> tempTableSnap(int year, int month){
-        //int dcSum=0;
         int totalSum=0;
         int xmenSum=0;
-        //int marvelSum=0;
-        //int imageSum=0;
-        //int darkHorseSum=0;
-        //int boomSum=0;
-        //int otherSum=0;
         int seriesSum=0;
         ArrayList<Integer> totals=new ArrayList<Integer>();
         Connection connection = connectDB();
@@ -1229,17 +1120,19 @@ public class DBConnection {
             ArrayList<Integer> ids=new ArrayList<Integer>();
             rs.next();
             ids.add(rs.getInt("SeriesID"));
-            if (rs.getRow()==0){
-                int x=2;
-            }
-            while(rs.next()){
-                ids.add(rs.getInt("SeriesID"));
+            if (rs.getRow()!=0){
+                while(rs.next()){
+                    ids.add(rs.getInt("SeriesID"));
+                }
             }
             rs.close();
             statement.close();
 
             ArrayList<String> pub_list=getPublishers();
-            Integer[] sums=new Integer[pub_list.size()];
+            ArrayList<Integer> sums=new ArrayList<Integer>();
+            for (int i = 0; i < pub_list.size(); i++) {
+                sums.add(0);
+            }
             for (int series: ids){
                 String publisher=getPublisherByID(series);
                 int addTo;
@@ -1253,40 +1146,13 @@ public class DBConnection {
                 rs.close();
                 statement.close();
                 if (pub_list.contains(publisher)){
-                    if (publisher.equals("Marvel")){
-                        sums[pub_list.indexOf(publisher)]+=addTo;
-                        //marvelSum += addTo;
-                        if (seriesIsXmen(series)) {
-                            xmenSum += addTo;
-                        }
-                    }
-                    else{
-                        sums[pub_list.indexOf(publisher)]+=addTo;
+                    int ind=pub_list.indexOf(publisher);
+                    sums.set(ind,sums.get(ind)+addTo);
+                    if (seriesIsXmen(series)) {
+                        xmenSum += addTo;
                     }
                 }
-                // switch(publisher) {
-                //     case "Marvel":
-                //         marvelSum += addTo;
-                //         if (seriesIsXmen(series)) {
-                //             xmenSum += addTo;
-                //         }
-                //         break;
-                //     case "Image":
-                //         imageSum += addTo;
-                //         break;
-                //     case "Dark Horse":
-                //         darkHorseSum += addTo;
-                //         break;
-                //     case "Boom":
-                //         boomSum += addTo;
-                //         break;
-                //     case "DC":
-                //         dcSum += addTo;
-                //         break;
-                //     case "Other":
-                //         otherSum += addTo;
-                //         break;
-                // }
+                
             }
             xmenSum+=getXmenAdjSnap(month,year);
             seriesSum=ids.size();
@@ -1297,12 +1163,11 @@ public class DBConnection {
             rs.close();
             statement.close();
             totals.add(totalSum);
-            for (int i=0;i<sums.length;i++){
-                totals.add(sums[i]);
+            for (int i=0;i<sums.size();i++){
+                totals.add(sums.get(i));
             }
             totals.add(xmenSum);
             totals.add(seriesSum);
-            //totals=new ArrayList<Integer>(Arrays.asList(totalSum, dcSum, marvelSum, imageSum, darkHorseSum, boomSum, otherSum, xmenSum, seriesSum));
         }catch(SQLException e){
             throw new RuntimeException("Problem with database", e);
         }
