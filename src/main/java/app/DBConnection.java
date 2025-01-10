@@ -309,7 +309,7 @@ public class DBConnection {
             try{
                 assert connection != null;
                 Statement st = connection.createStatement();
-                ResultSet res = st.executeQuery("select count(*) FROM Series2 s, Issue i where s.`SeriesName`=i.`SeriesName` and s.`Xmen`=1;");
+                ResultSet res = st.executeQuery("select count(*) FROM Series2 s, Issue2 i where s.`SeriesName`=i.`SeriesName` and s.`Xmen`=1;");
                 while (res.next()) {
                     int c = res.getInt(1);
                     sum = sum + c;
@@ -348,7 +348,7 @@ public class DBConnection {
         try{
             assert connection != null;
             Statement st = connection.createStatement();
-            ResultSet res = st.executeQuery("select count(*) FROM Series2 s, Issue i where s.`SeriesName`=i.`SeriesName` and s.`Publisher`=\'"+Publisher+"\';");
+            ResultSet res = st.executeQuery("select count(*) FROM Series2 s, Issue2 i where s.`SeriesName`=i.`SeriesName` and s.`Publisher`=\'"+Publisher+"\';");
             while (res.next()) {
                 int c = res.getInt(1);
                 sum = sum + c;
