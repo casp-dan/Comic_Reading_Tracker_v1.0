@@ -66,7 +66,7 @@ public class DBConnection {
         try {
             assert connection != null;
             Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT issueName,seriesName FROM Issue2 WHERE dateString='"+dateString+"' order by ReadOrder;");
+            ResultSet rs = statement.executeQuery("SELECT issueName,seriesName FROM Issue2 WHERE dateString like '"+dateString+"%' order by DateString;");
 
             rs.next();
             if (rs.getRow()==0){
