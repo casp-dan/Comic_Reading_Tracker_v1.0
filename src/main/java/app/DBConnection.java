@@ -260,7 +260,7 @@ public class DBConnection {
         try{
             assert connection != null;
             Statement st = connection.createStatement();
-            ResultSet res = st.executeQuery("SELECT COUNT(*) FROM Issue;");
+            ResultSet res = st.executeQuery("SELECT COUNT(*) FROM Issue2;");
             while (res.next()) {
                 int c = res.getInt(1);
                 sum = sum + c;
@@ -806,6 +806,38 @@ public class DBConnection {
         closeDB(connection);
         return publishers;
     }
+
+    public static void addPublisher(String publisher){
+        int num;
+        Connection connection = connectDB();
+        try {
+            assert connection != null;
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT MAX(list_order) as count FROM publisher;");
+            rs.next();
+            num = rs.getInt("count");
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        try{
+            assert connection != null;
+            Statement statement = connection.createStatement();
+            String sql = "insert into publisher(publisher, list_order) values('"+publisher+"', "+(num+1)+");";
+            statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+            ResultSet resultSet = statement.getGeneratedKeys();
+            if (resultSet.next()) {
+                String pubKey = resultSet.getString(1);
+                System.out.println("Added Publisher: " + pubKey);
+            }
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem with database", e);
+        }
+        closeDB(connection);
+    }
+
 
 
 }

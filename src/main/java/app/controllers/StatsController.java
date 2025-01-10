@@ -162,13 +162,13 @@ public class StatsController {
         if (month.getText().isEmpty()){
             ArrayList<Integer> totals=new ArrayList<Integer>();
             ArrayList<String> pub_list=DBConnection.getPublishers();
-            totals.add(DBConnection.getTotal());
+            totals.add(DBConnection.getTotalIssues());
             for (int i=0;i<pub_list.size();i++){
                 totals.add(DBConnection.getNumPublisher(pub_list.get(i)));
 
             }
             totals.add(DBConnection.getNumXMen());
-            totals.add(DBConnection.getNumSeries());
+            totals.add(DBConnection.getTotalSeries());
             setStatValues(totals);
             year.setVisible(false);
             year.setText("");
@@ -183,7 +183,11 @@ public class StatsController {
                 setStatValues(totals);
             }
             else {
-                ArrayList<Integer> totals = DBConnection.tempTableMonth(Integer.parseInt(year.getText().split("0")[1]), monthInt);
+                String sMonth=Integer.toString(monthInt);
+                if (monthInt<10){
+                    sMonth="0"+sMonth;
+                }
+                ArrayList<Integer> totals = DBConnection.tempTableMonth(year.getText(), sMonth);
                 setStatValues(totals);
             }
         }

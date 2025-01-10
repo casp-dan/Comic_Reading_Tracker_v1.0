@@ -3,7 +3,7 @@ package app.controllers;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Optional;
 
 import app.DBConnection;
 import app.MainScenesController;
@@ -11,10 +11,13 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -42,14 +45,24 @@ public class MakeEntryDialogController {
     @FXML public TextField dateField;
     @SuppressWarnings("exports")
     @FXML public TextField issuesField; 
-    
-    private final ArrayList<String> PUBLISHERS=new ArrayList<String>(Arrays.asList("DC","Marvel","Image","Dark Horse", "Boom", "Other"));
+    @SuppressWarnings("exports")
+    @FXML public Button log;
+    @SuppressWarnings("exports")
+    @FXML public Button collection;
+    @SuppressWarnings("exports")
+    @FXML public Button collectEntry;
+    @SuppressWarnings("exports")
+    @FXML public Button logEntry;
+    @SuppressWarnings("exports")
+    @FXML public Label dateLabel;
+    private int scene;
 
 
     /**
      * Sets objects and creates Menu Buttons for the publisher, series title, month and year.
      */
     public void setObjects(MainScenesController main) {
+        scene=1;
         mainController=main;
         makeXmenButton();
         makeSeriesSearch();
@@ -114,6 +127,7 @@ public class MakeEntryDialogController {
         xmen.setVisible(false);
         xmen.setSelected(false);
         seriesTitles.setText("");
+        seriesTitles.setPrefHeight(scene);
         today.setSelected(false);
         xmenAdj.setVisible(false);
         xmenAdj.setSelected(false);
@@ -124,9 +138,11 @@ public class MakeEntryDialogController {
      */
     private void makePublisherButton(){
         ObservableList<MenuItem> publishers=publisher.getItems();
-        for (int i=0;i<PUBLISHERS.size();i++){
-            MenuItem item=new MenuItem(PUBLISHERS.get(i));
-            if (PUBLISHERS.get(i).equals("Marvel")){
+        publishers.clear();
+        ArrayList<String> pub_list=DBConnection.getPublishers();
+        for (int i=0;i<pub_list.size();i++){
+            MenuItem item=new MenuItem(pub_list.get(i));
+            if (pub_list.get(i).equals("Marvel")){
                 item.setOnAction(new EventHandler<ActionEvent>() {
                     public void handle(ActionEvent t) {
                         publisher.setText(item.getText());
@@ -149,6 +165,23 @@ public class MakeEntryDialogController {
                 publishers.add(item);
             }
         }
+        MenuItem item=new MenuItem("Add Publisher");
+        item.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) {
+                TextInputDialog dialog = new TextInputDialog();
+                dialog.setTitle("New Publisher");
+                dialog.setHeaderText("New Publisher");
+                dialog.setContentText("Publisher Name: ");
+
+                Optional<String> result = dialog.showAndWait();
+                if (result!=null){
+                    DBConnection.addPublisher(result.get());
+                    makePublisherButton();
+                    mainController.updateTabs();
+                }
+            }
+        });
+        publishers.add(item);
     }
 
     /**
@@ -267,7 +300,7 @@ public class MakeEntryDialogController {
 
     /**
      * Adds either a set of several issues or a single issue as new rows in the Comic table
-     * @param seriesName integer ID for a series (correlates to SeriesID in all tables in database)
+     * @param bookID integer ID for a series (correlates to SeriesID in all tables in database)
      */
     private void addBook(Entry entry, String seriesName){
         Date date=entry.getDate();
@@ -348,4 +381,28 @@ public class MakeEntryDialogController {
             }
         });
     }
+
+    public void logScene(){
+        if (scene==2){
+            scene=1;
+            setScene();
+        }
+        
+    }
+    
+    public void collectScene(){
+        if (scene==1){
+            scene=2;
+            setScene();
+        }
+    }
+
+    private void setScene(){
+            collectEntry.setVisible(!collectEntry.isVisible());
+            logEntry.setVisible(!logEntry.isVisible());
+            dateLabel.setVisible(!dateLabel.isVisible());
+            dateField.setVisible(!dateField.isVisible());
+            today.setVisible(!today.isVisible());
+    }
+
 }

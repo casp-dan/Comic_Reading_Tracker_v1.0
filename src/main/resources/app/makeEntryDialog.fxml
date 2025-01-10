@@ -6,6 +6,9 @@
 <AnchorPane fx:id="pane" prefHeight="216.0" prefWidth="202.0" style="-fx-background-color: B04759;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.controllers.MakeEntryDialogController">
    <children>
       <MenuButton fx:id="publisher" xmlns:fx="http://javafx.com/fxml" />
+
+      <Button fx:id="collectEntry" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" layoutY="207.0" layoutX="26.0" text="Collect" visible="false" />
+      
       <VBox layoutX="26.0" layoutY="50.0" prefHeight="133.0" prefWidth="150.0">
          <children>
             <Label alignment="CENTER" prefHeight="16.0" prefWidth="200.0" text="Series Name" textAlignment="CENTER" textFill="WHITE" />
@@ -14,16 +17,21 @@
             <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
             <TextField fx:id="seriesField" prefHeight="25.0" prefWidth="135.0" promptText="Series Name"/>
             <Separator orientation="VERTICAL" prefWidth="200.0" visible="false" />
-            <Label alignment="CENTER" prefHeight="16.0" prefWidth="200.0" text="Issues Read" textAlignment="CENTER" textFill="WHITE"/>
+            <Label fx:id="issues" alignment="CENTER" prefHeight="16.0" prefWidth="200.0" text="Issues Read" textAlignment="CENTER" textFill="WHITE"/>
             <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
             <TextField fx:id="issuesField" prefHeight="25.0" prefWidth="135.0" promptText="Issue Number"/>
             <Separator orientation="VERTICAL" prefWidth="200.0" visible="false" />
-            <Label alignment="CENTER" prefHeight="16.0" prefWidth="200.0" text="Date" textAlignment="CENTER" textFill="WHITE"/>
+            <Label fx:id="dateLabel" alignment="CENTER" prefHeight="16.0" prefWidth="200.0" text="Date" textAlignment="CENTER" textFill="WHITE"/>
             <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
             <TextField fx:id="dateField" prefHeight="25.0" prefWidth="135.0" promptText="Enter Date"/>
             <Separator orientation="VERTICAL" prefWidth="200.0" visible="false" />
-            <Button mnemonicParsing="false" prefHeight="25.0" onMouseClicked="#entryButton" prefWidth="168.0" text="Make Entry" />
+            <Button fx:id="logEntry" mnemonicParsing="false" prefHeight="25.0" onMouseClicked="#entryButton" prefWidth="168.0" text="Make Entry" />
          </children>
+      </VBox>
+      <VBox layoutX="260.0" layoutY="165.0" prefHeight="143.0" prefWidth="150.0">
+         <Button fx:id="log" mnemonicParsing="false" prefHeight="25.0" onMouseClicked="#logScene" prefWidth="108.0" text="Reading Log" />
+         <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
+         <Button fx:id="collection" mnemonicParsing="false" prefHeight="25.0" onMouseClicked="#collectScene" prefWidth="108.0" text="Collection" />
       </VBox>
    </children>
 </AnchorPane>
