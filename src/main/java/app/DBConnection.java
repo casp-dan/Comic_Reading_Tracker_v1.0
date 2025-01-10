@@ -66,7 +66,7 @@ public class DBConnection {
         try {
             assert connection != null;
             Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT issueName,seriesName FROM Issue WHERE dateString='"+dateString+"' order by ReadOrder;");
+            ResultSet rs = statement.executeQuery("SELECT issueName,seriesName FROM Issue2 WHERE dateString='"+dateString+"' order by ReadOrder;");
 
             rs.next();
             if (rs.getRow()==0){
@@ -164,7 +164,7 @@ public class DBConnection {
         try{
             assert connection != null;
             Statement st = connection.createStatement();
-            ResultSet res = st.executeQuery("SELECT count(*) FROM Issue WHERE SeriesName='"+SeriesName+"';");
+            ResultSet res = st.executeQuery("SELECT count(*) FROM Issue2 WHERE SeriesName='"+SeriesName+"';");
             while (res.next()) {
                 int c = res.getInt(1);
                 sum = sum + c;
@@ -222,7 +222,7 @@ public class DBConnection {
         try {
             assert connection != null;
             Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT issueName,DateString FROM Issue WHERE SeriesName='"+SeriesName+"';");
+            ResultSet rs = statement.executeQuery("SELECT issueName,DateString FROM Issue2 WHERE SeriesName='"+SeriesName+"' order by DateString;");
 
             rs.next();
             if (rs.getRow()==0){
@@ -323,7 +323,7 @@ public class DBConnection {
             try{
                 assert connection != null;
                 Statement st = connection.createStatement();
-                ResultSet res = st.executeQuery("select count(*) from Issue where `XmenAdj`=1;");
+                ResultSet res = st.executeQuery("select count(*) FROM Issue2 where `XmenAdj`=1;");
                 while (res.next()) {
                     int c = res.getInt(1);
                     sum2 = sum2 + c;
@@ -377,7 +377,7 @@ public class DBConnection {
         try{
             assert connection != null;
             Statement statement = connection.createStatement();
-            String sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Issue WHERE DateString like "+year+"%;";
+            String sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Issue2 WHERE DateString like "+year+"%;";
             statement.execute(sql);
             statement.close();
 
@@ -472,10 +472,10 @@ public class DBConnection {
             Statement statement = connection.createStatement();
             String sql;
             if ((month+1)<12){
-                sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Issue WHERE DateString<\'"+year+"-"+(month+1)+"%\';";
+                sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Issue2 WHERE DateString<\'"+year+"-"+(month+1)+"%\';";
             }
             else{
-                sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Issue WHERE DateString<\'"+(year+1)+"-01%\';";
+                sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Issue2 WHERE DateString<\'"+(year+1)+"-01%\';";
             }
             statement.execute(sql);
             statement.close();
@@ -569,7 +569,7 @@ public class DBConnection {
         try{
             assert connection != null;
             Statement statement = connection.createStatement();
-            String sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Issue WHERE DateString like \'"+year+"-"+month+"%\';";
+            String sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Issue2 WHERE DateString like \'"+year+"-"+month+"%\';";
             statement.execute(sql);
             statement.close();
 
