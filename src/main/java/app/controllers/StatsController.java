@@ -44,7 +44,7 @@ public class StatsController {
     private CheckBox upTo;
 
     private final ArrayList<String> MONTHS=new ArrayList<String>(Arrays.asList("Overview","Yearly","January","February","March","April","May","June","July","August","September","October","November","December"));
-    private final ArrayList<String> YEARS=new ArrayList<String>(Arrays.asList("2022","2023","2024"));
+    private final ArrayList<String> YEARS=new ArrayList<String>(Arrays.asList("2022","2023","2024","2025"));
 
     /**
      * Sets objects and creates Menu Buttons for the publisher, series title, month and year.

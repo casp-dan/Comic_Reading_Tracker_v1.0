@@ -188,7 +188,7 @@ public class DBConnection {
         try {
             assert connection != null;
             Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT SeriesName FROM Series;");
+            ResultSet rs = statement.executeQuery("SELECT SeriesName FROM Series2;");
 
             rs.next();
             titles.add(rs.getString("SeriesName"));
@@ -284,7 +284,7 @@ public class DBConnection {
         try{
             assert connection != null;
             Statement st = connection.createStatement();
-            ResultSet res = st.executeQuery("SELECT COUNT(*) FROM Series;");
+            ResultSet res = st.executeQuery("SELECT COUNT(*) FROM Series2;");
             while (res.next()) {
                 int c = res.getInt(1);
                 sum = sum + c;
@@ -309,7 +309,7 @@ public class DBConnection {
             try{
                 assert connection != null;
                 Statement st = connection.createStatement();
-                ResultSet res = st.executeQuery("select count(*) from Series s, Issue i where s.`SeriesName`=i.`SeriesName` and s.`Xmen`=1;");
+                ResultSet res = st.executeQuery("select count(*) FROM Series2 s, Issue i where s.`SeriesName`=i.`SeriesName` and s.`Xmen`=1;");
                 while (res.next()) {
                     int c = res.getInt(1);
                     sum = sum + c;
@@ -348,7 +348,7 @@ public class DBConnection {
         try{
             assert connection != null;
             Statement st = connection.createStatement();
-            ResultSet res = st.executeQuery("select count(*) from Series s, Issue i where s.`SeriesName`=i.`SeriesName` and s.`Publisher`=\'"+Publisher+"\';");
+            ResultSet res = st.executeQuery("select count(*) FROM Series2 s, Issue i where s.`SeriesName`=i.`SeriesName` and s.`Publisher`=\'"+Publisher+"\';");
             while (res.next()) {
                 int c = res.getInt(1);
                 sum = sum + c;
@@ -653,7 +653,7 @@ public class DBConnection {
             try {
                 assert connection != null;
                 Statement statement = connection.createStatement();
-                ResultSet rs = statement.executeQuery("SELECT xmen FROM Series WHERE SeriesName=\'"+series+"\';");
+                ResultSet rs = statement.executeQuery("SELECT xmen FROM Series2 WHERE SeriesName=\'"+series+"\';");
 
             rs.next();
             if (rs.getRow()==0){
@@ -680,7 +680,7 @@ public class DBConnection {
         try {
             assert connection != null;
             Statement statement = connection.createStatement();
-            String sql="SELECT Publisher FROM Series WHERE SeriesName=\'"+SeriesName+"\';";
+            String sql="SELECT Publisher FROM Series2 WHERE SeriesName=\'"+SeriesName+"\';";
             ResultSet rs = statement.executeQuery(sql);
 
             rs.next();
