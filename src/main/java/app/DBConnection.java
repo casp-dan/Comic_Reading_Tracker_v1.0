@@ -363,16 +363,10 @@ public class DBConnection {
     }
 
     public static ArrayList<Integer> tempTableYear(int year){
-        int dcSum=0;
         int totalSum=0;
         int xmenSum=0;
-        int marvelSum=0;
-        int imageSum=0;
-        int darkHorseSum=0;
-        int boomSum=0;
-        int otherSum=0;
         int seriesSum=0;
-        ArrayList<Integer> totals=new ArrayList<Integer>();      
+        ArrayList<Integer> totals=new ArrayList<Integer>();
         Connection connection = connectDB();
         try{
             assert connection != null;
@@ -387,18 +381,24 @@ public class DBConnection {
             ArrayList<String> seriesList=new ArrayList<String>();
             rs.next();
             seriesList.add(rs.getString("SeriesName"));
-            
-            while(rs.next()){
-                seriesList.add(rs.getString("SeriesName"));
+            if (rs.getRow()!=0){
+                while(rs.next()){
+                    seriesList.add(rs.getString("SeriesID"));
+                }
             }
             rs.close();
             statement.close();
 
+            ArrayList<String> pub_list=getPublishers();
+            ArrayList<Integer> sums=new ArrayList<Integer>();
+            for (int i = 0; i < pub_list.size(); i++) {
+                sums.add(0);
+            }
             for (String series: seriesList){
                 String publisher=getPublisher(series);
                 int addTo;
                 statement = connection.createStatement();
-                rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where SeriesName=\'"+series+"\';");
+                rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where SeriesID="+series+";");
                 rs.next();
                 if (rs.getRow()==0){
                     addTo=0;
@@ -406,48 +406,75 @@ public class DBConnection {
                 addTo= rs.getInt("count");
                 rs.close();
                 statement.close();
-                switch(publisher) {
-                    case "Marvel":
-                        marvelSum += addTo;
-                        if (seriesIsXmen(series)) {
-                            xmenSum += addTo;
-                        }
-                        break;
-                    case "Image":
-                        imageSum += addTo;
-                        break;
-                    case "Dark Horse":
-                        darkHorseSum += addTo;
-                        break;
-                    case "Boom":
-                        boomSum += addTo;
-                        break;
-                    case "DC":
-                        dcSum += addTo;
-                        break;
-                    case "Other":
-                        otherSum += addTo;
-                        break;
+                if (pub_list.contains(publisher)){
+                    int ind=pub_list.indexOf(publisher);
+                    sums.set(ind,sums.get(ind)+addTo);
+                    if (seriesIsXmen(series)) {
+                        xmenSum += addTo;
+                    }
                 }
+                
             }
-            int addTo;
+            seriesSum=seriesList.size();
             statement = connection.createStatement();
             rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where XmenAdj=1;");
             rs.next();
             if (rs.getRow()==0){
-                addTo=0;
+                xmenSum+=0;
             }
-            addTo= rs.getInt("count");
+            xmenSum= rs.getInt("count");
             rs.close();
-            xmenSum+=addTo;
-            seriesSum=seriesList.size();
+
+            // for (String series: seriesList){
+            //     String publisher=getPublisher(series);
+            //     int addTo;
+            //     statement = connection.createStatement();
+            //     rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where SeriesName=\'"+series+"\';");
+            //     rs.next();
+            //     if (rs.getRow()==0){
+            //         addTo=0;
+            //     }
+            //     addTo= rs.getInt("count");
+            //     rs.close();
+            //     statement.close();
+            //     switch(publisher) {
+            //         case "Marvel":
+            //             marvelSum += addTo;
+            //             if (seriesIsXmen(series)) {
+            //                 xmenSum += addTo;
+            //             }
+            //             break;
+            //         case "Image":
+            //             imageSum += addTo;
+            //             break;
+            //         case "Dark Horse":
+            //             darkHorseSum += addTo;
+            //             break;
+            //         case "Boom":
+            //             boomSum += addTo;
+            //             break;
+            //         case "DC":
+            //             dcSum += addTo;
+            //             break;
+            //         case "Other":
+            //             otherSum += addTo;
+            //             break;
+            //     }
+            // }
+            // int addTo;
+            
             statement = connection.createStatement();
             rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic;");
             rs.next();
             totalSum=rs.getInt("count");
             rs.close();
             statement.close();
-            totals=new ArrayList<Integer>(Arrays.asList(totalSum, xmenSum, dcSum, marvelSum, imageSum, darkHorseSum, boomSum, otherSum, seriesSum));
+            totals.add(totalSum);
+            for (int i=0;i<sums.size();i++){
+                totals.add(sums.get(i));
+            }
+            totals.add(xmenSum);
+            totals.add(seriesSum);
         }catch(SQLException e){
             throw new RuntimeException("Problem with database", e);
         }
@@ -456,14 +483,8 @@ public class DBConnection {
     }
 
     public static ArrayList<Integer> tempTableSnap(int year, int month){
-        int dcSum=0;
         int totalSum=0;
         int xmenSum=0;
-        int marvelSum=0;
-        int imageSum=0;
-        int darkHorseSum=0;
-        int boomSum=0;
-        int otherSum=0;
         int seriesSum=0;
         ArrayList<Integer> totals=new ArrayList<Integer>();
         Connection connection = connectDB();
@@ -486,18 +507,24 @@ public class DBConnection {
             ArrayList<String> seriesList=new ArrayList<String>();
             rs.next();
             seriesList.add(rs.getString("SeriesName"));
-            
-            while(rs.next()){
-                seriesList.add(rs.getString("SeriesName"));
+            if (rs.getRow()!=0){
+                while(rs.next()){
+                    seriesList.add(rs.getString("SeriesName"));
+                }
             }
             rs.close();
             statement.close();
 
+            ArrayList<String> pub_list=getPublishers();
+            ArrayList<Integer> sums=new ArrayList<Integer>();
+            for (int i = 0; i < pub_list.size(); i++) {
+                sums.add(0);
+            }
             for (String series: seriesList){
                 String publisher=getPublisher(series);
                 int addTo;
                 statement = connection.createStatement();
-                rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where SeriesName=\'"+series+"\';");
+                rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where SeriesID="+series+";");
                 rs.next();
                 if (rs.getRow()==0){
                     addTo=0;
@@ -505,48 +532,78 @@ public class DBConnection {
                 addTo= rs.getInt("count");
                 rs.close();
                 statement.close();
-                switch(publisher) {
-                    case "Marvel":
-                        marvelSum += addTo;
-                        if (seriesIsXmen(series)) {
-                            xmenSum += addTo;
-                        }
-                        break;
-                    case "Image":
-                        imageSum += addTo;
-                        break;
-                    case "Dark Horse":
-                        darkHorseSum += addTo;
-                        break;
-                    case "Boom":
-                        boomSum += addTo;
-                        break;
-                    case "DC":
-                        dcSum += addTo;
-                        break;
-                    case "Other":
-                        otherSum += addTo;
-                        break;
+                if (pub_list.contains(publisher)){
+                    int ind=pub_list.indexOf(publisher);
+                    sums.set(ind,sums.get(ind)+addTo);
+                    if (seriesIsXmen(series)) {
+                        xmenSum += addTo;
+                    }
                 }
+                
             }
-            int addTo;
+            seriesSum=seriesList.size();
+            // for (String series: seriesList){
+            //     String publisher=getPublisher(series);
+            //     int addTo;
+            //     statement = connection.createStatement();
+            //     rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where SeriesName=\'"+series+"\';");
+            //     rs.next();
+            //     if (rs.getRow()==0){
+            //         addTo=0;
+            //     }
+            //     addTo= rs.getInt("count");
+            //     rs.close();
+            //     statement.close();
+            //     switch(publisher) {
+            //         case "Marvel":
+            //             marvelSum += addTo;
+            //             if (seriesIsXmen(series)) {
+            //                 xmenSum += addTo;
+            //             }
+            //             break;
+            //         case "Image":
+            //             imageSum += addTo;
+            //             break;
+            //         case "Dark Horse":
+            //             darkHorseSum += addTo;
+            //             break;
+            //         case "Boom":
+            //             boomSum += addTo;
+            //             break;
+            //         case "DC":
+            //             dcSum += addTo;
+            //             break;
+            //         case "Other":
+            //             otherSum += addTo;
+            //             break;
+            //     }
+            // }
+            // int addTo;
             statement = connection.createStatement();
             rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where XmenAdj=1;");
             rs.next();
             if (rs.getRow()==0){
-                addTo=0;
+                xmenSum+=0;
             }
-            addTo= rs.getInt("count");
+            xmenSum+= rs.getInt("count");
             rs.close();
-            xmenSum+=addTo;
-            seriesSum=seriesList.size();
+
+
+
+
             statement = connection.createStatement();
             rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic;");
             rs.next();
             totalSum= rs.getInt("count");
             rs.close();
             statement.close();
-            totals=new ArrayList<Integer>(Arrays.asList(totalSum, xmenSum, dcSum, marvelSum, imageSum, darkHorseSum, boomSum, otherSum, seriesSum));
+            
+            totals.add(totalSum);
+            for (int i=0;i<sums.size();i++){
+                totals.add(sums.get(i));
+            }
+            totals.add(xmenSum);
+            totals.add(seriesSum);
         }catch(SQLException e){
             throw new RuntimeException("Problem with database", e);
         }
@@ -555,14 +612,8 @@ public class DBConnection {
         }
 
     public static ArrayList<Integer> tempTableMonth(String year, String month){
-        int dcSum=0;
         int totalSum=0;
         int xmenSum=0;
-        int marvelSum=0;
-        int imageSum=0;
-        int darkHorseSum=0;
-        int boomSum=0;
-        int otherSum=0;
         int seriesSum=0;
         ArrayList<Integer> totals=new ArrayList<Integer>();
         Connection connection = connectDB();
@@ -579,73 +630,104 @@ public class DBConnection {
             ArrayList<String> seriesList=new ArrayList<String>();
             rs.next();
             seriesList.add(rs.getString("SeriesName"));
-            
-            while(rs.next()){
-                seriesList.add(rs.getString("SeriesName"));
+            if (rs.getRow()!=0){
+                while(rs.next()){
+                    seriesList.add(rs.getString("SeriesName"));
+                }
             }
             rs.close();
             statement.close();
-
+            ArrayList<String> pub_list=getPublishers();
+            ArrayList<Integer> sums=new ArrayList<Integer>();
+            for (int i = 0; i < pub_list.size(); i++) {
+                sums.add(0);
+            }
             for (String series: seriesList){
                 String publisher=getPublisher(series);
                 int addTo;
                 statement = connection.createStatement();
-                rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where SeriesName=\'"+series+"\';");
+                rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where SeriesID="+series+";");
                 rs.next();
                 if (rs.getRow()==0){
                     addTo=0;
                 }
-                addTo= rs.getInt("count");
+                addTo=rs.getInt("count");
                 rs.close();
                 statement.close();
-                switch(publisher) {
-                    case "Marvel":
-                        marvelSum += addTo;
-                        if (seriesIsXmen(series)) {
-                            xmenSum += addTo;
-                        }
-                        break;
-                    case "Image":
-                        imageSum += addTo;
-                        break;
-                    case "Dark Horse":
-                        darkHorseSum += addTo;
-                        break;
-                    case "Boom":
-                        boomSum += addTo;
-                        break;
-                    case "DC":
-                        dcSum += addTo;
-                        break;
-                    case "Other":
-                        otherSum += addTo;
-                        break;
+                if (pub_list.contains(publisher)){
+                    int ind=pub_list.indexOf(publisher);
+                    sums.set(ind,sums.get(ind)+addTo);
+                    if (seriesIsXmen(series)) {
+                        xmenSum += addTo;
+                    }
                 }
+                
             }
-            int addTo;
+            seriesSum=seriesList.size();
+
+            // for (String series: seriesList){
+            //     String publisher=getPublisher(series);
+            //     int addTo;
+            //     statement = connection.createStatement();
+            //     rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where SeriesName=\'"+series+"\';");
+            //     rs.next();
+            //     if (rs.getRow()==0){
+            //         addTo=0;
+            //     }
+            //     addTo= rs.getInt("count");
+            //     rs.close();
+            //     statement.close();
+            //     switch(publisher) {
+            //         case "Marvel":
+            //             marvelSum += addTo;
+            //             if (seriesIsXmen(series)) {
+            //                 xmenSum += addTo;
+            //             }
+            //             break;
+            //         case "Image":
+            //             imageSum += addTo;
+            //             break;
+            //         case "Dark Horse":
+            //             darkHorseSum += addTo;
+            //             break;
+            //         case "Boom":
+            //             boomSum += addTo;
+            //             break;
+            //         case "DC":
+            //             dcSum += addTo;
+            //             break;
+            //         case "Other":
+            //             otherSum += addTo;
+            //             break;
+            //     }
+            // }
+
             statement = connection.createStatement();
             rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where XmenAdj=1;");
             rs.next();
             if (rs.getRow()==0){
-                addTo=0;
+                xmenSum+=0;
             }
-            addTo= rs.getInt("count");
+            xmenSum+= rs.getInt("count");
             rs.close();
-            xmenSum+=addTo;
-            seriesSum=seriesList.size();
             statement = connection.createStatement();
             rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic;");
             rs.next();
             totalSum= rs.getInt("count");
             rs.close();
             statement.close();
-            totals=new ArrayList<Integer>(Arrays.asList(totalSum, xmenSum, dcSum, marvelSum, imageSum, darkHorseSum, boomSum, otherSum, seriesSum));
-        }catch(SQLException e){
+            totals.add(totalSum);
+            for (int i=0;i<sums.size();i++){
+                totals.add(sums.get(i));
+            }
+            totals.add(xmenSum);
+            totals.add(seriesSum);
+        } catch(SQLException e){
             throw new RuntimeException("Problem with database", e);
         }
         closeDB(connection);
         return totals;
-        }
+    }
 
     public static boolean seriesIsXmen(String series){
             boolean xmen;
@@ -696,4 +778,34 @@ public class DBConnection {
         closeDB(connection);
         return Publisher;
     }
+
+    public static ArrayList<String> getPublishers(){
+        ArrayList<String> publishers=new ArrayList<String>();
+        Connection connection = connectDB();
+        try {
+            assert connection != null;
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT publisher from publisher order by list_order;");
+
+            rs.next();
+            if (rs.getRow()==0){
+                return null;
+            }
+            publishers.add(rs.getString("publisher"));
+
+            while(rs.next()){
+                publishers.add(rs.getString("publisher"));
+            }
+
+
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return publishers;
+    }
+
+
 }

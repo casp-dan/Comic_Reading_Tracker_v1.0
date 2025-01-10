@@ -1,22 +1,27 @@
 package app.controllers;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import app.DBConnection;
 import app.MainScenesController;
+import models.Date;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
+import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.Separator;
 import javafx.scene.layout.AnchorPane;
-import models.Date;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.control.CheckBox;
+import java.time.LocalDate;
 
 
 
@@ -29,19 +34,12 @@ public class StatsController {
 
     private MenuButton year;
     private MainScenesController mainController;
+    @FXML private VBox box;
     @FXML private AnchorPane pane;
     @FXML private MenuButton month;
-    @FXML private Label TotalValue;
-    @FXML private Label marvelTotalValue;
-    @FXML private Label dcTotalValue;
-    @FXML private Label imageTotalValue;
-    @FXML private Label darkHorseTotalValue;
-    @FXML private Label boomTotalValue;
-    @FXML private Label otherTotalValue;
-    @FXML private Label xmenTotalValue;
-    @FXML private Label seriesTotalValue;
     @FXML private CheckBox percents;
     private CheckBox upTo;
+    private ArrayList<Label> values;
 
     private final ArrayList<String> MONTHS=new ArrayList<String>(Arrays.asList("Overview","Yearly","January","February","March","April","May","June","July","August","September","October","November","December"));
     private final ArrayList<String> YEARS=new ArrayList<String>(Arrays.asList("2022","2023","2024","2025"));
@@ -51,6 +49,7 @@ public class StatsController {
      */
     public void setObjects(MainScenesController main) {
         mainController=main;
+        makePage();
         makeYearButton();
         makeUpToBox();
         updateStats();
@@ -59,45 +58,154 @@ public class StatsController {
         updateStats();
     }
 
+    public void makePage(){
+        values=new ArrayList<Label>();
+        box.getChildren().clear();
+        Label TotalLabel=new Label("Total:");
+        TotalLabel.setPrefWidth(200.0);
+        TotalLabel.setPrefHeight(16.0);
+        TotalLabel.setTextAlignment(TextAlignment.CENTER);
+        TotalLabel.setTextFill(Color.WHITE);
+        
+        Label TotalValue=new Label();
+        TotalValue=new Label();
+        TotalValue.setPrefWidth(200.0);
+        TotalValue.setPrefHeight(16.0);
+        TotalValue.setTextAlignment(TextAlignment.CENTER);
+        TotalValue.setTextFill(Color.WHITE);
+
+        box.getChildren().add(TotalLabel);
+        box.getChildren().add(TotalValue);
+        values.add(TotalValue);
+
+        ArrayList<String> pub_list=DBConnection.getPublishers();
+        for (int i=0;i<pub_list.size();i++){
+            Separator sep=new Separator();
+            sep.setOrientation(Orientation.VERTICAL);
+            sep.setPrefHeight(0);
+            sep.setPrefWidth(6.0);
+            sep.setVisible(false);
+
+            Label label=new Label("Total "+pub_list.get(i)+":");
+            label.setPrefWidth(200.0);
+            label.setPrefHeight(16.0);
+            label.setTextAlignment(TextAlignment.CENTER);
+            label.setTextFill(Color.WHITE);
+
+            Label value=new Label();
+            value.setPrefWidth(200.0);
+            value.setPrefHeight(16.0);
+            value.setTextAlignment(TextAlignment.CENTER);
+            value.setTextFill(Color.WHITE);
+
+            box.getChildren().addAll(sep);
+            box.getChildren().add(label);
+            box.getChildren().add(value);
+            values.add(value);
+        }
+
+        Separator sep=new Separator();
+        sep.setOrientation(Orientation.VERTICAL);
+        sep.setPrefHeight(0);
+        sep.setPrefWidth(6.0);
+        sep.setVisible(false);
+
+        Label xmenLabel=new Label("Total X-Men:");
+        xmenLabel.setPrefWidth(200.0);
+        xmenLabel.setPrefHeight(16.0);
+        xmenLabel.setTextAlignment(TextAlignment.CENTER);
+        xmenLabel.setTextFill(Color.WHITE);
+
+        Label xmenTotalValue=new Label("");
+        xmenTotalValue.setPrefWidth(200.0);
+        xmenTotalValue.setPrefHeight(16.0);
+        xmenTotalValue.setTextAlignment(TextAlignment.CENTER);
+        xmenTotalValue.setTextFill(Color.WHITE);
+        
+        
+        box.getChildren().add(sep);
+        box.getChildren().add(xmenLabel);
+        box.getChildren().add(xmenTotalValue);
+        values.add(xmenTotalValue);
+
+        sep=new Separator();
+        sep.setOrientation(Orientation.VERTICAL);
+        sep.setPrefHeight(0);
+        sep.setPrefWidth(6.0);
+        sep.setVisible(false);
+        
+        Label seriesLabel=new Label("Total Series:");
+        seriesLabel.setPrefWidth(200.0);
+        seriesLabel.setPrefHeight(16.0);
+        seriesLabel.setTextAlignment(TextAlignment.CENTER);
+        seriesLabel.setTextFill(Color.WHITE);
+        
+        Label seriesTotalValue=new Label("");
+        seriesTotalValue=new Label("Tester");
+        seriesTotalValue.setPrefWidth(200.0);
+        seriesTotalValue.setPrefHeight(16.0);
+        seriesTotalValue.setTextAlignment(TextAlignment.CENTER);
+        seriesTotalValue.setTextFill(Color.WHITE);
+
+        box.getChildren().add(sep);
+        box.getChildren().add(seriesLabel);
+        box.getChildren().add(seriesTotalValue);
+        values.add(seriesTotalValue);
+
+    }
+
     /**
      * Updates stat values based on month and year button values.
      */
     public void updateStats(){
         int monthInt=MONTHS.indexOf(month.getText())-1;
         if (month.getText().isEmpty()){
-            setStatValues(DBConnection.getTotalIssues(), DBConnection.getNumXMen(), DBConnection.getNumPublisher("DC"), DBConnection.getNumPublisher("Marvel"), DBConnection.getNumPublisher("Image"), DBConnection.getNumPublisher("Dark Horse"), DBConnection.getNumPublisher("Boom"), DBConnection.getNumPublisher("Other"), DBConnection.getTotalSeries());
+            ArrayList<Integer> totals=new ArrayList<Integer>();
+            ArrayList<String> pub_list=DBConnection.getPublishers();
+            totals.add(DBConnection.getTotal());
+            for (int i=0;i<pub_list.size();i++){
+                totals.add(DBConnection.getNumPublisher(pub_list.get(i)));
+
+            }
+            totals.add(DBConnection.getNumXMen());
+            totals.add(DBConnection.getNumSeries());
+            setStatValues(totals);
             year.setVisible(false);
             year.setText("");
         }
         else if (month.getText().equals("Yearly")){
             ArrayList<Integer> totals=DBConnection.tempTableYear(Integer.parseInt(year.getText().split("0")[1]));
-            setStatValues(totals.get(0),totals.get(1),totals.get(2),totals.get(3),totals.get(4),totals.get(5),totals.get(6),totals.get(7), totals.get(8));
+            setStatValues(totals);
         }
         else{
             if (upTo.isSelected()){
                 ArrayList<Integer> totals = DBConnection.tempTableSnap(Integer.parseInt(year.getText().split("0")[1]), monthInt);
-                setStatValues(totals.get(0), totals.get(1), totals.get(2), totals.get(3), totals.get(4), totals.get(5), totals.get(6), totals.get(7), totals.get(8));
+                setStatValues(totals);
             }
             else {
-                String sMonth=Integer.toString(monthInt);
-                if (monthInt<10){
-                    sMonth="0"+sMonth;
-                }
-                ArrayList<Integer> totals = DBConnection.tempTableMonth(year.getText(), sMonth);
-                setStatValues(totals.get(0), totals.get(1), totals.get(2), totals.get(3), totals.get(4), totals.get(5), totals.get(6), totals.get(7), totals.get(8));
+                ArrayList<Integer> totals = DBConnection.tempTableMonth(Integer.parseInt(year.getText().split("0")[1]), monthInt);
+                setStatValues(totals);
             }
         }
+    }
+
+    private ArrayList<Integer> setPercents(ArrayList<Integer> totals){
+        if (percents.isSelected()){
+            double marvel=(double) (totals.get(2));
+            for (int i=1;i<values.size()-2;i++){
+                int z=(int) Math.round(((double) totals.get(i)/(double) totals.get(0))*100);
+                totals.set(i,(int) Math.round(((double) totals.get(i)/(double) totals.get(0))*100));
+                totals.set(i,z);
+            }
+            totals.set(totals.size()-2,(int) Math.round(((double) (totals.get(totals.size()-2))/marvel)*100));
+        }
+        return totals;
     }
 
     private void makePercentBox(){
         percents.setOnMouseReleased(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent t) {
-                if (percents.isSelected()){
-                    setStatValues(Integer.parseInt(TotalValue.getText()), Integer.parseInt(xmenTotalValue.getText()), Integer.parseInt(dcTotalValue.getText()), Integer.parseInt(marvelTotalValue.getText()), Integer.parseInt(imageTotalValue.getText()), Integer.parseInt(darkHorseTotalValue.getText()), Integer.parseInt(boomTotalValue.getText()), Integer.parseInt(otherTotalValue.getText()), Integer.parseInt(seriesTotalValue.getText()));
-                }
-                else{
-                    updateStats();
-                }
+                updateStats();
             }
         });
     }
@@ -114,35 +222,56 @@ public class StatsController {
      * @param other Total number of individual rows in comic table that is part of a series published by any other independent publishing house
      * @param series Total number of individual rows in Series table
      */
-    private void setStatValues(int total, int xmen, int dc, int marvel, int image, int darkHorse, int boom, int other, int series){
+    private void setStatValues(ArrayList<Integer> totals){//int total, int xmen, int dc, int marvel, int image, int darkHorse, int boom, int other, int series){
         if (percents.isSelected()){
             Date today=new Date(LocalDate.now());
             int numMonths=today.getNumMonths();
-            TotalValue.setText(Integer.toString(total));
-            dcTotalValue.setText((String.format("%.2f", (((double)dc/(double)total)*100)))+"%");                   
-            imageTotalValue.setText((String.format("%.2f", (((double)image/(double)total)*100)))+"%"); 
-            darkHorseTotalValue.setText((String.format("%.2f", (((double)darkHorse/(double)total)*100)))+"%"); 
-            boomTotalValue.setText((String.format("%.2f", (((double)boom/(double)total)*100)))+"%");
-            otherTotalValue.setText((String.format("%.2f", (((double)other/(double)total)*100)))+"%");
-            xmenTotalValue.setText((String.format("%.2f", (((double)xmen/(double)marvel)*100)))+"%");
-            marvelTotalValue.setText((String.format("%.2f", (((double)marvel/(double)total)*100)))+"%");
+            //TotalValue.setText(Integer.toString(totals.get(0)));
+            for (int i=0;i<values.size();i++){
+                values.get(i).setText(Integer.toString(totals.get(i)));
+            }
             if (month.getText().isEmpty() || month.getText().equals("Overview")){
-                seriesTotalValue.setText(String.format("%.2f",((double)series/(double)numMonths)));
+                values.get(values.size()-2).setText(String.format("%.2f",((double)totals.get(totals.size()-1)/(double)numMonths)));
             }
             else{
-                seriesTotalValue.setText(Integer.toString(series));
+                values.get(values.size()-1).setText(Integer.toString(totals.get(totals.size()-1)));
             }
+            if (percents.isSelected()){
+                totals=setPercents(totals);
+                for (int i=1;i<totals.size()-1;i++){
+                    values.get(i).setText(Integer.toString(totals.get(i))+"%");
+                }
+            }
+
+            // dcTotalValue.setText((String.format("%.2f", (((double)dc/(double)total)*100)))+"%");                   
+            // imageTotalValue.setText((String.format("%.2f", (((double)image/(double)total)*100)))+"%"); 
+            // darkHorseTotalValue.setText((String.format("%.2f", (((double)darkHorse/(double)total)*100)))+"%"); 
+            // boomTotalValue.setText((String.format("%.2f", (((double)boom/(double)total)*100)))+"%");
+            // otherTotalValue.setText((String.format("%.2f", (((double)other/(double)total)*100)))+"%");
+            // xmenTotalValue.setText((String.format("%.2f", (((double)xmen/(double)marvel)*100)))+"%");
+            // marvelTotalValue.setText((String.format("%.2f", (((double)marvel/(double)total)*100)))+"%");
+            // if (month.getText().isEmpty() || month.getText().equals("Overview")){
+            //     seriesTotalValue.setText(String.format("%.2f",((double)series/(double)numMonths)));
+            // }
+            // else{
+            //     seriesTotalValue.setText(Integer.toString(series));
+            // }
         }
         else{
-            TotalValue.setText(Integer.toString(total));
-            dcTotalValue.setText(Integer.toString(dc));                   
-            imageTotalValue.setText(Integer.toString(image)); 
-            darkHorseTotalValue.setText(Integer.toString(darkHorse)); 
-            boomTotalValue.setText(Integer.toString(boom));
-            otherTotalValue.setText(Integer.toString(other));
-            xmenTotalValue.setText(Integer.toString(xmen));
-            marvelTotalValue.setText(Integer.toString(marvel));
-            seriesTotalValue.setText(Integer.toString(series));
+            for (int i=0;i<values.size();i++){
+                values.get(i).setText(Integer.toString(totals.get(i)));
+            }
+
+
+            // TotalValue.setText(Integer.toString(total));
+            // dcTotalValue.setText(Integer.toString(dc));                   
+            // imageTotalValue.setText(Integer.toString(image)); 
+            // darkHorseTotalValue.setText(Integer.toString(darkHorse)); 
+            // boomTotalValue.setText(Integer.toString(boom));
+            // otherTotalValue.setText(Integer.toString(other));
+            // xmenTotalValue.setText(Integer.toString(xmen));
+            // marvelTotalValue.setText(Integer.toString(marvel));
+            // seriesTotalValue.setText(Integer.toString(series));
         }
     }
 
