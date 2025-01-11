@@ -2,6 +2,7 @@ package app.controllers;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -248,7 +249,7 @@ public class MakeEntryDialogController {
      * @return a string of the current date in the form mm/dd/yy
      */
     private String getToday(){
-        Date today=new Date(LocalDate.now());
+        Date today=new Date(LocalDateTime.now());
         return today.toString();
     }
 
@@ -278,24 +279,17 @@ public class MakeEntryDialogController {
      * @return true if entry made successfully, false if error message is displayed
      */
     private boolean makeEntry(Entry entry){
-        // int bookID=DBConnection.getSeriesIDByTitle(entry.getSeriesName());
-        // if (bookID!=0){
-        //     addBook(entry,bookID);
-        //     clearFields();
-        //     return true;
-        // }
-        if (entry.getPublisher().equals("")){
-            mainController.errorMessage("No Publisher Selected", "Please Select a Publisher");
+        if (!DBConnection.seriesExists(entry.getSeriesName())){
+            if (entry.getPublisher().equals("")){
+                mainController.errorMessage("No Publisher Selected", "Please Select a Publisher");
+            }
             return false;
         }
         else{
-            // order,  SeriesName,  Publisher,  xmen
-            DBConnection.createSeries(DBConnection.getTotalSeries(), entry.getSeriesName(), entry.getPublisher(), entry.getXmen()); 
             addBook(entry,entry.getSeriesName());
             clearFields();
             return true;
         }
-        // }
     }
 
     /**
@@ -305,13 +299,12 @@ public class MakeEntryDialogController {
     private void addBook(Entry entry, String seriesName){
         Date date=entry.getDate();
         for (String issueName: entry.getIssues()){
-            int orderNum=DBConnection.getTotalIssues()+1;
-            DBConnection.addIssue(orderNum,issueName,seriesName,entry.getXmenAdj(),date.toDateString());
-            // if (!DBConnection.entryExists(bookID,issue,date.toString(),date.getMonth(),date.getDay(),date.getYear())){
-            // }
-            // else{
-                // mainController.errorMessage("Entry Exists", "This Entry Exists");
-            // }
+            if (!DBConnection.entryExists(seriesName,issueName,date.toDateString())){
+                DBConnection.addIssue(issueName,seriesName,entry.getXmenAdj(),date.toDateString());
+            }
+            else{
+                mainController.errorMessage("Entry Exists", "This Entry Exists");
+            }
         }
     }
 

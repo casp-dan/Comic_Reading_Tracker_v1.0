@@ -22,6 +22,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.control.CheckBox;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 
@@ -174,12 +175,12 @@ public class StatsController {
             year.setText("");
         }
         else if (month.getText().equals("Yearly")){
-            ArrayList<Integer> totals=DBConnection.tempTableYear(Integer.parseInt(year.getText().split("0")[1]));
+            ArrayList<Integer> totals=DBConnection.tempTableYear(year.getText().split("0")[1]);
             setStatValues(totals);
         }
         else{
             if (upTo.isSelected()){
-                ArrayList<Integer> totals = DBConnection.tempTableSnap(Integer.parseInt(year.getText().split("0")[1]), monthInt);
+                ArrayList<Integer> totals = DBConnection.tempTableSnap(year.getText().split("0")[1], Integer.toString(monthInt));
                 setStatValues(totals);
             }
             else {
@@ -228,7 +229,7 @@ public class StatsController {
      */
     private void setStatValues(ArrayList<Integer> totals){//int total, int xmen, int dc, int marvel, int image, int darkHorse, int boom, int other, int series){
         if (percents.isSelected()){
-            Date today=new Date(LocalDate.now());
+            Date today=new Date(LocalDateTime.now());
             int numMonths=today.getNumMonths();
             //TotalValue.setText(Integer.toString(totals.get(0)));
             for (int i=0;i<values.size();i++){

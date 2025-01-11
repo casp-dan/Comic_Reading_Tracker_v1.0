@@ -102,12 +102,12 @@ public class DBConnection {
      * @param xmen boolean for the xmen column for the new row
      * @return integer in the SeriesName column of the new row, -1 if the series already exists
      */
-    public static String createSeries(int order, String SeriesName, String Publisher, boolean xmen){
+    public static String createSeries(String SeriesName, String Publisher, boolean xmen){
         Connection connection = connectDB();
         try{
             assert connection != null;
             Statement statement = connection.createStatement();
-            String sql = "INSERT INTO Series(ReadOrder, SeriesName, Publisher, xmen) VALUES(" + order + " , \'"+SeriesName+"\', 0, \'"+Publisher+"\', "+xmen+" );";
+            String sql = "INSERT INTO Series2(SeriesName, Publisher, xmen) VALUES(\'"+SeriesName+"\', 0, \'"+Publisher+"\', "+xmen+" );";
             statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
             ResultSet resultSet = statement.getGeneratedKeys();
             if (resultSet.next()) {
@@ -133,13 +133,13 @@ public class DBConnection {
      * @param year integer for the year column of the new row
      * @param xmenAdj boolean indicating whether or not to add this issue to the xmenadjcomic table
      */
-    public static void addIssue(int order, String issueName, String SeriesName, boolean xmenAdj, String DateString){
+    public static void addIssue(String issueName, String SeriesName, boolean xmenAdj, String DateString){
         // int issueID = -1;
         Connection connection = connectDB();
         try{
             assert connection != null;
             Statement statement = connection.createStatement();
-            String sql = "insert into comic(ReadOrder, IssueName, SeriesName, XmenAdj, DateString) values("+ order + ", \'"+issueName+"\' , \'"+ SeriesName +"', "+xmenAdj+", \'"+DateString+"\');";
+            String sql = "insert into Issue2(IssueName, SeriesName, DateString, XmenAdj) values(\'"+issueName+"\' , \'"+ SeriesName +"\' , \'"+DateString+"\' , "+xmenAdj+");";
             statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
             ResultSet resultSet = statement.getGeneratedKeys();
             if (resultSet.next()) {
@@ -362,7 +362,7 @@ public class DBConnection {
         return sum;
     }
 
-    public static ArrayList<Integer> tempTableYear(int year){
+    public static ArrayList<Integer> tempTableYear(String year){
         int totalSum=0;
         int xmenSum=0;
         int seriesSum=0;
@@ -371,7 +371,7 @@ public class DBConnection {
         try{
             assert connection != null;
             Statement statement = connection.createStatement();
-            String sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Issue2 WHERE DateString like "+year+"%;";
+            String sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Issue2 WHERE DateString like \'"+year+"%\'';";
             statement.execute(sql);
             statement.close();
 
@@ -482,7 +482,7 @@ public class DBConnection {
         return totals;
     }
 
-    public static ArrayList<Integer> tempTableSnap(int year, int month){
+    public static ArrayList<Integer> tempTableSnap(String year, String month){
         int totalSum=0;
         int xmenSum=0;
         int seriesSum=0;
@@ -492,7 +492,8 @@ public class DBConnection {
             assert connection != null;
             Statement statement = connection.createStatement();
             String sql;
-            if ((month+1)<12){
+            
+            if ((Integer.parseInt(month)+1)<12){
                 sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Issue2 WHERE DateString<\'"+year+"-"+(month+1)+"%\';";
             }
             else{
@@ -646,7 +647,7 @@ public class DBConnection {
                 String publisher=getPublisher(series);
                 int addTo;
                 statement = connection.createStatement();
-                rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where SeriesID="+series+";");
+                rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where SeriesID=\'"+series+"\'';");
                 rs.next();
                 if (rs.getRow()==0){
                     addTo=0;
@@ -838,6 +839,69 @@ public class DBConnection {
         closeDB(connection);
     }
 
+    /**
+     * Checks whether or not an entry for a specific issue on a given date has already been made
+     * @param SeriesID integer in the SeriesID column of a given row of the comic table
+     * @param issueName string in the issueName column of a given row of the comic table
+     * @param dateString string in the dateString column of a given row of the comic table
+     * @param month integer in the month column of a given row of the comic table
+     * @param day integer in the day column of a given row of the comic table
+     * @param year integer in the year column of a given row of the comic table
+     * @return true if an entry matching all the parameters is found and false if not
+     */
+    public static boolean entryExists(String SeriesName, String issueName, String dateString){
+        Connection connection = connectDB();
+        try {
+            assert connection != null;
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT IssueName FROM Issue2 WHERE SeriesName=\'"+SeriesName+"\' AND issueName=\'"+issueName+"\' AND dateString like '"+dateString+"%';");
+
+
+            rs.next();
+
+            if (rs.getRow()==0){
+                return false;
+            }
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return true;
+    }
+    
+    /**
+     * Checks whether or not an entry for a specific issue on a given date has already been made
+     * @param SeriesID integer in the SeriesID column of a given row of the comic table
+     * @param issueName string in the issueName column of a given row of the comic table
+     * @param dateString string in the dateString column of a given row of the comic table
+     * @param month integer in the month column of a given row of the comic table
+     * @param day integer in the day column of a given row of the comic table
+     * @param year integer in the year column of a given row of the comic table
+     * @return true if an entry matching all the parameters is found and false if not
+     */
+    public static boolean seriesExists(String SeriesName){
+        Connection connection = connectDB();
+        try {
+            assert connection != null;
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT SeriesName FROM Series2 WHERE SeriesName=\'"+SeriesName+"\';");
+
+
+            rs.next();
+
+            if (rs.getRow()==0){
+                return false;
+            }
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return true;
+    }
 
 
 }

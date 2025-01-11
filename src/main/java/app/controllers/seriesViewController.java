@@ -3,6 +3,8 @@ package app.controllers;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import models.Date;
+
 import app.DBConnection;
 import app.MainScenesController;
 import javafx.event.EventHandler;
@@ -138,9 +140,19 @@ public class seriesViewController{
         for (int i = 0; i < issues.size(); i++) {
             String thisIssue = issues.get(i).get(0);
             String thisDate = issues.get(i).get(1);
-            TreeItem<String> treeIssue = new TreeItem<>(thisIssue+"    "+thisDate);
+            String printDate=forPrint(thisDate);
+            TreeItem<String> treeIssue = new TreeItem<>(thisIssue+"    "+printDate);
             title.getChildren().add(treeIssue);
         }
+    }
+
+
+    private String forPrint(String date){
+        String splitDate=date.split(" ")[0];
+        String[] dateList=splitDate.split("-");
+        String slashDate=dateList[1]+"/"+dateList[2]+"/"+dateList[0];
+        Date newDate=new Date(slashDate);
+        return newDate.toString();
     }
 
     private void actionOnEnter(){

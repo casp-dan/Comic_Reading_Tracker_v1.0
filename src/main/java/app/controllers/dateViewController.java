@@ -20,6 +20,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import models.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 /**
@@ -150,7 +151,7 @@ public class dateViewController{
      * @return a string of the current date in the form mm/dd/yy
      */
     private String getToday(){
-        Date today=new Date(LocalDate.now());
+        Date today=new Date(LocalDateTime.now());
         return today.toString();
     }
 

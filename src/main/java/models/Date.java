@@ -1,6 +1,7 @@
 package models;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -14,6 +15,7 @@ public class Date {
     private int day;
     private int month;
     private int year;
+    private String time;
 
     private final String START="1/1/22";
     private final ArrayList<Integer> THIRTYONE=new ArrayList<>(Arrays.asList(1,3,5,7,8,10,12));
@@ -33,7 +35,11 @@ public class Date {
                 month=0;
                 day=0;
                 year=0;
+                time="";
             }
+            LocalDateTime dateTime=LocalDateTime.now();
+            String localTime=dateTime.toString().split("T")[1];
+            time=localTime.split("\\.")[0];
         }
     }
 
@@ -41,7 +47,7 @@ public class Date {
      * Constructor for the current date as determined by the LocalDate module
      * @param today the input date
      */
-    public Date(LocalDate today){
+    public Date(LocalDateTime today){
         String[] comps=today.toString().split("-");
         if (Integer.parseInt(comps[1])<10){
             month=Integer.parseInt(comps[1].split("0")[1]);
@@ -49,13 +55,22 @@ public class Date {
         else{
             month=Integer.parseInt(comps[1]);
         }
-        if (Integer.parseInt(comps[2])<10){
-            day=Integer.parseInt(comps[2].split("0")[1]);
+        // if (Integer.parseInt(comps[2])<10){
+        //     day=Integer.parseInt(comps[2].split("0")[1]);
+        // }
+        // else{
+        //     day=Integer.parseInt(comps[2]);
+        // }
+        year=Integer.parseInt(comps[0].split("0")[1]);
+        String[] dayTimeSplit=comps[2].split("T");
+        //String[] dayTimeSplit=dayTime.split("T");
+        if (Integer.parseInt(dayTimeSplit[0])<10){
+            day=Integer.parseInt(dayTimeSplit[0].split("0")[1]);
         }
         else{
-            day=Integer.parseInt(comps[2]);
+            day=Integer.parseInt(dayTimeSplit[0]);
         }
-        year=Integer.parseInt(comps[0].split("0")[1]);
+        time=dayTimeSplit[1].split("\\.")[0];
     }
 
     /**
@@ -80,6 +95,14 @@ public class Date {
      */
     public int getYear(){
         return year;
+    }
+    
+    /**
+     * Getter for the time
+     * @return string of the time variable
+     */
+    public String getTime(){
+        return time;
     }
 
     /**
@@ -114,7 +137,7 @@ public class Date {
     public boolean withinRange(){
         boolean validDate=false;
         Date start=new Date(START);
-        Date today=new Date(LocalDate.now());
+        Date today=new Date(LocalDateTime.now());
         if (!tooEarly(start)){
             if (!tooLate(today)){
                 validDate=true;
