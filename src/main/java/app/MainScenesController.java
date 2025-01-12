@@ -10,6 +10,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
@@ -28,6 +29,8 @@ import app.controllers.seriesViewController;
 
 public class MainScenesController {
 
+    @FXML private TabPane tabs;
+
     @FXML private Parent makeEntryPage;
     @FXML private MakeEntryDialogController makeEntryPageController;
     
@@ -43,7 +46,7 @@ public class MainScenesController {
     @FXML private Parent logoutPage;
     @FXML private LogoutController logoutPageController;
     
-
+    public double height;
     
     /**
      * Called by App. Passes in object refs so they can be shared.
