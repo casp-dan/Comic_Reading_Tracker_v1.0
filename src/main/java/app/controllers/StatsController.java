@@ -2,6 +2,7 @@ package app.controllers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
 
 import app.DBConnection;
 import app.MainScenesController;
@@ -16,10 +17,15 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.CheckBox;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,7 +45,11 @@ public class StatsController {
     @FXML private AnchorPane pane;
     @FXML private MenuButton month;
     @FXML private CheckBox percents;
-    private CheckBox upTo;
+    private Label startLabel;
+    private Label endLabel;
+    private Label startDateLabel;
+    private Label endDateLabel;
+    private CheckBox snapshot;
     private ArrayList<Label> values;
 
     private final ArrayList<String> MONTHS=new ArrayList<String>(Arrays.asList("Overview","Yearly","January","February","March","April","May","June","July","August","September","October","November","December"));
@@ -52,7 +62,7 @@ public class StatsController {
         mainController=main;
         makePage();
         makeYearButton();
-        makeUpToBox();
+        makeSnapshot();
         updateStats();
         makePercentBox();
         makeMonthsButton();
@@ -160,7 +170,7 @@ public class StatsController {
      */
     public void updateStats(){
         int monthInt=MONTHS.indexOf(month.getText())-1;
-        if (month.getText().isEmpty()){
+        if (month.getText().isEmpty() & !snapshot.isSelected()){
             ArrayList<Integer> totals=new ArrayList<Integer>();
             ArrayList<String> pub_list=DBConnection.getPublishers();
             totals.add(DBConnection.getTotalIssues());
@@ -179,9 +189,20 @@ public class StatsController {
             setStatValues(totals);
         }
         else{
-            if (upTo.isSelected()){
-                ArrayList<Integer> totals = DBConnection.tempTableSnap(year.getText().split("0")[1], Integer.toString(monthInt));
-                setStatValues(totals);
+            if (snapshot.isSelected()){
+                String x1=startDateLabel.getText();
+                String y1=endDateLabel.getText();
+                Date startDate=new Date(x1);
+                Date endDate=new Date(y1);
+                if (startDate.toDateString()!=""){
+                    ArrayList<Integer> totals = DBConnection.tempTableTrueSnap(startDate.toDateString(), endDate.toDateString());
+                    //ArrayList<Integer> totals = DBConnection.tempTableSnap(year.getText().split("0")[1], Integer.toString(monthInt));
+                    setStatValues(totals);
+                }
+                else{
+                    ArrayList<Integer> totals = DBConnection.tempTableSnap(year.getText().split("0")[1], Integer.toString(monthInt));
+                    setStatValues(totals);
+                }
             }
             else {
                 String sMonth=Integer.toString(monthInt);
@@ -330,22 +351,91 @@ public class StatsController {
     /**
      * Creates a dropdown menu button to select the year for the stats view.
      */
-    private void makeUpToBox(){
-        upTo=new CheckBox("Switch Modes");
-        upTo.setLayoutX(215);
-        upTo.setLayoutY(5);
-        upTo.setVisible(true);
-        upTo.setOnMouseReleased(new EventHandler<MouseEvent>() {
+    private void makeSnapshot(){
+        snapshot=new CheckBox("View Snapshot");
+        snapshot.setLayoutX(215);
+        snapshot.setLayoutY(5);
+        snapshot.setVisible(true);
+        snapshot.setOnMouseReleased(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent t) {
-                if (year.getText().isEmpty() && upTo.isSelected()){
-                    mainController.errorMessage("Fields Empty", "Select a Month to Snapshot!");
-                    upTo.setSelected(false);
+                TextInputDialog dialog = new TextInputDialog();
+                dialog.setTitle("View Snapshot");
+                dialog.setHeaderText("View Snapshot");
+                dialog.setContentText("Start Date: ");
+                ObservableList<Node> children=dialog.getDialogPane().getChildren();
+                Node paneNode=children.get(3);
+                GridPane pane=((GridPane) paneNode);
+                Label label=new Label("End Date: ");
+                TextField txtFld=new TextField();
+                Separator sep=mainController.makeSeparator();
+                GridPane.setConstraints(label, 0, 2);
+                GridPane.setConstraints(txtFld, 1, 2);
+                GridPane.setConstraints(sep, 0, 1);
+                pane.getChildren().addAll(sep, label, txtFld);
+                
+                
+                // ObservableList<Node> paneChildren=((GridPane) pane).getChildren();
+                // paneChildren.add(new Label("End Date: "));
+                // paneChildren.add(new TextField());
+                
+                
+                Optional<String> start = dialog.showAndWait();
+                if (start!=null){
+                    String startString=""+start;
+                    startString=startString.split("\\[")[1].split("\\]")[0];
+                    startDateLabel.setText(""+startString);
+                    startLabel.setVisible(true);
+                    startDateLabel.setVisible(true);
                 }
-                else{
+                Optional<String> end = Optional.ofNullable(txtFld.getText());
+                if (end!=null){
+                    String endString=""+end;
+                    endString=endString.split("\\[")[1].split("\\]")[0];
+                    endDateLabel.setText(""+endString);
+                    endDateLabel.setVisible(true);
+                    endLabel.setVisible(true);
                     updateStats();
                 }
+                else{
+                    mainController.errorMessage("Fields Empty", "Select a Time Frame to Snapshot!");
+                    
+                }
             }
-        });
-        pane.getChildren().add(1, upTo);
-    }
-}
+            
+            
+            
+            
+            
+            
+            // public void handle(MouseEvent t) {
+                //     if (year.getText().isEmpty() && upTo.isSelected()){
+                    //         upTo.setSelected(false);
+                    //     }
+                    //     else{
+                        //         updateStats();
+                        //     }
+                        // }
+                    });
+                    pane.getChildren().add(1, snapshot);
+                    startLabel=new Label("Start Date: ");
+                    startDateLabel=new Label();
+                    startLabel.setLayoutX(215);
+                    startLabel.setLayoutY(35);
+                    startDateLabel.setLayoutX(275);
+                    startDateLabel.setLayoutY(35);
+                    startLabel.setVisible(false);
+                    endLabel=new Label("End Date: ");
+                    endDateLabel=new Label();
+                    endLabel.setVisible(false);
+                    endLabel.setLayoutX(215);
+                    endLabel.setLayoutY(55);
+                    endDateLabel.setLayoutX(275);
+                    endDateLabel.setLayoutY(55);
+                    pane.getChildren().add(1, startLabel);
+                    pane.getChildren().add(1, startDateLabel);
+                    pane.getChildren().add(1, endLabel);
+                    pane.getChildren().add(1, endDateLabel);
+                }
+                
+            }
+            

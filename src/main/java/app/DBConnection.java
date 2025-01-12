@@ -366,12 +366,13 @@ public class DBConnection {
         int totalSum=0;
         int xmenSum=0;
         int seriesSum=0;
+        year="20"+year;
         ArrayList<Integer> totals=new ArrayList<Integer>();
         Connection connection = connectDB();
         try{
             assert connection != null;
             Statement statement = connection.createStatement();
-            String sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Issue2 WHERE DateString like \'"+year+"%\'';";
+            String sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Issue2 WHERE DateString like \'"+year+"%\';";
             statement.execute(sql);
             statement.close();
 
@@ -383,7 +384,7 @@ public class DBConnection {
             seriesList.add(rs.getString("SeriesName"));
             if (rs.getRow()!=0){
                 while(rs.next()){
-                    seriesList.add(rs.getString("SeriesID"));
+                    seriesList.add(rs.getString("SeriesName"));
                 }
             }
             rs.close();
@@ -398,7 +399,7 @@ public class DBConnection {
                 String publisher=getPublisher(series);
                 int addTo;
                 statement = connection.createStatement();
-                rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where SeriesID="+series+";");
+                rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where SeriesName=\'"+series+"\';");
                 rs.next();
                 if (rs.getRow()==0){
                     addTo=0;
@@ -425,44 +426,6 @@ public class DBConnection {
             xmenSum= rs.getInt("count");
             rs.close();
 
-            // for (String series: seriesList){
-            //     String publisher=getPublisher(series);
-            //     int addTo;
-            //     statement = connection.createStatement();
-            //     rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where SeriesName=\'"+series+"\';");
-            //     rs.next();
-            //     if (rs.getRow()==0){
-            //         addTo=0;
-            //     }
-            //     addTo= rs.getInt("count");
-            //     rs.close();
-            //     statement.close();
-            //     switch(publisher) {
-            //         case "Marvel":
-            //             marvelSum += addTo;
-            //             if (seriesIsXmen(series)) {
-            //                 xmenSum += addTo;
-            //             }
-            //             break;
-            //         case "Image":
-            //             imageSum += addTo;
-            //             break;
-            //         case "Dark Horse":
-            //             darkHorseSum += addTo;
-            //             break;
-            //         case "Boom":
-            //             boomSum += addTo;
-            //             break;
-            //         case "DC":
-            //             dcSum += addTo;
-            //             break;
-            //         case "Other":
-            //             otherSum += addTo;
-            //             break;
-            //     }
-            // }
-            // int addTo;
-            
             statement = connection.createStatement();
             rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic;");
             rs.next();
@@ -486,6 +449,8 @@ public class DBConnection {
         int totalSum=0;
         int xmenSum=0;
         int seriesSum=0;
+        int yearInt=Integer.parseInt(year);
+        int monthInt=Integer.parseInt(month);
         ArrayList<Integer> totals=new ArrayList<Integer>();
         Connection connection = connectDB();
         try{
@@ -493,11 +458,11 @@ public class DBConnection {
             Statement statement = connection.createStatement();
             String sql;
             
-            if ((Integer.parseInt(month)+1)<12){
-                sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Issue2 WHERE DateString<\'"+year+"-"+(month+1)+"%\';";
+            if (monthInt+1<12){
+                sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Issue2 WHERE DateString<\'"+year+"-"+(monthInt+1)+"-01 00:00:00\';";
             }
             else{
-                sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Issue2 WHERE DateString<\'"+(year+1)+"-01%\';";
+                sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Issue2 WHERE DateString<\'"+(yearInt+1)+"-01-01 00:00:00';";
             }
             statement.execute(sql);
             statement.close();
@@ -525,7 +490,7 @@ public class DBConnection {
                 String publisher=getPublisher(series);
                 int addTo;
                 statement = connection.createStatement();
-                rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where SeriesID="+series+";");
+                rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where SeriesName=\'"+series+"\';");
                 rs.next();
                 if (rs.getRow()==0){
                     addTo=0;
@@ -543,43 +508,7 @@ public class DBConnection {
                 
             }
             seriesSum=seriesList.size();
-            // for (String series: seriesList){
-            //     String publisher=getPublisher(series);
-            //     int addTo;
-            //     statement = connection.createStatement();
-            //     rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where SeriesName=\'"+series+"\';");
-            //     rs.next();
-            //     if (rs.getRow()==0){
-            //         addTo=0;
-            //     }
-            //     addTo= rs.getInt("count");
-            //     rs.close();
-            //     statement.close();
-            //     switch(publisher) {
-            //         case "Marvel":
-            //             marvelSum += addTo;
-            //             if (seriesIsXmen(series)) {
-            //                 xmenSum += addTo;
-            //             }
-            //             break;
-            //         case "Image":
-            //             imageSum += addTo;
-            //             break;
-            //         case "Dark Horse":
-            //             darkHorseSum += addTo;
-            //             break;
-            //         case "Boom":
-            //             boomSum += addTo;
-            //             break;
-            //         case "DC":
-            //             dcSum += addTo;
-            //             break;
-            //         case "Other":
-            //             otherSum += addTo;
-            //             break;
-            //     }
-            // }
-            // int addTo;
+            
             statement = connection.createStatement();
             rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where XmenAdj=1;");
             rs.next();
@@ -589,8 +518,96 @@ public class DBConnection {
             xmenSum+= rs.getInt("count");
             rs.close();
 
+            statement = connection.createStatement();
+            rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic;");
+            rs.next();
+            totalSum= rs.getInt("count");
+            rs.close();
+            statement.close();
+            
+            totals.add(totalSum);
+            for (int i=0;i<sums.size();i++){
+                totals.add(sums.get(i));
+            }
+            totals.add(xmenSum);
+            totals.add(seriesSum);
+        }catch(SQLException e){
+            throw new RuntimeException("Problem with database", e);
+        }
+        closeDB(connection);
+        return totals;
+        }
 
+    public static ArrayList<Integer> tempTableTrueSnap(String start, String end){
+        int totalSum=0;
+        int xmenSum=0;
+        int seriesSum=0;
+        //int startYearInt=Integer.parseInt(startYear);
+        //int startMonthInt=Integer.parseInt(startMonth);
+        //int endYearInt=Integer.parseInt(endYear);
+        //int endMonthInt=Integer.parseInt(endMonth);
+        ArrayList<Integer> totals=new ArrayList<Integer>();
+        Connection connection = connectDB();
+        try{
+            assert connection != null;
+            Statement statement = connection.createStatement();
+            String sql;
+            
 
+            sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Issue2 WHERE DateString<=\'"+end+" 23:59:59\' and DateString>=\'"+start+" 00:00:00\';";
+            statement.execute(sql);
+            statement.close();
+
+            statement = connection.createStatement();
+            sql="SELECT DISTINCT SeriesName FROM tempComic;";
+            ResultSet rs = statement.executeQuery(sql);
+            ArrayList<String> seriesList=new ArrayList<String>();
+            rs.next();
+            seriesList.add(rs.getString("SeriesName"));
+            if (rs.getRow()!=0){
+                while(rs.next()){
+                    seriesList.add(rs.getString("SeriesName"));
+                }
+            }
+            rs.close();
+            statement.close();
+
+            ArrayList<String> pub_list=getPublishers();
+            ArrayList<Integer> sums=new ArrayList<Integer>();
+            for (int i = 0; i < pub_list.size(); i++) {
+                sums.add(0);
+            }
+            for (String series: seriesList){
+                String publisher=getPublisher(series);
+                int addTo;
+                statement = connection.createStatement();
+                rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where SeriesName=\'"+series+"\';");
+                rs.next();
+                if (rs.getRow()==0){
+                    addTo=0;
+                }
+                addTo= rs.getInt("count");
+                rs.close();
+                statement.close();
+                if (pub_list.contains(publisher)){
+                    int ind=pub_list.indexOf(publisher);
+                    sums.set(ind,sums.get(ind)+addTo);
+                    if (seriesIsXmen(series)) {
+                        xmenSum += addTo;
+                    }
+                }
+                
+            }
+            seriesSum=seriesList.size();
+            
+            statement = connection.createStatement();
+            rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where XmenAdj=1;");
+            rs.next();
+            if (rs.getRow()==0){
+                xmenSum+=0;
+            }
+            xmenSum+= rs.getInt("count");
+            rs.close();
 
             statement = connection.createStatement();
             rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic;");
@@ -647,7 +664,8 @@ public class DBConnection {
                 String publisher=getPublisher(series);
                 int addTo;
                 statement = connection.createStatement();
-                rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where SeriesID=\'"+series+"\'';");
+                String query="SELECT COUNT(*) AS count FROM tempComic where SeriesName=\'"+series+"\';";
+                rs = statement.executeQuery(query);
                 rs.next();
                 if (rs.getRow()==0){
                     addTo=0;
@@ -665,43 +683,6 @@ public class DBConnection {
                 
             }
             seriesSum=seriesList.size();
-
-            // for (String series: seriesList){
-            //     String publisher=getPublisher(series);
-            //     int addTo;
-            //     statement = connection.createStatement();
-            //     rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where SeriesName=\'"+series+"\';");
-            //     rs.next();
-            //     if (rs.getRow()==0){
-            //         addTo=0;
-            //     }
-            //     addTo= rs.getInt("count");
-            //     rs.close();
-            //     statement.close();
-            //     switch(publisher) {
-            //         case "Marvel":
-            //             marvelSum += addTo;
-            //             if (seriesIsXmen(series)) {
-            //                 xmenSum += addTo;
-            //             }
-            //             break;
-            //         case "Image":
-            //             imageSum += addTo;
-            //             break;
-            //         case "Dark Horse":
-            //             darkHorseSum += addTo;
-            //             break;
-            //         case "Boom":
-            //             boomSum += addTo;
-            //             break;
-            //         case "DC":
-            //             dcSum += addTo;
-            //             break;
-            //         case "Other":
-            //             otherSum += addTo;
-            //             break;
-            //     }
-            // }
 
             statement = connection.createStatement();
             rs = statement.executeQuery("SELECT COUNT(*) AS count FROM tempComic where XmenAdj=1;");
@@ -754,7 +735,7 @@ public class DBConnection {
 
     /**
      * Get the publisher of a series from the series table
-     * @param seriesID integer in the SeriesID column of a given row of the series table
+     * @param SeriesName integer in the SeriesName column of a given row of the series table
      * @return string in the Publisher column of a given row of the series table
      */
     public static String getPublisher(String SeriesName){
@@ -841,7 +822,7 @@ public class DBConnection {
 
     /**
      * Checks whether or not an entry for a specific issue on a given date has already been made
-     * @param SeriesID integer in the SeriesID column of a given row of the comic table
+     * @param SeriesName integer in the SeriesName column of a given row of the comic table
      * @param issueName string in the issueName column of a given row of the comic table
      * @param dateString string in the dateString column of a given row of the comic table
      * @param month integer in the month column of a given row of the comic table
@@ -873,7 +854,7 @@ public class DBConnection {
     
     /**
      * Checks whether or not an entry for a specific issue on a given date has already been made
-     * @param SeriesID integer in the SeriesID column of a given row of the comic table
+     * @param SeriesName integer in the SeriesName column of a given row of the comic table
      * @param issueName string in the issueName column of a given row of the comic table
      * @param dateString string in the dateString column of a given row of the comic table
      * @param month integer in the month column of a given row of the comic table
