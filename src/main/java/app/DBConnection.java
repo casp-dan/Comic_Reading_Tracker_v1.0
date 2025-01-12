@@ -63,10 +63,11 @@ public class DBConnection {
     public static ArrayList<ArrayList<String>> getIssuesByDate(String dateString){
         ArrayList<ArrayList<String>> issues=new ArrayList<ArrayList<String>>();
         Connection connection = connectDB();
+        String searchDate=dateString.split(" ")[0];
         try {
             assert connection != null;
             Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT issueName,seriesName FROM Issue2 WHERE dateString like '"+dateString+"%' order by DateString;");
+            ResultSet rs = statement.executeQuery("SELECT issueName,seriesName FROM Issue2 WHERE dateString like '"+searchDate+"%' order by DateString;");
 
             rs.next();
             if (rs.getRow()==0){
@@ -144,8 +145,8 @@ public class DBConnection {
             ResultSet resultSet = statement.getGeneratedKeys();
             if (resultSet.next()) {
                 // issueID = resultSet.getInt(1);
-                System.out.println("Added New Issue: " + SeriesName + "#" + issueName + " on " + DateString);
             }
+            System.out.println("Added New Issue: " + SeriesName + " #" + issueName + " on " + DateString);
             statement.close();
         }catch(SQLException e){
             throw new RuntimeException("Problem with database", e);

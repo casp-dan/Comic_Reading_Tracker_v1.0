@@ -300,7 +300,8 @@ public class MakeEntryDialogController {
         Date date=entry.getDate();
         for (String issueName: entry.getIssues()){
             if (!DBConnection.entryExists(seriesName,issueName,date.toDateString())){
-                DBConnection.addIssue(issueName,seriesName,entry.getXmenAdj(),date.toDateString());
+                Date entryDate=new Date(date.toString());
+                DBConnection.addIssue(issueName,seriesName,entry.getXmenAdj(),entryDate.toDateString());
             }
             else{
                 mainController.errorMessage("Entry Exists", "This Entry Exists");

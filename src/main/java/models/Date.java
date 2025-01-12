@@ -123,7 +123,7 @@ public class Date {
         if (day<10){
             sDay="0"+sDay;
         }
-        return "20"+Integer.toString(year)+"-"+sMonth+"-"+sDay;
+        return "20"+Integer.toString(year)+"-"+sMonth+"-"+sDay+" "+time;
         // return Integer.toString(month)+"/"+Integer.toString(day)+"/"+Integer.toString(year);
     }
 
