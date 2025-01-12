@@ -44,6 +44,7 @@ public class seriesViewController{
     public void setObjects(MainScenesController main) {
         mainController=main;
         lastSearch=-1;
+        totalIssues.setLayoutY(mainController.height-63);
         makeTitleTreeView();
         searchBySubstring();
         //mainController.makeTitlesButton(seriesTitles,seriesField);
@@ -102,8 +103,8 @@ public class seriesViewController{
     private void makeTitleTreeView(){
         titleTree=new TreeView<String>();
         titleTree.setLayoutX(33);
-        titleTree.setLayoutY(30.0);
-        titleTree.setPrefHeight(268.0);
+        titleTree.setLayoutY(35.0);
+        titleTree.setPrefHeight(mainController.height-110);
         titleTree.setPrefWidth(355.0);
         pane.getChildren().add(1, titleTree);
         createTreeView();
