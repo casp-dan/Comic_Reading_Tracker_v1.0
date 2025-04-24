@@ -1,6 +1,5 @@
 package models;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +30,7 @@ public class Date {
             month=Integer.parseInt(comps[0]);
             day=Integer.parseInt(comps[1]);
             year=Integer.parseInt(comps[2]);
-            if (!realDate()){
+            if (!date.equals("") & !realDate()){
                 month=0;
                 day=0;
                 year=0;
@@ -113,8 +112,20 @@ public class Date {
     public String toString(){
         return Integer.toString(month)+"/"+Integer.toString(day)+"/"+Integer.toString(year);
     }
+    
+    public String toSearchString(){
+        String sMonth=Integer.toString(month);
+        String sDay=Integer.toString(day);
+        if (month<10){
+            sMonth="0"+sMonth;
+        }
+        if (day<10){
+            sDay="0"+sDay;
+        }
+        return "20"+Integer.toString(year)+"-"+sMonth+"-"+sDay;
+    }
 
-    public String toDateString(){
+    public String toDateTimeString(){
         String sMonth=Integer.toString(month);
         String sDay=Integer.toString(day);
         if (month<10){
@@ -126,7 +137,6 @@ public class Date {
         return "20"+Integer.toString(year)+"-"+sMonth+"-"+sDay+" "+time;
         // return Integer.toString(month)+"/"+Integer.toString(day)+"/"+Integer.toString(year);
     }
-
 
     /**
      * Checks if the date falls between the constant start 
@@ -300,6 +310,57 @@ public class Date {
 
     public int getNumMonths(){
         return (getYear()-22)*12+getMonth();
+    }
+    
+    public void fastForward(){
+        String[] timeList=(time.split(":"));
+        String hrStr=timeList[0];
+        String minStr=timeList[1];
+        String secStr=timeList[2];
+        int sec=Integer.parseInt(timeList[2]);
+        int min=Integer.parseInt(timeList[1]);
+        int hr=Integer.parseInt(timeList[0]);
+        if (sec+1<=59){
+            sec++;
+            if (sec<10){
+                secStr="0"+Integer.toString(sec);
+            }
+            else{
+                secStr=Integer.toString(sec);
+            }
+        }
+        else{
+            secStr="0"+Integer.toString(sec+1+-60);
+            if (min+1<=59){
+                min++;
+                if (min<10){
+                    minStr="0"+Integer.toString(min);
+                }
+                else{
+                    minStr=Integer.toString(min);
+                }
+            }
+            else{
+                secStr="0"+Integer.toString(sec+1-60);
+                minStr="0"+Integer.toString(min+1-60);
+                if (hr+1<=23){
+                    hr++;
+                    if (hr<10){
+                        hrStr="0"+Integer.toString(hr);
+                    }
+                    else{
+                        hrStr=Integer.toString(hr);
+                    }
+                    // secStr="00";
+                    // minStr="00";
+                }
+            }
+        }
+        time=hrStr+":"+minStr+":"+secStr;
+    }
+
+    public void setTime(String newTime){
+        time=newTime;
     }
 
 }

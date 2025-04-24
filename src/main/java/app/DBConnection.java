@@ -5,8 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
-
 
 /**
  * SQL Connection
@@ -103,19 +101,18 @@ public class DBConnection {
      * @param xmen boolean for the xmen column for the new row
      * @return integer in the SeriesName column of the new row, -1 if the series already exists
      */
-    public static String createSeries(String SeriesName, String Publisher, boolean xmen){
+    public static String createSeries(String SeriesName, String Publisher, boolean xmen, String dbName){
         Connection connection = connectDB();
         try{
             assert connection != null;
             Statement statement = connection.createStatement();
-            String sql = "INSERT INTO Series2(SeriesName, Publisher, xmen) VALUES(\'"+SeriesName+"\', 0, \'"+Publisher+"\', "+xmen+" );";
+            String sql ="INSERT INTO "+dbName+"(SeriesName, Publisher, xmen) VALUES(\'"+SeriesName+"\', \'"+Publisher+"\', "+xmen+" );";
             statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
             ResultSet resultSet = statement.getGeneratedKeys();
             if (resultSet.next()) {
                 // SeriesName = resultSet.getInt(1);
-                System.out.println("Added New Series: " + SeriesName);
             }
-
+            System.out.println("Added New Series: " + SeriesName);
             statement.close();
         }catch(SQLException e){
             throw new RuntimeException("Problem with database", e);
@@ -147,6 +144,32 @@ public class DBConnection {
                 // issueID = resultSet.getInt(1);
             }
             System.out.println("Added New Issue: " + SeriesName + " #" + issueName + " on " + DateString);
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem with database", e);
+        }
+        closeDB(connection);
+    }
+    
+    /**
+     * Add a new issue to the comic table
+     * @param SeriesName integer for the SeriesName column of the new row
+     * @param issueName string for the issueName column of the new row
+     * @param xmenAdj boolean indicating whether or not to add this issue to the xmenadjcomic table
+     */
+    public static void collectIssue(String issueName, String SeriesName, boolean xmenAdj){
+        // int issueID = -1;
+        Connection connection = connectDB();
+        try{
+            assert connection != null;
+            Statement statement = connection.createStatement();
+            String sql = "insert into CollectedIssues(IssueName, SeriesName, XmenAdj) values(\'"+issueName+"\' , \'"+ SeriesName +"\' , "+xmenAdj+");";
+            statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+            ResultSet resultSet = statement.getGeneratedKeys();
+            if (resultSet.next()) {
+                // issueID = resultSet.getInt(1);
+            }
+            System.out.println("Collected New Issue: " + SeriesName + " #" + issueName);
             statement.close();
         }catch(SQLException e){
             throw new RuntimeException("Problem with database", e);
@@ -424,7 +447,7 @@ public class DBConnection {
             if (rs.getRow()==0){
                 xmenSum+=0;
             }
-            xmenSum= rs.getInt("count");
+            xmenSum+= rs.getInt("count");
             rs.close();
 
             statement = connection.createStatement();
@@ -446,25 +469,18 @@ public class DBConnection {
         return totals;
     }
 
-    public static ArrayList<Integer> tempTableSnap(String year, String month){
+    public static ArrayList<Integer> tempTableSnap(String end){
         int totalSum=0;
         int xmenSum=0;
         int seriesSum=0;
-        int yearInt=Integer.parseInt(year);
-        int monthInt=Integer.parseInt(month);
+        // int yearInt=Integer.parseInt(year);
+        // int monthInt=Integer.parseInt(month);
         ArrayList<Integer> totals=new ArrayList<Integer>();
         Connection connection = connectDB();
         try{
             assert connection != null;
             Statement statement = connection.createStatement();
-            String sql;
-            
-            if (monthInt+1<12){
-                sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Issue2 WHERE DateString<\'"+year+"-"+(monthInt+1)+"-01 00:00:00\';";
-            }
-            else{
-                sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Issue2 WHERE DateString<\'"+(yearInt+1)+"-01-01 00:00:00';";
-            }
+            String sql = "CREATE TEMPORARY TABLE tempComic AS SELECT * FROM Issue2 WHERE DateString<=\'"+end+" 23:59:59\';";
             statement.execute(sql);
             statement.close();
 
@@ -885,5 +901,31 @@ public class DBConnection {
         return true;
     }
 
+
+    public static String getLastDateTime(String DateString){
+        String Publisher;
+        Connection connection = connectDB();
+        try {
+            assert connection != null;
+            Statement statement = connection.createStatement();
+
+            String sql="SELECT max(DateString) as date FROM Issue2 where DateString like \'"+DateString+"%\';";
+
+            // sql="SELECT Publisher FROM Series2 WHERE SeriesName=\'"+SeriesName+"\';";
+            ResultSet rs = statement.executeQuery(sql);
+
+            rs.next();
+            if (rs.getRow()==0){
+                return "";
+            }
+            Publisher= rs.getString("date");
+            rs.close();
+            statement.close();
+        }catch(SQLException e){
+            throw new RuntimeException("Problem querying database", e);
+        }
+        closeDB(connection);
+        return Publisher;
+    }
 
 }

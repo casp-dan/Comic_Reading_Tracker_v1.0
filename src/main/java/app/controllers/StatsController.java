@@ -1,34 +1,32 @@
 package app.controllers;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 
 import app.DBConnection;
 import app.MainScenesController;
-import models.Date;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
+import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.control.CheckBox;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import models.Date;
 
 
 
@@ -190,18 +188,19 @@ public class StatsController {
         }
         else{
             if (snapshot.isSelected()){
-                String x1=startDateLabel.getText();
-                String y1=endDateLabel.getText();
-                Date startDate=new Date(x1);
-                Date endDate=new Date(y1);
-                if (startDate.toDateString()!=""){
-                    ArrayList<Integer> totals = DBConnection.tempTableTrueSnap(startDate.toDateString(), endDate.toDateString());
-                    //ArrayList<Integer> totals = DBConnection.tempTableSnap(year.getText().split("0")[1], Integer.toString(monthInt));
-                    setStatValues(totals);
-                }
-                else{
-                    ArrayList<Integer> totals = DBConnection.tempTableSnap(year.getText().split("0")[1], Integer.toString(monthInt));
-                    setStatValues(totals);
+                Date startDate=new Date(startDateLabel.getText());
+                Date endDate=new Date(endDateLabel.getText());
+
+                if (startDate.compareTo(endDate)<=0 & endDate.withinRange()){
+                    if (startDate.withinRange() & startDate.toDateTimeString()!=""){
+                        ArrayList<Integer> totals = DBConnection.tempTableTrueSnap(startDate.toDateTimeString().split(" ")[0], endDate.toDateTimeString().split(" ")[0]);
+                        setStatValues(totals);
+                    }
+                    else{
+                        // ArrayList<Integer> totals = DBConnection.tempTableSnap(year.getText().split("0")[1], Integer.toString(monthInt));
+                        ArrayList<Integer> totals = DBConnection.tempTableSnap(endDate.toDateTimeString().split(" ")[0]);
+                        setStatValues(totals);
+                    }
                 }
             }
             else {
@@ -315,10 +314,19 @@ public class StatsController {
                         updateStats();
                     }
                     else{
+                        String old=month.getText();
                         month.setText(item.getText());
                         year.setVisible(true);
                         if (!year.getText().isEmpty()) {
-                            updateStats();
+                            int monthInt=MONTHS.indexOf(month.getText())-1;
+                            Date date=new Date(Integer.toString(monthInt)+"/1/"+year.getText());
+                            if (date.withinRange()){
+                                updateStats();
+                            }
+                            else{
+                                month.setText(old);
+                                mainController.errorMessage("Invalid Date", "Please select a valid month to view!");
+                            }
                         }
                     }
                 }
@@ -339,8 +347,15 @@ public class StatsController {
             MenuItem item = new MenuItem(yearStr);
             item.setOnAction(new EventHandler<ActionEvent>() {
                 public void handle(ActionEvent t) {
-                    year.setText(item.getText());
-                    updateStats();
+                    int monthInt=MONTHS.indexOf(month.getText())-1;
+                    Date date=new Date(Integer.toString(monthInt)+"/1/"+item.getText());
+                    if (date.withinRange() || date.toString().equals("0/1/22")){
+                        year.setText(item.getText());
+                        updateStats();
+                    }
+                    else{
+                        mainController.errorMessage("Invalid Date", "Please select a valid month to view!");
+                    }
                 }
             });
             years.add(item);
@@ -358,47 +373,75 @@ public class StatsController {
         snapshot.setVisible(true);
         snapshot.setOnMouseReleased(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent t) {
-                TextInputDialog dialog = new TextInputDialog();
-                dialog.setTitle("View Snapshot");
-                dialog.setHeaderText("View Snapshot");
-                dialog.setContentText("Start Date: ");
-                ObservableList<Node> children=dialog.getDialogPane().getChildren();
-                Node paneNode=children.get(3);
-                GridPane pane=((GridPane) paneNode);
-                Label label=new Label("End Date: ");
-                TextField txtFld=new TextField();
-                Separator sep=mainController.makeSeparator();
-                GridPane.setConstraints(label, 0, 2);
-                GridPane.setConstraints(txtFld, 1, 2);
-                GridPane.setConstraints(sep, 0, 1);
-                pane.getChildren().addAll(sep, label, txtFld);
-                
-                
-                // ObservableList<Node> paneChildren=((GridPane) pane).getChildren();
-                // paneChildren.add(new Label("End Date: "));
-                // paneChildren.add(new TextField());
-                
-                
-                Optional<String> start = dialog.showAndWait();
-                if (start!=null){
-                    String startString=""+start;
-                    startString=startString.split("\\[")[1].split("\\]")[0];
-                    startDateLabel.setText(""+startString);
-                    startLabel.setVisible(true);
-                    startDateLabel.setVisible(true);
-                }
-                Optional<String> end = Optional.ofNullable(txtFld.getText());
-                if (end!=null){
-                    String endString=""+end;
-                    endString=endString.split("\\[")[1].split("\\]")[0];
-                    endDateLabel.setText(""+endString);
-                    endDateLabel.setVisible(true);
-                    endLabel.setVisible(true);
-                    updateStats();
+                if (snapshot.isSelected()){
+                    TextInputDialog dialog = new TextInputDialog();
+                    dialog.setTitle("View Snapshot");
+                    dialog.setHeaderText("View Snapshot");
+                    dialog.setContentText("Start Date: ");
+                    ObservableList<Node> children=dialog.getDialogPane().getChildren();
+                    Node paneNode=children.get(3);
+                    GridPane pane=((GridPane) paneNode);
+                    Label label=new Label("End Date: ");
+                    TextField txtFld=new TextField();
+                    Separator sep=mainController.makeSeparator();
+                    GridPane.setConstraints(label, 0, 2);
+                    GridPane.setConstraints(txtFld, 1, 2);
+                    GridPane.setConstraints(sep, 0, 1);
+                    pane.getChildren().addAll(sep, label, txtFld);
+                    
+                    
+                    // ObservableList<Node> paneChildren=((GridPane) pane).getChildren();
+                    // paneChildren.add(new Label("End Date: "));
+                    // paneChildren.add(new TextField());
+                    
+                    
+                    Optional<String> start = dialog.showAndWait();
+                    String startString="";
+                    try {
+                        startString=start.get();
+                      //  Block of code to try
+                    }
+                    catch(Exception e) {
+                        updateStats();
+                        //mainController.errorMessage("Fields Empty", "Select a Time Frame to Snapshot!");
+                        //snapshot.setSelected(false);
+                        //  Block of code to handle errors
+                    }
+                    String end = txtFld.getText();
+                    if (!end.equals("")){
+                        endDateLabel.setText(end);
+                        endDateLabel.setVisible(true);
+                        endLabel.setVisible(true);
+                        if (!startString.equals("")){
+                            startDateLabel.setText(startString);
+                            startDateLabel.setVisible(true);
+                            startLabel.setVisible(true);
+                        }
+                        updateStats();
+                    }
+                    //if (start.get()!=null){
+                    //    String startString=start.get();
+                    //    startString=startString.split("\\[")[1].split("\\]")[0];
+                    //    startDateLabel.setText(""+startString);
+                    //    startLabel.setVisible(true);
+                    //    startDateLabel.setVisible(true);
+                    //}
+                    //Optional<String> end = Optional.ofNullable(txtFld.getText());
+                    //if (end.get()!=null){
+                    //    String endString=end.get();
+                    //    endString=endString.split("\\[")[1].split("\\]")[0];
+                    //    updateStats();
+                    //}
+                    //else{
+                    //    
+                    //}
                 }
                 else{
-                    mainController.errorMessage("Fields Empty", "Select a Time Frame to Snapshot!");
-                    
+                    startLabel.setVisible(false);
+                    endLabel.setVisible(false);
+                    endDateLabel.setVisible(false);
+                    startDateLabel.setVisible(false);
+                    updateStats();
                 }
             }
             
@@ -437,5 +480,5 @@ public class StatsController {
                     pane.getChildren().add(1, endDateLabel);
                 }
                 
-            }
+}
             

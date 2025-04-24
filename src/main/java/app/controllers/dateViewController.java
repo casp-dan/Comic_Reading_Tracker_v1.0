@@ -1,6 +1,7 @@
 package app.controllers;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import app.DBConnection;
@@ -19,8 +20,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import models.Date;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 
 /**
@@ -95,7 +94,7 @@ public class dateViewController{
         pane.getChildren().remove(issueTree);
         TreeItem<String> rootItem = new CheckBoxTreeItem<>("Issues");
         Date newDate=new Date(dateField.getText());
-        ArrayList<ArrayList<String>> issues=DBConnection.getIssuesByDate(newDate.toDateString());
+        ArrayList<ArrayList<String>> issues=DBConnection.getIssuesByDate(newDate.toDateTimeString());
         // ArrayList<Integer> series=DBConnection.getSeriesByDate(dateField.getText());
         if (issues!=null){
             for (int i = 0; i < issues.size(); i++) {

@@ -8,6 +8,7 @@
       <MenuButton fx:id="publisher" xmlns:fx="http://javafx.com/fxml" />
 
       <Button fx:id="collectEntry" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" layoutY="207.0" layoutX="26.0" text="Collect" visible="false" />
+      <!-- <Button fx:id="collectEntry" mnemonicParsing="false" prefHeight="25.0" onMouseClicked="#collectBooks" prefWidth="150.0" layoutY="207.0" layoutX="26.0" text="Collect" visible="false" /> -->
       
       <VBox layoutX="26.0" layoutY="50.0" prefHeight="133.0" prefWidth="150.0">
          <children>
