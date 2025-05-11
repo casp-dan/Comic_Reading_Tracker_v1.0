@@ -53,7 +53,7 @@ public class MainScenesController {
      */
     public void setObjects(App app) throws IOException {
         double h=tabs.getPrefHeight();
-        height=h+=DBConnection.getPublishers().size()*40;
+        height=h+=DBConnection.getPublishers().size()*42;
         tabs.setPrefHeight(height);
         statsPageController.setObjects(this);
         dateViewPageController.setObjects(this);
