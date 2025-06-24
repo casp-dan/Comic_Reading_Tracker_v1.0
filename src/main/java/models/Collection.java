@@ -11,7 +11,6 @@ public class Collection {
 
     private String seriesName;
     private ArrayList<String> issues;
-    private Date date;
     private String publisher;
     private boolean xmen;
     private boolean xmenAdj;

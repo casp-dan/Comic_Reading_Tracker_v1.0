@@ -11,6 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -22,6 +23,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
+import models.Collection;
 // import models.Collection;
 import models.Date;
 import models.Entry;
@@ -55,6 +58,8 @@ public class MakeEntryDialogController {
     @SuppressWarnings("exports")
     @FXML public Button logEntry;
     @SuppressWarnings("exports")
+    @FXML public VBox theBox;
+    @SuppressWarnings("exports")
     @FXML public Label dateLabel;
     private int scene;
 
@@ -70,7 +75,9 @@ public class MakeEntryDialogController {
         makeXmenAdjButton();
         makeTodayCheckbox();
         makePublisherButton();
-        mainController.makeTitlesButton(seriesTitles,seriesField);
+        pane.getChildren().remove(4);
+        // collectEntry.setVisible(!collectEntry.isVisible());
+        mainController.makeTitlesButton(seriesTitles,seriesField,scene);
         actionOnEnter();
     }
 
@@ -114,33 +121,33 @@ public class MakeEntryDialogController {
         }
     }
     
-    // /**
-    //  * Makes a new entry based on the filled out text fields, or creates an error message if needed
-    //  * @param mouseEvent
-    //  * @throws IOException 
-    //  */
-    // public void collectBooks(@SuppressWarnings("exports") MouseEvent mouseEvent){
-    //     if (seriesField.getText().equals("") || issuesField.getText().equals("")){
-    //         mainController.errorMessage("Fields Empty", "Please Fill Out All Fields!");
-    //     }
-    //     else if (issuesField.getText().contains(",")){
-    //         String[] issues=issuesField.getText().split(",");
-    //         String publisherStr=publisher.getText();
-    //         String seriesName=seriesField.getText();
-    //         boolean isXmen=xmen.isSelected();
-    //         boolean isXmenAdj=xmenAdj.isSelected();
-    //         for (int i=0;i<issues.length;i++){
-    //             Collection collect=new Collection(seriesName,issues[i],publisherStr,isXmen,isXmenAdj);
-    //             if (!addToCollection(collect)){
-    //                 i=issues.length;
-    //             }
-    //         }
-    //     }
-    //     else{
-    //         Collection collect=new Collection(seriesField.getText(),issuesField.getText(),publisher.getText(),xmen.isSelected(),xmenAdj.isSelected());
-    //         addToCollection(collect);
-    //     }
-    // }
+    /**
+     * Makes a new entry based on the filled out text fields, or creates an error message if needed
+     * @param mouseEvent
+     * @throws IOException 
+     */
+    public void collectBooks(@SuppressWarnings("exports") MouseEvent mouseEvent){
+        if (seriesField.getText().equals("") || issuesField.getText().equals("")){
+            mainController.errorMessage("Fields Empty", "Please Fill Out All Fields!");
+        }
+        else if (issuesField.getText().contains(",")){
+            String[] issues=issuesField.getText().split(",");
+            String publisherStr=publisher.getText();
+            String seriesName=seriesField.getText();
+            boolean isXmen=xmen.isSelected();
+            boolean isXmenAdj=xmenAdj.isSelected();
+            for (int i=0;i<issues.length;i++){
+                Collection collect=new Collection(seriesName,issues[i],publisherStr,isXmen,isXmenAdj);
+                if (!addToCollection(collect)){
+                    i=issues.length;
+                }
+            }
+        }
+        else{
+            Collection collect=new Collection(seriesField.getText(),issuesField.getText(),publisher.getText(),xmen.isSelected(),xmenAdj.isSelected());
+            addToCollection(collect);
+        }
+    }
     
     /**
      * Clear all text fields and buttons and update 
@@ -148,7 +155,7 @@ public class MakeEntryDialogController {
      */
     private void clearFields(){
         dateField.clear();
-        mainController.makeTitlesButton(seriesTitles,seriesField);
+        mainController.makeTitlesButton(seriesTitles,seriesField,scene);
         seriesField.clear();
         issuesField.clear();
         publisher.setText("");
@@ -267,11 +274,11 @@ public class MakeEntryDialogController {
     private void makeSeriesSearch(){
         seriesField.setOnKeyReleased(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent t) {
-                mainController.makeTitlesButton(seriesTitles,seriesField);
+                mainController.makeTitlesButton(seriesTitles,seriesField,scene);
             }
         });
     }
-    
+
     /**
      * Gets and formats the current date in the form of mm/dd/yy
      * @return a string of the current date in the form mm/dd/yy
@@ -312,7 +319,7 @@ public class MakeEntryDialogController {
                 mainController.errorMessage("No Publisher Selected", "Please Select a Publisher");
             }
             else{
-                DBConnection.createSeries(entry.getSeriesName(),entry.getPublisher(), entry.getXmen(), "Series2");
+                DBConnection.createSeries(entry.getSeriesName(),entry.getPublisher(), entry.getXmen());
                 addBook(entry, entry.getSeriesName());
                 clearFields();
                 return true;
@@ -326,29 +333,29 @@ public class MakeEntryDialogController {
         }
     }
     
-    // /**
-    //  * Creates a new entry in the database, creating a new series if needed and adding all indicated issues
-    //  * @return true if entry made successfully, false if error message is displayed
-    //  */
-    // private boolean addToCollection(Collection collect){
-    //     if (!DBConnection.seriesExists(collect.getSeriesName())){
-    //         if (collect.getPublisher().equals("")){
-    //             mainController.errorMessage("No Publisher Selected", "Please Select a Publisher");
-    //         }
-    //         else{
-    //             DBConnection.createSeries(collect.getSeriesName(),collect.getPublisher(), collect.getXmen(), "Series2");
-    //             addBook(collect, collect.getSeriesName());
-    //             clearFields();
-    //             return true;
-    //         }
-    //         return false;
-    //     }
-    //     else{
-    //         addBook(collect,collect.getSeriesName());
-    //         clearFields();
-    //         return true;
-    //     }
-    // }
+    /**
+     * Creates a new entry in the database, creating a new series if needed and adding all indicated issues
+     * @return true if entry made successfully, false if error message is displayed
+     */
+    private boolean addToCollection(Collection collect){
+        if (!DBConnection.seriesCollected(collect.getSeriesName())){
+            if (collect.getPublisher().equals("")){
+                mainController.errorMessage("No Publisher Selected", "Please Select a Publisher");
+            }
+            else{
+                DBConnection.collectSeries(collect.getSeriesName(),collect.getPublisher(), collect.getXmen());
+                collectIssue(collect, collect.getSeriesName());
+                clearFields();
+                return true;
+            }
+            return false;
+        }
+        else{
+            collectIssue(collect,collect.getSeriesName());
+            clearFields();
+            return true;
+        }
+    }
 
     /**
      * Adds either a set of several issues or a single issue as new rows in the Comic table
@@ -382,16 +389,41 @@ public class MakeEntryDialogController {
     //  * Adds either a set of several issues or a single issue as new rows in the Comic table
     //  * @param bookID integer ID for a series (correlates to SeriesID in all tables in database)
     //  */
-    // private void collectIssue(Collection collect, String seriesName){
+    // private void addToCollect(Collection collect, String seriesName){
+    //     Date todayDate=new Date(LocalDateTime.now());
+    //     String time="";
+    //     // if (!date.toString().equals(todayDate.toString())){
+    //     //     String dateString=DBConnection.getLastDateTime(date.toSearchString());
+    //     //     if (dateString!=null){
+    //     //         time=dateString.split(" ")[1];
+    //     //         date.setTime(time);
+    //     //         date.fastForward();
+    //     //     }
+    //     // }
     //     for (String issueName: collect.getIssues()){
     //         if (!DBConnection.entryExists(seriesName,issueName)){
-    //             DBConnection.addIssue(issueName,seriesName,collect.getXmenAdj());
+    //             DBConnection.addIssue(issueName,seriesName,collect.getXmenAdj(),);
     //         }
     //         else{
     //             mainController.errorMessage("Entry Exists", "This Entry Exists");
     //         }
     //     }
     // }
+    
+    /**
+     * Adds either a set of several issues or a single issue as new rows in the Comic table
+     * @param bookID integer ID for a series (correlates to SeriesID in all tables in database)
+     */
+    private void collectIssue(Collection collect, String seriesName){
+        for (String issueName: collect.getIssues()){
+            if (!DBConnection.isCollected(seriesName,issueName)){
+                DBConnection.collectIssue(issueName,seriesName,collect.getXmenAdj());
+            }
+            else{
+                mainController.errorMessage("Entry Exists", "This Entry Exists");
+            }
+        }
+    }
 
     private void actionOnEnter(){
         xmen.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -463,7 +495,7 @@ public class MakeEntryDialogController {
     public void logScene(){
         if (scene==2){
             scene=1;
-            setScene();
+            setScene(dateLabel);
         }
         
     }
@@ -471,16 +503,19 @@ public class MakeEntryDialogController {
     public void collectScene(){
         if (scene==1){
             scene=2;
-            setScene();
+            setScene(collectEntry);
         }
     }
 
-    private void setScene(){
-            collectEntry.setVisible(!collectEntry.isVisible());
+    private void setScene(Node toAdd){
+            ObservableList<Node> child=theBox.getChildren();
+            child.add(10,toAdd);
+            child.remove(11);
             logEntry.setVisible(!logEntry.isVisible());
-            dateLabel.setVisible(!dateLabel.isVisible());
+            // dateLabel.setVisible(!dateLabel.isVisible());
             dateField.setVisible(!dateField.isVisible());
             today.setVisible(!today.isVisible());
+            clearFields();
     }
 
 }

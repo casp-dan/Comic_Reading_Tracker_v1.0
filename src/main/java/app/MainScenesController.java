@@ -83,10 +83,16 @@ public class MainScenesController {
     /**
      * Creates a dropdown menu button to select the title of a series that already exists.
      */
-    public void makeTitlesButton(@SuppressWarnings("exports") MenuButton seriesTitles, @SuppressWarnings("exports") TextField seriesField){
+    public void makeTitlesButton(@SuppressWarnings("exports") MenuButton seriesTitles, @SuppressWarnings("exports") TextField seriesField, Integer scene){
         ObservableList<MenuItem> bookNames=seriesTitles.getItems();
         bookNames.clear();
-        ArrayList<String> titles=DBConnection.getSeries();
+        ArrayList<String> titles;
+        if (scene==1){
+            titles=DBConnection.getSeries();
+        }
+        else{
+            titles=DBConnection.getCollectedSeries();
+        }
         for (int i=0;i<titles.size();i++){
             if (titles.get(i).contains(seriesField.getText())){
                 MenuItem item=new MenuItem(titles.get(i));
