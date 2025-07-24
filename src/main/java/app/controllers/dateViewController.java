@@ -1,6 +1,7 @@
 package app.controllers;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import app.DBConnection;
@@ -19,7 +20,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import models.Date;
-import java.time.LocalDate;
 
 
 /**
@@ -93,12 +93,13 @@ public class dateViewController{
     private boolean createIssueView(){
         pane.getChildren().remove(issueTree);
         TreeItem<String> rootItem = new CheckBoxTreeItem<>("Issues");
-        ArrayList<String> issues=DBConnection.getIssuesByDate(dateField.getText());
-        ArrayList<Integer> series=DBConnection.getSeriesByDate(dateField.getText());
+        Date newDate=new Date(dateField.getText());
+        ArrayList<ArrayList<String>> issues=DBConnection.getIssuesByDate(newDate.toDateTimeString());
+        // ArrayList<Integer> series=DBConnection.getSeriesByDate(dateField.getText());
         if (issues!=null){
             for (int i = 0; i < issues.size(); i++) {
-                String thisSeries = DBConnection.getSeriesTitleByID(series.get(i));
-                String thisIssue = issues.get(i);
+                String thisSeries = issues.get(i).get(1);
+                String thisIssue = issues.get(i).get(0);
                 TreeItem<String> treeIssue = new TreeItem<>(thisSeries+" #"+thisIssue);
                 rootItem.getChildren().add(treeIssue);
             }
@@ -150,7 +151,7 @@ public class dateViewController{
      * @return a string of the current date in the form mm/dd/yy
      */
     private String getToday(){
-        Date today=new Date(LocalDate.now());
+        Date today=new Date(LocalDateTime.now());
         return today.toString();
     }
 

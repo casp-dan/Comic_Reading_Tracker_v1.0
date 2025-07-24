@@ -7,9 +7,10 @@
    <children>
       <MenuButton fx:id="publisher" xmlns:fx="http://javafx.com/fxml" />
 
-      <Button fx:id="collectEntry" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" layoutY="207.0" layoutX="26.0" text="Collect" visible="false" />
+      <Button fx:id="collectEntry" mnemonicParsing="false" prefHeight="25.0" onMouseClicked="#collectBooks" prefWidth="150.0" layoutY="207.0" layoutX="26.0" text="Collect" />
+      <!-- <Button fx:id="collectEntry" mnemonicParsing="false" prefHeight="25.0" onMouseClicked="#collectBooks" prefWidth="150.0" layoutY="207.0" layoutX="26.0" text="Collect" visible="false" /> -->
       
-      <VBox layoutX="26.0" layoutY="50.0" prefHeight="133.0" prefWidth="150.0">
+      <VBox fx:id="theBox" layoutX="26.0" layoutY="50.0" prefHeight="133.0" prefWidth="150.0">
          <children>
             <Label alignment="CENTER" prefHeight="16.0" prefWidth="200.0" text="Series Name" textAlignment="CENTER" textFill="WHITE" />
             <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" visible="false" />
