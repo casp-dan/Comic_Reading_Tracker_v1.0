@@ -113,6 +113,9 @@ public class Date {
         return Integer.toString(month)+"/"+Integer.toString(day)+"/"+Integer.toString(year);
     }
     
+    /**
+     * 
+     */
     public String toSearchString(){
         String sMonth=Integer.toString(month);
         String sDay=Integer.toString(day);
@@ -125,6 +128,10 @@ public class Date {
         return "20"+Integer.toString(year)+"-"+sMonth+"-"+sDay;
     }
 
+    /**
+     * 
+     * @return
+     */
     public String toDateTimeString(){
         String sMonth=Integer.toString(month);
         String sDay=Integer.toString(day);
@@ -308,10 +315,17 @@ public class Date {
         return comps;
     }
 
+    /**
+     * 
+     * @return
+     */
     public int getNumMonths(){
         return (getYear()-22)*12+getMonth();
     }
     
+    /**
+     * 
+     */
     public void fastForward(){
         String[] timeList=(time.split(":"));
         String hrStr=timeList[0];
@@ -359,6 +373,10 @@ public class Date {
         time=hrStr+":"+minStr+":"+secStr;
     }
 
+    /**
+     * 
+     * @param newTime
+     */
     public void setTime(String newTime){
         time=newTime;
     }

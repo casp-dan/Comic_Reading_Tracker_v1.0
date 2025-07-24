@@ -1,67 +1,27 @@
-CREATE TABLE Series(
-    SeriesName VARCHAR(45) primary key,
-    Publisher VARCHAR(45),
-    Xmen boolean
-);
+CREATE TABLE CollectedIssues (
+    IssueName varchar(75) NOT NULL,
+    SeriesName varchar(75) NOT NULL,
+    XmenAdj tinyint(1) DEFAULT NULL,
+    PRIMARY KEY (IssueName,SeriesName)
+)
 
-CREATE TABLE Issue(
-    IssueName VARCHAR(45) primary key,
-    SeriesName VARCHAR(45) foreign key,
-    XmenAdj boolean
-);
-
-CREATE TABLE Date(
-    IssueName VARCHAR(45) primary key foreign key,
-    Date VARCHAR(45) primary key,
-    Month INTEGER,
-    Day INTEGER,
-    Year INTEGER
-);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+CREATE TABLE Issue (
+    IssueName varchar(75) NOT NULL,
+    SeriesName varchar(100) NOT NULL,
+    DateString datetime NOT NULL,
+    XmenAdj tinyint(1) DEFAULT NULL,
+    PRIMARY KEY (IssueName,SeriesName,DateString)
+)
 
 CREATE TABLE Series (
-    SeriesID INTEGER not null auto_increment primary key,
-    SeriesTitle VARCHAR(45),
-    issueID INTEGER,
-    Publisher VARCHAR(45),
-    xmen boolean
-);
+    SeriesName varchar(100) NOT NULL,
+    Publisher varchar(75) DEFAULT NULL,
+    Xmen tinyint(1) DEFAULT NULL,
+    PRIMARY KEY (SeriesName)
+)
 
-CREATE TABLE Comic (
-    issueID INTEGER not null auto_increment primary key,
-    SeriesID INTEGER,
-    issueName VARCHAR(45),
-    dateString VARCHAR(45),
-    month INTEGER,
-    day INTEGER,
-    year INTEGER
-);
-
-CREATE TABLE XmenAdjSeries (
-    SeriesID INTEGER primary key,
-    SeriesTitle VARCHAR(45),
-    issueID INTEGER
-);
-
-CREATE TABLE XmenAdjComic (
-    issueID INTEGER not null auto_increment primary key,
-    SeriesID INTEGER,
-    issueName VARCHAR(45),
-    dateString VARCHAR(45),
-    month INTEGER,
-    day INTEGER,
-    year INTEGER
-);
+CREATE TABLE publisher (
+    publisher varchar(100) NOT NULL,
+    list_order int DEFAULT NULL,
+    PRIMARY KEY (publisher)
+)
