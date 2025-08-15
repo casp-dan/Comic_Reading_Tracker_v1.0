@@ -9,3 +9,6 @@ This app can:
 This was meant as a replacement for my previous method of tracking and as such is designed to only present information as early as 1/1/2022. This can be changed by modifying the START constant in "src\main\java\models\Date.java"
 
 Launches as a gradle app.
+
+## Check out the newer electron web app version here: 
+https://github.com/casp-dan/Comic_Reading_Tracker_v2.0
