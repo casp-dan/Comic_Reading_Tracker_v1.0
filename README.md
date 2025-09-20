@@ -10,5 +10,6 @@ This was meant as a replacement for my previous method of tracking and as such i
 
 Launches as a gradle app.
 
-## Check out the newer electron web app version here: 
+[## Check out the newer electron web app version here: 
 https://github.com/casp-dan/Comic_Reading_Tracker_v2.0
+](url)
